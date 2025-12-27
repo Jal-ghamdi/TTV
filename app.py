@@ -18,7 +18,7 @@ st.set_page_config(
 
 st.image(
     "sls_image.jpg",
-    use_container_width=True
+    use_column_width=True
 )
 
 # Custom CSS
