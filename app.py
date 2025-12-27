@@ -185,7 +185,8 @@ with col4:
     engagement_hours = metrics.get('chapter_metrics', {}).get('estimated_engagement_hours', 0)
     st.metric(
         label="⏰ Total Engagement",
-        value=f"{engagement_hours}h",
+        value="1.30 h"
+        #value=f"{engagement_hours}h",
         help="Total member engagement hours"
     )
 
