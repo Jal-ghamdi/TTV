@@ -488,10 +488,10 @@ with tab2:
     # Engagement Funnel
     st.markdown("#### 📊 Engagement & Connection Funnel")
     
-    funnel_stages = ['Attended Event', 'Completed Surveys', 'Knowledge Improved', 'Planning Action']
+    funnel_stages = ['Knowledge Improved', 'Planning Action'] #'Attended Event', 'Completed Surveys', 
     funnel_values = [
-        metrics.get('total_participants_pre', 0),
-        metrics.get('total_responses', 0),
+        #metrics.get('total_participants_pre', 0),
+        #metrics.get('total_responses', 0),
         int(metrics.get('total_responses', 0) * metrics.get('grow_members_reporting_growth_pct', 0) / 100),
         metrics.get('connect_total_planning_action', 0)
     ]
