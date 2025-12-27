@@ -74,9 +74,18 @@ try:
     data = load_data()
     metrics = data['metrics']
     viz_data = data['visualization_data']
+    chapter_metrics = metrics.get('chapter_metrics', {})  # Load chapter_metrics here
 except FileNotFoundError:
     st.error("⚠️ Data file not found! Please ensure 'sls_kpi_data.json' is in the same directory.")
     st.stop()
+except Exception as e:
+    st.error(f"⚠️ Error loading data: {str(e)}")
+    st.stop()
+
+# Event attendance constants
+REGISTERED = 119
+TARGET = 50
+ACTUAL_ATTENDEES = 54
 
 # ============================================================================
 # HEADER
@@ -173,7 +182,7 @@ with col3:
         )
 
 with col4:
-    engagement_hours = chapter_metrics.get('estimated_engagement_hours', 0)
+    engagement_hours = metrics.get('chapter_metrics', {}).get('estimated_engagement_hours', 0)
     st.metric(
         label="⏰ Total Engagement",
         value=f"{engagement_hours}h",
