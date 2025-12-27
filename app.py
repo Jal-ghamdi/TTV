@@ -822,7 +822,7 @@ with tab4:
                 names=list(satisfaction_data.keys()),
                 values=list(satisfaction_data.values()),
                 title='Satisfaction Breakdown',
-                color_discrete_sequence=px.colors.sequential.RdYlGn
+                color_discrete_sequence=px.colors.diverging.RdYlGn
             )
             fig.update_traces(textposition='inside', textinfo='percent+label')
             fig.update_layout(height=400)
