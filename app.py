@@ -195,13 +195,12 @@ st.markdown("---")
 # MAIN TABS
 # ============================================================================
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3 = st.tabs([
     "📈 GROW", 
     "🤝 CONNECT", 
-    "💡 IMPACT", 
-    "📊 CHAPTER ACTIVITIES",
-    "👥 DEMOGRAPHICS"
+    "💡 IMPACT"
 ])
+
 
 # ============================================================================
 # TAB 1: GROW
@@ -645,302 +644,202 @@ with tab3:
 # TAB 4: CHAPTER ACTIVITIES
 # ============================================================================
 
-with tab4:
-    st.markdown('<p class="section-header">📊 CHAPTER ACTIVITIES & ENGAGEMENT</p>', unsafe_allow_html=True)
+#with tab4:
+  #  st.markdown('<p class="section-header">📊 CHAPTER ACTIVITIES & ENGAGEMENT</p>', unsafe_allow_html=True)
     
-    chapter_metrics = metrics.get('chapter_metrics', {})
+  #  chapter_metrics = metrics.get('chapter_metrics', {})
     
     # Attendance & Registration Metrics
-    st.markdown("#### 📈 Attendance & Registration Metrics")
+  #  st.markdown("#### 📈 Attendance & Registration Metrics")
     
-    col1, col2, col3, col4, col5 = st.columns(5)
+#    col1, col2, col3, col4, col5 = st.columns(5)
     
-    with col1:
-        st.metric(
-            label="📝 Total Registrations",
-            value=REGISTERED,
-            help="Total number of event registrations"
-        )
+  #  with col1:
+  #      st.metric(
+  #          label="📝 Total Registrations",
+  #          value=REGISTERED,
+  #          help="Total number of event registrations"
+  #      )
     
-    with col2:
-        st.metric(
-            label="🎯 Target Attendance",
-            value=TARGET,
-            help="Target attendance goal"
-        )
+  #  with col2:
+  #      st.metric(
+  #          label="🎯 Target Attendance",
+   #         value=TARGET,
+   #         help="Target attendance goal"
+    #    )
     
-    with col3:
-        st.metric(
-            label="👥 Actual Attendees",
-            value=ACTUAL_ATTENDEES,
-            delta=f"+{ACTUAL_ATTENDEES - TARGET} vs target",
-            help="Number of people who actually attended"
-        )
+   # with col3:
+  #      st.metric(
+  #          label="👥 Actual Attendees",
+  #          value=ACTUAL_ATTENDEES,
+  #          delta=f"+{ACTUAL_ATTENDEES - TARGET} vs target",
+   #         help="Number of people who actually attended"
+   #     )
     
-    with col4:
-        attendance_rate = round((ACTUAL_ATTENDEES / REGISTERED) * 100, 1)
-        st.metric(
-            label="📊 Attendance Rate",
-            value=f"{attendance_rate}%",
-            help="Actual attendees / Registrations"
-        )
+   # with col4:
+   #     attendance_rate = round((ACTUAL_ATTENDEES / REGISTERED) * 100, 1)
+   #     st.metric(
+   #         label="📊 Attendance Rate",
+   #         value=f"{attendance_rate}%",
+   #         help="Actual attendees / Registrations"
+   #     )
     
-    with col5:
-        target_achievement = round((ACTUAL_ATTENDEES / TARGET) * 100, 1)
-        st.metric(
-            label="🏆 Target Achievement",
-            value=f"{target_achievement}%",
-            help="Achievement vs target"
-        )
+  #  with col5:
+   #     target_achievement = round((ACTUAL_ATTENDEES / TARGET) * 100, 1)
+   #     st.metric(
+   #         label="🏆 Target Achievement",
+    #        value=f"{target_achievement}%",
+    #        help="Achievement vs target"
+    #    )
     
-    st.markdown("<br>", unsafe_allow_html=True)
+ #   st.markdown("<br>", unsafe_allow_html=True)
     
     # Attendance Funnel
-    st.markdown("#### 🎯 Event Attendance Funnel")
+#    st.markdown("#### 🎯 Event Attendance Funnel")
     
-    funnel_stages = ['Registered', 'Target', 'Attended', 'Completed Pre-Survey', 'Completed Both Surveys']
-    funnel_values = [
-        REGISTERED,
-        TARGET,
-        ACTUAL_ATTENDEES,
-        metrics.get('total_participants_pre', 0),
-        metrics.get('total_responses', 0)
-    ]
+#    funnel_stages = ['Registered', 'Target', 'Attended', 'Completed Pre-Survey', 'Completed Both Surveys']
+#    funnel_values = [
+#        REGISTERED,
+ #       TARGET,
+#        ACTUAL_ATTENDEES,
+ #       metrics.get('total_participants_pre', 0),
+ #       metrics.get('total_responses', 0)
+ #   ]
     
-    fig = go.Figure(go.Funnel(
-        y=funnel_stages,
-        x=funnel_values,
-        textinfo="value+percent initial",
-        marker={
-            "color": ["#3498db", "#9b59b6", "#2ecc71", "#f39c12", "#e74c3c"],
-            "line": {"width": 2, "color": "white"}
-        },
-        connector={"line": {"color": "#34495e", "dash": "dot", "width": 3}}
-    ))
+ #   fig = go.Figure(go.Funnel(
+   #     y=funnel_stages,
+   #     x=funnel_values,
+   #     textinfo="value+percent initial",
+  #      marker={
+    #        "color": ["#3498db", "#9b59b6", "#2ecc71", "#f39c12", "#e74c3c"],
+   #         "line": {"width": 2, "color": "white"}
+   #     },
+    #    connector={"line": {"color": "#34495e", "dash": "dot", "width": 3}}
+  #  ))
     
-    fig.update_layout(height=450)
+  #  fig.update_layout(height=450)
     
-    st.plotly_chart(fig, use_container_width=True)
+  #  st.plotly_chart(fig, use_container_width=True)
     
     # Activity Metrics
-    st.markdown("#### 📋 Survey & Engagement Metrics")
+   # st.markdown("#### 📋 Survey & Engagement Metrics")
     
-    col1, col2, col3, col4 = st.columns(4)
+ #   col1, col2, col3, col4 = st.columns(4)
     
-    with col1:
-        st.metric(
-            label="Event Name",
-            value=chapter_metrics.get('event_name', 'N/A')
-        )
+  #  with col1:
+  #      st.metric(
+   #         label="Event Name",
+   #         value=chapter_metrics.get('event_name', 'N/A')
+   #     )
     
-    with col2:
-        st.metric(
-            label="Survey Completion",
-            value=f"{chapter_metrics.get('completion_rate_pct', 0)}%",
-            help="% who completed both surveys"
-        )
+  #  with col2:
+  #      st.metric(
+   #         label="Survey Completion",
+    #        value=f"{chapter_metrics.get('completion_rate_pct', 0)}%",
+     #       help="% who completed both surveys"
+      #  )
     
-    with col3:
-        st.metric(
-            label="Engagement Hours",
-            value=f"{chapter_metrics.get('estimated_engagement_hours', 0)}h",
-            help="Estimated total engagement hours"
-        )
+   # with col3:
+    #    st.metric(
+     #       label="Engagement Hours",
+      #      value=f"{chapter_metrics.get('estimated_engagement_hours', 0)}h",
+       #     help="Estimated total engagement hours"
+        #)
     
-    with col4:
-        response_rate = round((metrics.get('total_participants_pre', 0) / ACTUAL_ATTENDEES) * 100, 1) if ACTUAL_ATTENDEES > 0 else 0
-        st.metric(
-            label="Pre-Survey Response",
-            value=f"{response_rate}%",
-            help="% of attendees who completed pre-survey"
-        )
+  #  with col4:
+   #     response_rate = round((metrics.get('total_participants_pre', 0) / ACTUAL_ATTENDEES) * 100, 1) if ACTUAL_ATTENDEES > 0 else 0
+    #    st.metric(
+     #       label="Pre-Survey Response",
+      #      value=f"{response_rate}%",
+       #     help="% of attendees who completed pre-survey"
+        #)
     
-    st.markdown("<br>", unsafe_allow_html=True)
+    #st.markdown("<br>", unsafe_allow_html=True)
     
     # Activities Breakdown
-    col1, col2 = st.columns([1, 1])
+    #col1, col2 = st.columns([1, 1])
     
-    with col1:
-        st.markdown("#### 📈 Knowledge Score Distribution - Pre Survey")
+    #with col1:
+     #   st.markdown("#### 📈 Knowledge Score Distribution - Pre Survey")
         
-        pre_dist = viz_data.get('pre_score_distribution', {})
+      #  pre_dist = viz_data.get('pre_score_distribution', {})
         
-        if pre_dist:
-            labels = [f"Score {k}" for k in pre_dist.keys()]
-            values = list(pre_dist.values())
+       # if pre_dist:
+        #    labels = [f"Score {k}" for k in pre_dist.keys()]
+         #   values = list(pre_dist.values())
             
-            fig = go.Figure(data=[go.Bar(
-                x=labels,
-                y=values,
-                marker_color='#ff7f0e',
-                text=values,
-                textposition='outside',
-                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
-            )])
+         #   fig = go.Figure(data=[go.Bar(
+          #      x=labels,
+           #     y=values,
+            #    marker_color='#ff7f0e',
+             #   text=values,
+              #  textposition='outside',
+               # hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
+            #)])
             
-            fig.update_layout(
-                yaxis_title='Number of Participants',
-                height=400
-            )
+         #   fig.update_layout(
+          #      yaxis_title='Number of Participants',
+           #     height=400
+            #)
             
-            st.plotly_chart(fig, use_container_width=True)
+          #  st.plotly_chart(fig, use_container_width=True)
     
-    with col2:
-        st.markdown("#### 📈 Knowledge Score Distribution - Post Survey")
+    #with col2:
+     #   st.markdown("#### 📈 Knowledge Score Distribution - Post Survey")
         
-        post_dist = viz_data.get('post_score_distribution', {})
+      #  post_dist = viz_data.get('post_score_distribution', {})
         
-        if post_dist:
-            labels = [f"Score {k}" for k in post_dist.keys()]
-            values = list(post_dist.values())
+       # if post_dist:
+        #    labels = [f"Score {k}" for k in post_dist.keys()]
+         #   values = list(post_dist.values())
             
-            fig = go.Figure(data=[go.Bar(
-                x=labels,
-                y=values,
-                marker_color='#1f77b4',
-                text=values,
-                textposition='outside',
-                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
-            )])
+          #  fig = go.Figure(data=[go.Bar(
+           #     x=labels,
+            #    y=values,
+             #   marker_color='#1f77b4',
+              #  text=values,
+               # textposition='outside',
+                #hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
+           # )])
             
-            fig.update_layout(
-                yaxis_title='Number of Participants',
-                height=400
-            )
+            #fig.update_layout(
+             #   yaxis_title='Number of Participants',
+              #  height=400
+            #)
             
-            st.plotly_chart(fig, use_container_width=True)
+           # st.plotly_chart(fig, use_container_width=True)
     
     # Satisfaction vs Recommendation
-    st.markdown("#### ⭐ Satisfaction vs Recommendation Correlation")
+    #st.markdown("#### ⭐ Satisfaction vs Recommendation Correlation")
     
-    col1, col2 = st.columns(2)
+   # col1, col2 = st.columns(2)
     
-    with col1:
-        satisfaction_data = viz_data.get('satisfaction_data', {})
-        if satisfaction_data:
-            fig = px.pie(
-                names=list(satisfaction_data.keys()),
-                values=list(satisfaction_data.values()),
-                title='Satisfaction Breakdown',
-                color_discrete_sequence=px.colors.diverging.RdYlGn
-            )
-            fig.update_traces(textposition='inside', textinfo='percent+label')
-            fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+    #with col1:
+     #   satisfaction_data = viz_data.get('satisfaction_data', {})
+      #  if satisfaction_data:
+       #     fig = px.pie(
+        #        names=list(satisfaction_data.keys()),
+         #       values=list(satisfaction_data.values()),
+          #      title='Satisfaction Breakdown',
+           #     color_discrete_sequence=px.colors.diverging.RdYlGn
+            #)
+            #fig.update_traces(textposition='inside', textinfo='percent+label')
+            #fig.update_layout(height=400)
+            #st.plotly_chart(fig, use_container_width=True)
     
-    with col2:
-        recommend_data = viz_data.get('recommend_data', {})
-        if recommend_data:
-            fig = px.pie(
-                names=list(recommend_data.keys()),
-                values=list(recommend_data.values()),
-                title='Recommendation Likelihood Breakdown',
-                color_discrete_sequence=px.colors.sequential.Blues
-            )
-            fig.update_traces(textposition='inside', textinfo='percent+label')
-            fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+    #with col2:
+     #   recommend_data = viz_data.get('recommend_data', {})
+      #  if recommend_data:
+       #     fig = px.pie(
+        #        names=list(recommend_data.keys()),
+         #       values=list(recommend_data.values()),
+          #      title='Recommendation Likelihood Breakdown',
+           #     color_discrete_sequence=px.colors.sequential.Blues
+            #)
+            #fig.update_traces(textposition='inside', textinfo='percent+label')
+            #fig.update_layout(height=400)
+            #st.plotly_chart(fig, use_container_width=True)
 
-# ============================================================================
-# TAB 5: DEMOGRAPHICS
-# ============================================================================
-
-with tab5:
-    st.markdown('<p class="section-header">👥 PARTICIPANT DEMOGRAPHICS</p>', unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("#### 📍 Location Distribution")
-        
-        location_data = viz_data.get('location_data', {})
-        
-        if location_data:
-            # Sort by count
-            sorted_items = sorted(location_data.items(), key=lambda x: x[1], reverse=True)
-            locations = [item[0] for item in sorted_items]
-            counts = [item[1] for item in sorted_items]
-            
-            fig = go.Figure(data=[go.Bar(
-                y=locations,
-                x=counts,
-                orientation='h',
-                marker_color='#3498db',
-                text=counts,
-                textposition='outside',
-                hovertemplate='<b>%{y}</b><br>Count: %{x}<extra></extra>'
-            )])
-            
-            fig.update_layout(
-                xaxis_title='Number of Participants',
-                height=400
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        st.markdown("#### 🎓 Academic Level Distribution")
-        
-        academic_data = viz_data.get('academic_level_data', {})
-        
-        if academic_data:
-            fig = px.pie(
-                names=list(academic_data.keys()),
-                values=list(academic_data.values()),
-                color_discrete_sequence=px.colors.qualitative.Set3,
-                hole=0.3
-            )
-            
-            fig.update_traces(textposition='inside', textinfo='percent+label')
-            fig.update_layout(height=400)
-            
-            st.plotly_chart(fig, use_container_width=True)
-    
-    # How heard about event
-    st.markdown("#### 📢 How Participants Heard About SLS")
-    
-    heard_about_data = viz_data.get('heard_about_data', {})
-    
-    if heard_about_data:
-        sorted_items = sorted(heard_about_data.items(), key=lambda x: x[1], reverse=True)
-        channels = [item[0] for item in sorted_items]
-        counts = [item[1] for item in sorted_items]
-        
-        fig = go.Figure(data=[go.Bar(
-            x=channels,
-            y=counts,
-            marker_color='#e74c3c',
-            text=counts,
-            textposition='outside',
-            hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
-        )])
-        
-        fig.update_layout(
-            yaxis_title='Number of Participants',
-            height=400
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Demographics Summary
-    st.markdown("#### 📊 Demographics Summary")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if location_data:
-            most_common_location = max(location_data.items(), key=lambda x: x[1])
-            st.info(f"**Top Location:** {most_common_location[0]} ({most_common_location[1]} participants)")
-    
-    with col2:
-        if academic_data:
-            most_common_level = max(academic_data.items(), key=lambda x: x[1])
-            st.success(f"**Most Common Level:** {most_common_level[0]} ({most_common_level[1]} participants)")
-    
-    with col3:
-        if heard_about_data:
-            most_common_channel = max(heard_about_data.items(), key=lambda x: x[1])
-            st.warning(f"**Top Channel:** {most_common_channel[0]} ({most_common_channel[1]} participants)")
 
 # ============================================================================
 # FOOTER
