@@ -100,7 +100,7 @@ ACTUAL_ATTENDEES = 54
 # HEADER
 # ============================================================================
 
-st.markdown('<p class="main-header">📊 SLS Chapter KPI Dashboard</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">📊 SLS AU Chapter KPI Dashboard</p>', unsafe_allow_html=True)
 st.markdown("### Measuring Growth, Connection, and Impact")
 st.markdown("---")
 
