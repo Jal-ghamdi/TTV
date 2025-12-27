@@ -12,6 +12,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ============================================================================
+# HEADER IMAGE
+# ============================================================================
+
+st.image(
+    "sls_image.jpg",
+    use_container_width=True
+)
+
 # Custom CSS
 st.markdown("""
 <style>
