@@ -851,6 +851,6 @@ st.markdown("""
     <p style='font-size: 1.1rem;'><strong>📊 SLS Chapter KPI Dashboard</strong></p>
     <p>Tracking Growth, Connection, and Impact through data-driven insights</p>
     <p style='font-size: 0.9rem;'>Last Updated: {}</p>
-    <p style='font-size: 0.8rem;'>Data collected through bi-annual engagement surveys</p>
+    <p style='font-size: 0.8rem;'>All data has been fully anonymized, and participant privacy has been strictly maintained. Data for this event was collected through pre- and post-event polls conducted during the Zoom webinar.</p>
 </div>
 """.format(datetime.now().strftime('%B %d, %Y')), unsafe_allow_html=True)
