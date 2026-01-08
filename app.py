@@ -558,10 +558,10 @@ with tab3:
         st.markdown('<div class="metric-container impact-metric">', unsafe_allow_html=True)
         estimated_impact = metrics.get('impact_people_impacted_estimate', metrics.get('connect_total_planning_action', 0) * 3)
         st.metric(
-            label="Est. People Impacted",
-            value=estimated_impact,
-            help="Estimated reach through member actions"
-        )
+        label="Est. People Impacted",
+        value=metrics['impact_people_impacted_estimate']
+    )
+
         st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
