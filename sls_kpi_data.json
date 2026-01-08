@@ -1,0 +1,196 @@
+{
+  "metrics": {
+    "total_responses": 19,
+    "total_participants_pre": 32,
+    "total_participants_post": 24,
+    "match_rate_pct": 59.4,
+    "grow_members_reporting_growth_pct": 89.5,
+    "grow_avg_knowledge_increase": 2.07,
+    "grow_cybersecurity": {
+      "pre": 2.21,
+      "post": 4.53,
+      "improvement": 2.32
+    },
+    "grow_vision2030": {
+      "pre": 2.42,
+      "post": 4.58,
+      "improvement": 2.16
+    },
+    "grow_technical_skills": {
+      "pre": 2.68,
+      "post": 4.42,
+      "improvement": 1.74
+    },
+    "grow_improvement_distribution": {
+      "significant_improvement_2plus": 11,
+      "moderate_improvement_1to2": 5,
+      "slight_improvement_0to1": 1,
+      "no_change": 1,
+      "decreased": 1
+    },
+    "grow_pre_score_distribution": {
+      "score_1": 5,
+      "score_2": 3,
+      "score_3": 7,
+      "score_4": 0,
+      "score_5": 2
+    },
+    "grow_post_score_distribution": {
+      "score_1": 0,
+      "score_2": 0,
+      "score_3": 2,
+      "score_4": 8,
+      "score_5": 9
+    },
+    "grow_significant_growth_pct": 89.5,
+    "improvement_stats": {
+      "mean": 2.07,
+      "median": 2.0,
+      "std": 1.64,
+      "min": -2.0,
+      "max": 5.0,
+      "q25": 1.17,
+      "q75": 3.33
+    },
+    "connect_members_planning_action_pct": 89.5,
+    "connect_total_planning_action": 17,
+    "connect_action_plan_distribution": {
+      "Yes": 17,
+      "No": 2
+    },
+    "impact_avg_satisfaction": 4.47,
+    "impact_satisfaction_pct": 84.2,
+    "impact_satisfaction_distribution": {
+      "Very satisfied": 13,
+      "Satisfied": 3,
+      "Neutral": 2,
+      "Dissatisfied": 1
+    },
+    "impact_likely_recommend_pct": 89.5,
+    "impact_recommend_distribution": {
+      "Very likely": 15,
+      "Likely": 2,
+      "Neutral": 1,
+      "Not likely": 1
+    },
+    "impact_people_impacted_estimate": 51,
+    "demographics_location": {
+      "Melbourne": 19,
+      "Brisbane": 5,
+      "Sydney": 4,
+      "Adelaide": 2,
+      "Perth": 2
+    },
+    "demographics_academic_level": {
+      "Master\u2019s": 10,
+      "Doctorate (PhD)": 9,
+      "Bachelor\u2019s": 7,
+      "Unknown": 3,
+      "Foundation year": 2,
+      "Language program": 1
+    },
+    "demographics_heard_about": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 20,
+      "WhatsApp": 10,
+      "Telegram": 1,
+      "Other ": 1
+    },
+    "chapter_metrics": {
+      "event_name": "SLS Chapter Event",
+      "total_pre_responses": 32,
+      "total_post_responses": 24,
+      "completed_both_surveys": 19,
+      "completion_rate_pct": 59.4,
+      "estimated_engagement_hours": 28.5,
+      "attendance_rate": 59.4
+    }
+  },
+  "data_visualization": {
+    "knowledge_comparison": {
+      "topics": [
+        "Cybersecurity Knowledge",
+        "Vision 2030 Contribution",
+        "Technical Skills"
+      ],
+      "pre_scores": [
+        2.21,
+        2.42,
+        2.68
+      ],
+      "post_scores": [
+        4.53,
+        4.58,
+        4.42
+      ],
+      "improvements": [
+        2.32,
+        2.16,
+        1.74
+      ]
+    },
+    "location_data": {
+      "Melbourne": 19,
+      "Brisbane": 5,
+      "Sydney": 4,
+      "Adelaide": 2,
+      "Perth": 2
+    },
+    "academic_level_data": {
+      "Master\u2019s": 10,
+      "Doctorate (PhD)": 9,
+      "Bachelor\u2019s": 7,
+      "Unknown": 3,
+      "Foundation year": 2,
+      "Language program": 1
+    },
+    "heard_about_data": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 20,
+      "WhatsApp": 10,
+      "Telegram": 1,
+      "Other ": 1
+    },
+    "satisfaction_data": {
+      "Very satisfied": 13,
+      "Satisfied": 3,
+      "Neutral": 2,
+      "Dissatisfied": 1
+    },
+    "recommend_data": {
+      "Very likely": 15,
+      "Likely": 2,
+      "Neutral": 1,
+      "Not likely": 1
+    },
+    "action_plan_data": {
+      "Yes": 17,
+      "No": 2
+    },
+    "improvement_distribution": {
+      "significant_improvement_2plus": 11,
+      "moderate_improvement_1to2": 5,
+      "slight_improvement_0to1": 1,
+      "no_change": 1,
+      "decreased": 1
+    },
+    "pre_score_distribution": {
+      "score_1": 5,
+      "score_2": 3,
+      "score_3": 7,
+      "score_4": 0,
+      "score_5": 2
+    },
+    "post_score_distribution": {
+      "score_1": 0,
+      "score_2": 0,
+      "score_3": 2,
+      "score_4": 8,
+      "score_5": 9
+    }
+  },
+  "metadata": {
+    "generated_date": "2026-01-08 07:06:36",
+    "total_participants": 32,
+    "analysis_version": "1.0",
+    "privacy_safe": true
+  }
+}
