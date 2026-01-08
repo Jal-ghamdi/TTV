@@ -1,0 +1,62 @@
+{
+  "metrics": {
+    "sample_sizes": {
+      "pre": 32,
+      "post": 24,
+      "matched": 19
+    },
+    "total_participants_pre": 32,
+    "total_participants_post": 24,
+    "total_responses": 19,
+    "match_rate_pct": 59.4,
+    "grow_avg_knowledge_increase": 2.07,
+    "grow_significant_growth_pct": 89.5,
+    "connect_members_planning_action_pct": 91.7,
+    "connect_total_planning_action": 22,
+    "connect_action_plan_distribution": {
+      "Yes": 22,
+      "No": 2
+    },
+    "impact_avg_satisfaction": 4.42,
+    "impact_satisfaction_pct": 83.3,
+    "impact_likely_recommend_pct": 87.5,
+    "impact_satisfaction_distribution": {
+      "Very satisfied": 15,
+      "Satisfied": 5,
+      "Neutral": 3,
+      "Dissatisfied": 1
+    },
+    "impact_recommend_distribution": {
+      "Very likely": 17,
+      "Likely": 4,
+      "Neutral": 2,
+      "Not likely": 1
+    },
+    "demographics_location": {
+      "Melbourne": 19,
+      "Brisbane": 5,
+      "Sydney": 4,
+      "Adelaide": 2,
+      "Perth": 2
+    },
+    "demographics_academic_level": {
+      "Master\u2019s": 10,
+      "Doctorate (PhD)": 9,
+      "Bachelor\u2019s": 7,
+      "Unknown": 3,
+      "Foundation year": 2,
+      "Language program": 1
+    },
+    "demographics_heard_about": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 20,
+      "WhatsApp": 10,
+      "Telegram": 1,
+      "Other ": 1
+    }
+  },
+  "metadata": {
+    "generated_at": "2026-01-08 06:59:35",
+    "analysis_version": "1.1-backward-compatible",
+    "note": "GROW uses matched data; CONNECT & IMPACT use post survey data"
+  }
+}
