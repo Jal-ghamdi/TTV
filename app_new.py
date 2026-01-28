@@ -26,7 +26,7 @@ SESSIONS = {
     },
     "Finance": {
         "name": "💰 Finance Session",
-        "data_file": "sls_kpi_data_finance.json",
+        "data_file": "sls_kpi_finance_session2_ttv_data_updated1.json",
         "color": "#2ecc71",
         "icon": "💰"
     }
@@ -268,14 +268,20 @@ with col3:
             value=f"{metrics['impact_avg_satisfaction']}/5",
             delta=f"{metrics.get('impact_satisfaction_pct', 0)}% satisfied"
         )
-
 with col4:
-    engagement_hours = metrics.get('chapter_metrics', {}).get('estimated_engagement_hours', 0)
+    engagement_hours = chapter_metrics.get('estimated_engagement_hours', 1.30)
     st.metric(
         label="⏰ Total Engagement",
-        value="1.30 h",
+        value=f"{engagement_hours:.2f} h",  # ← Now dynamic!
         help="Total member engagement hours"
     )
+#with col4:
+ #   engagement_hours = metrics.get('chapter_metrics', {}).get('estimated_engagement_hours', 0)
+  #  st.metric(
+   #     label="⏰ Total Engagement",
+    #    value="1.30 h",
+     #   help="Total member engagement hours"
+    #)
 
 st.markdown("---")
 
