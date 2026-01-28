@@ -1,0 +1,193 @@
+{
+    "metrics": {
+        "total_responses": 28,
+        "total_participants_pre": 41,
+        "total_participants_post": 35,
+        "match_rate_pct": 68.3,
+        "grow_members_reporting_growth_pct": 78.6,
+        "grow_avg_knowledge_increase": 1.0,
+        "grow_finance": {
+            "pre": 3.39,
+            "post": 4.39,
+            "improvement": 1.0
+        },
+        "grow_vision2030": {
+            "pre": 3.39,
+            "post": 4.21,
+            "improvement": 0.82
+        },
+        "grow_technical_skills": {
+            "pre": 3.14,
+            "post": 4.32,
+            "improvement": 1.18
+        },
+        "grow_improvement_distribution": {
+            "significant_improvement_2plus": 7,
+            "moderate_improvement_1to2": 8,
+            "slight_improvement_0to1": 7,
+            "no_change": 5,
+            "decreased": 1
+        },
+        "grow_pre_score_distribution": {
+            "score_1": 0,
+            "score_2": 7,
+            "score_3": 12,
+            "score_4": 8,
+            "score_5": 1
+        },
+        "grow_post_score_distribution": {
+            "score_1": 0,
+            "score_2": 1,
+            "score_3": 4,
+            "score_4": 13,
+            "score_5": 10
+        },
+        "grow_significant_growth_pct": 64.3,
+        "improvement_stats": {
+            "mean": 1.0,
+            "median": 1.0,
+            "std": 0.85,
+            "min": -0.33,
+            "max": 2.67,
+            "q25": 0.33,
+            "q75": 1.75
+        },
+        "connect_members_planning_action_pct": 92.9,
+        "connect_total_planning_action": 26,
+        "connect_action_plan_distribution": {
+            "Yes": 26,
+            "No": 2
+        },
+        "impact_avg_satisfaction": 4.43,
+        "impact_satisfaction_pct": 89.3,
+        "impact_satisfaction_distribution": {
+            "Very satisfied": 15,
+            "Satisfied": 10,
+            "Neutral": 3
+        },
+        "impact_likely_recommend_pct": 89.3,
+        "impact_recommend_distribution": {
+            "Very likely": 17,
+            "Likely": 8,
+            "Neutral": 3
+        },
+        "impact_people_impacted_estimate": 26,
+        "demographics_location": {
+            "Melbourne": 27,
+            "Sydney": 7,
+            "Other ": 4,
+            "Brisbane": 1,
+            "Adelaide": 1,
+            "Canberra": 1
+        },
+        "demographics_academic_level": {
+            "Bachelor\u2019s": 13,
+            "Foundation year": 9,
+            "Master\u2019s": 9,
+            "Doctorate (PhD)": 8,
+            "Language program": 2
+        },
+        "demographics_heard_about": {
+            "SACM (Saudi Arabian Cultural Mission in Australia)": 23,
+            "WhatsApp": 17,
+            "Other ": 1
+        },
+        "chapter_metrics": {
+            "event_name": "Towards the Vision: Finance & Financial Institutions with Muhannad Alsharekh | Saudi Leadership Society \u2013 Australia Chapter",
+            "total_pre_responses": 41,
+            "total_post_responses": 35,
+            "completed_both_surveys": 28,
+            "completion_rate_pct": 68.3,
+            "estimated_engagement_hours": 1.5,
+            "attendance_rate": 68.3,
+            "total_registered": 145,
+            "target_attendance": 50,
+            "actual_attendees": 63
+        }
+    },
+    "visualization_data": {
+        "knowledge_comparison": {
+            "topics": [
+                "Cybersecurity Knowledge",
+                "Vision 2030 Contribution",
+                "Technical Skills"
+            ],
+            "pre_scores": [
+                3.39,
+                3.39,
+                3.14
+            ],
+            "post_scores": [
+                4.39,
+                4.21,
+                4.32
+            ],
+            "improvements": [
+                1.0,
+                0.82,
+                1.18
+            ]
+        },
+        "location_data": {
+            "Melbourne": 27,
+            "Sydney": 7,
+            "Other ": 4,
+            "Brisbane": 1,
+            "Adelaide": 1,
+            "Canberra": 1
+        },
+        "academic_level_data": {
+            "Bachelor\u2019s": 13,
+            "Foundation year": 9,
+            "Master\u2019s": 9,
+            "Doctorate (PhD)": 8,
+            "Language program": 2
+        },
+        "heard_about_data": {
+            "SACM (Saudi Arabian Cultural Mission in Australia)": 23,
+            "WhatsApp": 17,
+            "Other ": 1
+        },
+        "satisfaction_data": {
+            "Very satisfied": 15,
+            "Satisfied": 10,
+            "Neutral": 3
+        },
+        "recommend_data": {
+            "Very likely": 17,
+            "Likely": 8,
+            "Neutral": 3
+        },
+        "action_plan_data": {
+            "Yes": 26,
+            "No": 2
+        },
+        "improvement_distribution": {
+            "significant_improvement_2plus": 7,
+            "moderate_improvement_1to2": 8,
+            "slight_improvement_0to1": 7,
+            "no_change": 5,
+            "decreased": 1
+        },
+        "pre_score_distribution": {
+            "score_1": 0,
+            "score_2": 7,
+            "score_3": 12,
+            "score_4": 8,
+            "score_5": 1
+        },
+        "post_score_distribution": {
+            "score_1": 0,
+            "score_2": 1,
+            "score_3": 4,
+            "score_4": 13,
+            "score_5": 10
+        }
+    },
+    "metadata": {
+        "generated_date": "2026-01-28 09:42:11",
+        "total_participants": 41,
+        "analysis_version": "1.0",
+        "privacy_safe": true
+    }
+}
