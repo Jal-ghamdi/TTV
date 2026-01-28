@@ -1120,19 +1120,19 @@ with tab2:
             unsafe_allow_html=True
         )
     
-    with col4:
+    #with col4:
         # Calculate network effect
-        network_potential = ACTUAL_ATTENDEES * (ACTUAL_ATTENDEES - 1) / 2
-        st.markdown(
-            create_metric_card(
-                "Network Potential",
-                f"{network_potential:.0f}",
-                "possible connections",
-                "🌐",
-                "connect"
-            ),
-            unsafe_allow_html=True
-        )
+        #network_potential = ACTUAL_ATTENDEES * (ACTUAL_ATTENDEES - 1) / 2
+        #st.markdown(
+         #   create_metric_card(
+          #      "Network Potential",
+           #     f"{network_potential:.0f}",
+            #    "possible connections",
+             #   "🌐",
+              #  "connect"
+            #),
+            #unsafe_allow_html=True
+        #)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
