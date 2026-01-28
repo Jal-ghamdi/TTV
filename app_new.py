@@ -20,7 +20,7 @@ st.set_page_config(
 SESSIONS = {
     "Cybersecurity": {
         "name": "🔐 Cybersecurity Session",
-        "data_file": "sls_kpi_data_cybersecurity.json",
+        "data_file": "sls_kpi_data_cybersecurity_updated1.json",
         "color": "#e74c3c",
         "icon": "🔐"
     },
