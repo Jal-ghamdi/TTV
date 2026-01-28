@@ -801,7 +801,7 @@ st.markdown("---")
 
 tab1, tab2, tab3 = st.tabs([
     "📈 GROW - Learning & Development", 
-    "🤝 CONNECT - Engagement & Networking", 
+    "🤝 CONNECT - Engagement", 
     "💡 IMPACT - Satisfaction & Results"
 ])
 
