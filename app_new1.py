@@ -309,16 +309,31 @@ st.markdown("""
 # ============================================================================
 
 def calculate_engagement_score(metrics):
-    """Calculate overall engagement score (0-100)"""
+    """
+    Calculate overall engagement score (0-100)
+    
+    Weights aligned with SLS's Grow → Connect → Impact mission:
+    - Knowledge Growth (GROW): 35%
+    - Action Plans (CONNECT): 30%
+    - Satisfaction (IMPACT): 25%
+    - Attendance (Foundation): 10%
+    """
     try:
+        # Calculate individual component scores (0-100 scale)
         attendance_rate = (metrics.get('chapter_metrics', {}).get('actual_attendees', 0) / 
                           metrics.get('chapter_metrics', {}).get('total_registered', 1)) * 100
-        knowledge_score = metrics.get('grow_avg_knowledge_increase', 0) * 20
+        knowledge_score = metrics.get('grow_avg_knowledge_increase', 0) * 20  # Convert 0-5 scale to 0-100
         action_rate = metrics.get('connect_members_planning_action_pct', 0)
-        satisfaction_score = (metrics.get('impact_avg_satisfaction', 0) / 5) * 100
+        satisfaction_score = (metrics.get('impact_avg_satisfaction', 0) / 5) * 100  # Convert 0-5 to 0-100
         
-        engagement = (attendance_rate * 0.3 + knowledge_score * 0.3 + 
-                     action_rate * 0.2 + satisfaction_score * 0.2)
+        # Apply weights: GROW (35%) + CONNECT (30%) + IMPACT (25%) + Attendance (10%)
+        engagement = (
+            knowledge_score * 0.35 +      # GROW - Learning outcomes
+            action_rate * 0.30 +          # CONNECT - Action commitment
+            satisfaction_score * 0.25 +   # IMPACT - Member satisfaction
+            attendance_rate * 0.10        # Foundation - Show-up rate
+        )
+        
         return round(engagement, 1)
     except:
         return 0
@@ -526,6 +541,115 @@ st.markdown(f"""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Engagement Score Breakdown
+st.markdown("### 📋 How We Calculate the Engagement Score")
+
+# Calculate individual components for display
+attendance_rate = (ACTUAL_ATTENDEES / REGISTERED) * 100 if REGISTERED > 0 else 0
+knowledge_score = metrics.get('grow_avg_knowledge_increase', 0) * 20
+action_rate = metrics.get('connect_members_planning_action_pct', 0)
+satisfaction_score = (metrics.get('impact_avg_satisfaction', 0) / 5) * 100
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(f"""
+    <div style='background: white; padding: 1.5rem; border-radius: 12px; 
+                border-left: 5px solid #667eea; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.85rem; 
+                    color: #6c757d; text-transform: uppercase; margin-bottom: 0.5rem;'>
+            🌱 GROW (35%)
+        </div>
+        <div style='font-family: "Space Mono", monospace; font-size: 2rem; 
+                    font-weight: 700; color: #2c3e50;'>
+            {knowledge_score:.1f}
+        </div>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;'>
+            Knowledge growth<br>
+            <span style='color: #2ecc71; font-weight: 600;'>+{knowledge_score * 0.35:.1f} pts</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"""
+    <div style='background: white; padding: 1.5rem; border-radius: 12px; 
+                border-left: 5px solid #f093fb; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.85rem; 
+                    color: #6c757d; text-transform: uppercase; margin-bottom: 0.5rem;'>
+            🤝 CONNECT (30%)
+        </div>
+        <div style='font-family: "Space Mono", monospace; font-size: 2rem; 
+                    font-weight: 700; color: #2c3e50;'>
+            {action_rate:.1f}
+        </div>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;'>
+            Action commitment<br>
+            <span style='color: #2ecc71; font-weight: 600;'>+{action_rate * 0.30:.1f} pts</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown(f"""
+    <div style='background: white; padding: 1.5rem; border-radius: 12px; 
+                border-left: 5px solid #43e97b; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.85rem; 
+                    color: #6c757d; text-transform: uppercase; margin-bottom: 0.5rem;'>
+            💡 IMPACT (25%)
+        </div>
+        <div style='font-family: "Space Mono", monospace; font-size: 2rem; 
+                    font-weight: 700; color: #2c3e50;'>
+            {satisfaction_score:.1f}
+        </div>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;'>
+            Member satisfaction<br>
+            <span style='color: #2ecc71; font-weight: 600;'>+{satisfaction_score * 0.25:.1f} pts</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown(f"""
+    <div style='background: white; padding: 1.5rem; border-radius: 12px; 
+                border-left: 5px solid #4facfe; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.85rem; 
+                    color: #6c757d; text-transform: uppercase; margin-bottom: 0.5rem;'>
+            👥 ATTEND (10%)
+        </div>
+        <div style='font-family: "Space Mono", monospace; font-size: 2rem; 
+                    font-weight: 700; color: #2c3e50;'>
+            {attendance_rate:.1f}
+        </div>
+        <div style='font-family: "DM Sans", sans-serif; font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;'>
+            Show-up rate<br>
+            <span style='color: #2ecc71; font-weight: 600;'>+{attendance_rate * 0.10:.1f} pts</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Explanation box
+st.markdown(f"""
+<div style='background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); 
+            padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem;
+            border-left: 5px solid #667eea;'>
+    <div style='font-family: "Space Mono", monospace; font-weight: 700; 
+                font-size: 1rem; color: #2c3e50; margin-bottom: 0.75rem;'>
+        📊 METHODOLOGY
+    </div>
+    <div style='font-family: "DM Sans", sans-serif; font-size: 0.95rem; 
+                color: #495057; line-height: 1.6;'>
+        The Engagement Score combines four key metrics aligned with SLS's mission:
+        <strong>Grow → Connect → Impact</strong>. Weights prioritize learning outcomes (35%) 
+        and action commitment (30%) over attendance quantity (10%), emphasizing quality engagement.
+        <br><br>
+        <strong>Formula:</strong> (Knowledge × 35%) + (Action × 30%) + (Satisfaction × 25%) + (Attendance × 10%) = {engagement_score}/100
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Key Insights
 insights = generate_insights(metrics, data)
