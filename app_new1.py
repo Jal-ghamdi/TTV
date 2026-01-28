@@ -1221,45 +1221,45 @@ with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Engagement Timeline Simulation
-    st.markdown("#### 📅 Engagement Journey")
+    #st.markdown("#### 📅 Engagement Journey")
     
     # Create a simulated timeline
-    timeline_stages = ['Registration', 'Pre-Event', 'Event Day', 'Post-Survey', 'Action Phase']
-    timeline_engagement = [
-        REGISTERED,
-        int(REGISTERED * 0.85),  # Pre-event engagement
-        ACTUAL_ATTENDEES,
-        metrics['total_responses'],
-        metrics.get('connect_total_planning_action', 0)
-    ]
+   # timeline_stages = ['Registration', 'Pre-Event', 'Event Day', 'Post-Survey', 'Action Phase']
+   # timeline_engagement = [
+    #    REGISTERED,
+     #   int(REGISTERED * 0.85),  # Pre-event engagement
+      #  ACTUAL_ATTENDEES,
+       # metrics['total_responses'],
+        #metrics.get('connect_total_planning_action', 0)
+  #  ]
     
-    fig = go.Figure()
+    #fig = go.Figure()
     
-    fig.add_trace(go.Scatter(
-        x=timeline_stages,
-        y=timeline_engagement,
-        mode='lines+markers+text',
-        line=dict(color='#667eea', width=4),
-        marker=dict(size=15, color='#764ba2', line=dict(width=3, color='white')),
-        text=timeline_engagement,
-        textposition='top center',
-        textfont=dict(size=14, family='Space Mono', color='#2c3e50'),
-        fill='tonexty',
-        fillcolor='rgba(102, 126, 234, 0.1)',
-        hovertemplate='<b>%{x}</b><br>Participants: %{y}<extra></extra>'
-    ))
+    #fig.add_trace(go.Scatter(
+     #   x=timeline_stages,
+      #  y=timeline_engagement,
+       # mode='lines+markers+text',
+        #line=dict(color='#667eea', width=4),
+        #marker=dict(size=15, color='#764ba2', line=dict(width=3, color='white')),
+        #text=timeline_engagement,
+        #textposition='top center',
+        #textfont=dict(size=14, family='Space Mono', color='#2c3e50'),
+        #fill='tonexty',
+        #fillcolor='rgba(102, 126, 234, 0.1)',
+        #hovertemplate='<b>%{x}</b><br>Participants: %{y}<extra></extra>'
+    #))
     
-    fig.update_layout(
-        yaxis_title='Active Participants',
-        height=400,
-        font=dict(family="DM Sans, sans-serif"),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        yaxis=dict(gridcolor='#e9ecef'),
-        hovermode='x'
-    )
+    #fig.update_layout(
+     #   yaxis_title='Active Participants',
+      #  height=400,
+       # font=dict(family="DM Sans, sans-serif"),
+        #plot_bgcolor='rgba(0,0,0,0)',
+        #paper_bgcolor='rgba(0,0,0,0)',
+        #yaxis=dict(gridcolor='#e9ecef'),
+        #hovermode='x'
+    #)
     
-    st.plotly_chart(fig, use_container_width=True)
+    #st.plotly_chart(fig, use_container_width=True)
     
     # Connection Insights
     st.markdown("#### 💬 Engagement Insights")
