@@ -27,14 +27,16 @@ SESSIONS = {
         "data_file": "sls_kpi_data_cybersecurity_updated1.json",
         "icon": "🔐",
         "vision_theme": "Digital Transformation & Innovation",
-        "color": "#667eea"
+        "color": "#667eea",
+        "topic_labels": ["Cybersecurity Knowledge", "Vision 2030 Contribution", "Technical Skills"]
     },
     "Finance": {
         "name": "💰 Finance Session",
         "data_file": "sls_kpi_finance_session2_ttv_data_updated1.json",
         "icon": "💰",
         "vision_theme": "Financial Sector Development",
-        "color": "#f093fb"
+        "color": "#f093fb",
+        "topic_labels": ["Finance Knowledge", "Vision 2030 Contribution", "Technical Skills in Finance"]
     }
 }
 
@@ -961,7 +963,8 @@ with tab1:
     col1, col2 = st.columns([3, 2])
     
     with col1:
-        topics = viz_data['knowledge_comparison']['topics']
+        # Use session-specific topic labels instead of hardcoded ones from JSON
+        topics = session_info['topic_labels']
         pre_scores = viz_data['knowledge_comparison']['pre_scores']
         post_scores = viz_data['knowledge_comparison']['post_scores']
         improvements = viz_data['knowledge_comparison']['improvements']
