@@ -1,0 +1,53 @@
+{
+  "metrics": {
+    "total_responses": 24,
+    "total_participants_pre": 38,
+    "total_participants_post": 25,
+    "match_rate_pct": 63.2,
+    "awareness_summary": {
+      "aware_pre_pct": 29.2,
+      "aware_post_pct": 95.8,
+      "awareness_increase_pct_points": 66.7
+    },
+    "impact_avg_satisfaction": 4.54,
+    "impact_satisfaction_pct": 100.0,
+    "impact_satisfaction_distribution": {
+      "4": 11,
+      "5": 13
+    },
+    "connect_members_planning_action_pct": 75.0,
+    "connect_total_planning_action": 18,
+    "demographics_location": {
+      "Melbourne": 22,
+      "Sydney": 10,
+      "Adelaide": 3,
+      "Brisbane": 1,
+      "Other ": 1,
+      "Perth": 1
+    },
+    "demographics_heard_about": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 22,
+      "WhatsApp": 13,
+      "Other ": 3
+    },
+    "chapter_metrics": {
+      "event_name": "Misk Tracks Through an Australian Lens Inititative | 10x Leaders Program | SLS - Australia Chapter",
+      "total_pre_responses": 38,
+      "total_post_responses": 25,
+      "completed_both_surveys": 24,
+      "completion_rate_pct": 63.2,
+      "estimated_engagement_hours": 2,
+      "attendance_rate": 63.2,
+      "total_registered": 150,
+      "target_attendance": 50,
+      "actual_attendees": 66
+    }
+  },
+  "visualization_data": {},
+  "metadata": {
+    "generated_date": "2026-02-16 09:05:59",
+    "total_participants": 38,
+    "analysis_version": "1.0",
+    "privacy_safe": true
+  }
+}
