@@ -18,25 +18,58 @@ st.set_page_config(
 )
 
 # ============================================================================
-# SESSION CONFIGURATION
+# INITIATIVE & SESSION CONFIGURATION
 # ============================================================================
 
-SESSIONS = {
-    "Cybersecurity": {
-        "name": "🔐 Cybersecurity Session",
-        "data_file": "sls_kpi_data_cybersecurity_updated1.json",
-        "icon": "🔐",
-        "vision_theme": "Digital Transformation & Innovation",
-        "color": "#667eea",
-        "topic_labels": ["Cybersecurity Knowledge", "Vision 2030 Contribution", "Technical Skills"]
+INITIATIVES = {
+    "Towards the Vision": {
+        "name": "Towards the Vision",
+        "icon": "🎯",
+        "description": "Educational initiative empowering participants with knowledge and skills aligned with Vision 2030 goals",
+        "color": "#006341",
+        "sessions": {
+            "Cybersecurity": {
+                "name": "🔐 Cybersecurity Session",
+                "data_file": "sls_kpi_data_cybersecurity_updated1.json",
+                "icon": "🔐",
+                "vision_theme": "Digital Transformation & Innovation",
+                "color": "#667eea",
+                "topic_labels": ["Cybersecurity Knowledge", "Vision 2030 Contribution", "Technical Skills in Demand"]
+            },
+            "Finance": {
+                "name": "💰 Finance Session",
+                "data_file": "sls_kpi_finance_session2_ttv_data_updated1.json",
+                "icon": "💰",
+                "vision_theme": "Financial Sector Development",
+                "color": "#f093fb",
+                "topic_labels": ["Finance Knowledge", "Vision 2030 Contribution", "Technical Skills in Demand"]
+            }
+        }
     },
-    "Finance": {
-        "name": "💰 Finance Session",
-        "data_file": "sls_kpi_finance_session2_ttv_data_updated1.json",
-        "icon": "💰",
-        "vision_theme": "Financial Sector Development",
-        "color": "#f093fb",
-        "topic_labels": ["Finance Knowledge", "Vision 2030 Contribution", "Technical Skills in Finance"]
+    "Misk Tracks": {
+        "name": "Misk Tracks",
+        "icon": "🚀",
+        "description": "Leadership development programs designed to cultivate future leaders and innovators",
+        "color": "#8B5CF6",
+        "sessions": {
+            "Awareness Study": {
+                "name": "📊 Misk Tracks Awareness",
+                "data_file": "misk_tracks_awareness_session.json",
+                "icon": "📊",
+                "vision_theme": "Baseline Awareness Assessment",
+                "color": "#10b981",
+                "topic_labels": [],
+                "type": "awareness"  # Special type for awareness dashboard
+            },
+            "10x Leaders": {
+                "name": "⭐ 10x Leaders Program",
+                "data_file": "sls_kpi_10xleaders_session_data_updated.json",
+                "icon": "⭐",
+                "vision_theme": "Leadership Development & Excellence",
+                "color": "#f59e0b",
+                "topic_labels": ["Leadership Skills", "Vision 2030 Impact", "Personal Development"]
+            }
+        }
     }
 }
 
@@ -638,14 +671,17 @@ def load_data(data_file):
 # SESSION MANAGEMENT
 # ============================================================================
 
+if 'selected_initiative' not in st.session_state:
+    st.session_state.selected_initiative = None
+
 if 'selected_session' not in st.session_state:
     st.session_state.selected_session = None
 
 # ============================================================================
-# SESSION SELECTION SCREEN
+# INITIATIVE SELECTION SCREEN
 # ============================================================================
 
-if st.session_state.selected_session is None:
+if st.session_state.selected_initiative is None:
     try:
         st.image("sls_image.jpg", use_column_width=True)
     except:
@@ -653,8 +689,8 @@ if st.session_state.selected_session is None:
     
     st.markdown("""
     <div class="sls-header">
-        <h1 class="initiative-title">Towards the Vision</h1>
-        <p class="initiative-subtitle">Saudi Leadership Society • Australia Chapter</p>
+        <h1 class="initiative-title">Saudi Leadership Society</h1>
+        <p class="initiative-subtitle">Australia Chapter</p>
         <div style="text-align: center; margin-top: 1.5rem;">
             <span class="mission-tagline">Grow • Connect • Impact</span>
         </div>
@@ -663,20 +699,72 @@ if st.session_state.selected_session is None:
     
     st.markdown("""
     <div class="info-box">
-        <h3>About This Initiative</h3>
+        <h3>Our Initiatives</h3>
         <p>
-            <strong>Towards the Vision</strong> is an educational initiative by the Saudi Leadership Society Australia Chapter,
-            empowering participants with knowledge and skills aligned with Vision 2030 goals.
+            The Saudi Leadership Society Australia Chapter runs multiple initiatives to empower 
+            Saudi students and professionals with knowledge, skills, and connections aligned with 
+            <strong>Vision 2030</strong> goals.
         </p>
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown('<p class="section-title">🌟 Select an Initiative</p>', unsafe_allow_html=True)
+    
+    cols = st.columns(len(INITIATIVES))
+    
+    for idx, (initiative_key, initiative_info) in enumerate(INITIATIVES.items()):
+        with cols[idx]:
+            if st.button(
+                f"{initiative_info['icon']} {initiative_key}",
+                key=f"btn_init_{initiative_key}",
+                use_container_width=True,
+                type="primary"
+            ):
+                st.session_state.selected_initiative = initiative_key
+                st.rerun()
+            
+            st.markdown(f"""
+            <div class="session-card">
+                <div class="session-icon">{initiative_info['icon']}</div>
+                <div class="session-name">{initiative_key}</div>
+                <p class="session-theme">{initiative_info['description']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    st.stop()
+
+# ============================================================================
+# SESSION SELECTION SCREEN (within selected initiative)
+# ============================================================================
+
+if st.session_state.selected_session is None:
+    initiative_key = st.session_state.selected_initiative
+    initiative_info = INITIATIVES[initiative_key]
+    
+    try:
+        st.image("sls_image.jpg", use_column_width=True)
+    except:
+        pass
+    
+    st.markdown(f"""
+    <div class="sls-header">
+        <h1 class="initiative-title">{initiative_info['icon']} {initiative_key}</h1>
+        <p class="initiative-subtitle">{initiative_info['description']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("← Back to Initiatives", type="secondary"):
+        st.session_state.selected_initiative = None
+        st.rerun()
+    
     st.markdown('<p class="section-title">📚 Select a Session</p>', unsafe_allow_html=True)
     
-    cols = st.columns(len(SESSIONS))
+    sessions = initiative_info['sessions']
+    cols = st.columns(min(len(sessions), 3))  # Max 3 columns
     
-    for idx, (session_key, session_info) in enumerate(SESSIONS.items()):
-        with cols[idx]:
+    for idx, (session_key, session_info) in enumerate(sessions.items()):
+        col_idx = idx % 3
+        with cols[col_idx]:
             if st.button(
                 f"{session_info['icon']} {session_key}",
                 key=f"btn_{session_key}",
@@ -700,8 +788,11 @@ if st.session_state.selected_session is None:
 # LOAD SELECTED SESSION
 # ============================================================================
 
+selected_initiative = st.session_state.selected_initiative
 selected_session = st.session_state.selected_session
-session_info = SESSIONS[selected_session]
+
+initiative_info = INITIATIVES[selected_initiative]
+session_info = initiative_info['sessions'][selected_session]
 
 try:
     st.image("sls_image.jpg", use_column_width=True)
@@ -710,20 +801,241 @@ except:
 
 st.markdown(f"""
 <div class="sls-header">
-    <h1 class="initiative-title">{session_info["icon"]} {selected_session} Session</h1>
-    <p class="initiative-subtitle">{session_info['vision_theme']}</p>
+    <h1 class="initiative-title">{session_info["icon"]} {selected_session}</h1>
+    <p class="initiative-subtitle">{initiative_info['name']} • {session_info['vision_theme']}</p>
 </div>
 """, unsafe_allow_html=True)
 
-if st.button("← Back to Sessions", type="secondary"):
-    st.session_state.selected_session = None
-    st.rerun()
+col1, col2 = st.columns([1, 5])
+with col1:
+    if st.button("← Back", type="secondary"):
+        st.session_state.selected_session = None
+        st.rerun()
 
 data = load_data(session_info['data_file'])
 
 if data is None:
     st.error(f"Could not load data.")
     st.stop()
+
+# Check if this is an awareness dashboard
+if session_info.get('type') == 'awareness':
+    # ========================================================================
+    # MISK TRACKS AWARENESS DASHBOARD
+    # ========================================================================
+    
+    metrics = data['metrics']
+    viz_data = data['visualization_data']
+    
+    st.markdown('<p class="section-title">📊 Awareness Impact</p>', unsafe_allow_html=True)
+    
+    # Big stats - Before and After
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">BEFORE SESSION</div>
+            <div class="kpi-label">Awareness Level</div>
+            <div class="kpi-value">{metrics['awareness_summary']['aware_pre_pct']:.1f}%</div>
+            <div class="kpi-context">Participants aware of Misk Tracks</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">AFTER SESSION</div>
+            <div class="kpi-label">Awareness Level</div>
+            <div class="kpi-value">{metrics['awareness_summary']['aware_post_pct']:.1f}%</div>
+            <div class="kpi-context">Participants aware of Misk Tracks</div>
+            <div class="kpi-trend">✓ {metrics['awareness_summary']['awareness_increase_pct_points']:.1f} percentage point increase</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">SURVEY REACH</div>
+            <div class="kpi-label">Participants Surveyed</div>
+            <div class="kpi-value">{metrics['total_responses']}</div>
+            <div class="kpi-context">Completed both pre and post surveys</div>
+            <div class="kpi-trend">✓ {metrics['match_rate_pct']:.1f}% match rate</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Highlight box
+    st.markdown(f"""
+    <div class="highlight-box">
+        <h3>✨ Key Finding</h3>
+        <ul>
+            <li>Awareness increased by {metrics['awareness_summary']['awareness_increase_pct_points']:.1f} percentage points</li>
+            <li>{metrics['awareness_summary']['aware_post_pct']:.0f}% of participants are now aware of Misk Tracks</li>
+            <li>From {metrics['awareness_summary']['aware_pre_pct']:.1f}% to {metrics['awareness_summary']['aware_post_pct']:.0f}% awareness</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Detailed breakdown
+    st.markdown('<p class="section-title">📈 Awareness Breakdown</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Before Session")
+        
+        pre_dist = metrics['awareness_distribution']['pre']
+        labels_pre = list(pre_dist.keys())
+        values_pre = list(pre_dist.values())
+        
+        colors_map = {
+            'Very Aware': '#006341',
+            'Somewhat Aware': '#93c13f',
+            'Heard the name only': '#fbbf24',
+            'Not aware at all': '#e74c3c'
+        }
+        colors_pre = [colors_map.get(label, '#666') for label in labels_pre]
+        
+        fig_pre = go.Figure(data=[go.Pie(
+            labels=labels_pre,
+            values=values_pre,
+            marker_colors=colors_pre,
+            textfont=dict(size=14, family='Epilogue'),
+            hole=0.4
+        )])
+        
+        fig_pre.update_layout(
+            height=400,
+            showlegend=True,
+            annotations=[dict(
+                text=f"<b>{metrics['awareness_summary']['aware_pre_pct']:.1f}%</b><br>Aware",
+                x=0.5, y=0.5,
+                font=dict(size=20, family='Cormorant Garamond'),
+                showarrow=False
+            )],
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(fig_pre, use_container_width=True)
+    
+    with col2:
+        st.markdown("### After Session")
+        
+        post_dist = metrics['awareness_distribution']['post']
+        labels_post = list(post_dist.keys())
+        values_post = list(post_dist.values())
+        colors_post = [colors_map.get(label, '#666') for label in labels_post]
+        
+        fig_post = go.Figure(data=[go.Pie(
+            labels=labels_post,
+            values=values_post,
+            marker_colors=colors_post,
+            textfont=dict(size=14, family='Epilogue'),
+            hole=0.4
+        )])
+        
+        fig_post.update_layout(
+            height=400,
+            showlegend=True,
+            annotations=[dict(
+                text=f"<b>{metrics['awareness_summary']['aware_post_pct']:.0f}%</b><br>Aware",
+                x=0.5, y=0.5,
+                font=dict(size=20, family='Cormorant Garamond'),
+                showarrow=False
+            )],
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(fig_post, use_container_width=True)
+    
+    # Comparison chart
+    st.markdown('<p class="section-title">🔄 Before vs After Comparison</p>', unsafe_allow_html=True)
+    
+    levels = viz_data['awareness_comparison']['levels']
+    pre_scores = viz_data['awareness_comparison']['pre']
+    post_scores = viz_data['awareness_comparison']['post']
+    
+    fig_compare = go.Figure()
+    
+    fig_compare.add_trace(go.Bar(
+        name='Before Session',
+        x=levels,
+        y=pre_scores,
+        marker_color='#e9ecef',
+        text=[f"{s:.1f}%" for s in pre_scores],
+        textposition='outside'
+    ))
+    
+    fig_compare.add_trace(go.Bar(
+        name='After Session',
+        x=levels,
+        y=post_scores,
+        marker_color='#006341',
+        text=[f"{s:.1f}%" for s in post_scores],
+        textposition='outside'
+    ))
+    
+    fig_compare.update_layout(
+        barmode='group',
+        yaxis_title='Percentage of Participants',
+        yaxis=dict(range=[0, 80]),
+        height=450,
+        font=dict(family="Epilogue", color="#2c3e50"),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+    )
+    
+    st.plotly_chart(fig_compare, use_container_width=True)
+    
+    # Info box about the study
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About This Study</h3>
+        <p>
+            This baseline awareness assessment was conducted to understand participants' 
+            familiarity with <strong>Misk Tracks</strong> before and after the session. 
+            This one-time study helps us measure the impact of our awareness initiatives 
+            and plan future Misk Tracks sessions effectively.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Footer
+    st.markdown(f"""
+    <div class='sls-footer'>
+        <h2>Misk Tracks Awareness Study</h2>
+        <p class="tagline">Baseline Assessment • Australia Chapter</p>
+        <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{metrics['total_responses']}</div>
+                <div style='opacity: 0.8;'>Participants</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>+{metrics['awareness_summary']['awareness_increase_pct_points']:.1f}%</div>
+                <div style='opacity: 0.8;'>Awareness Increase</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{metrics['awareness_summary']['aware_post_pct']:.0f}%</div>
+                <div style='opacity: 0.8;'>Now Aware</div>
+            </div>
+        </div>
+        <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'>
+            <strong>Building Awareness • Growing Impact</strong>
+        </p>
+        <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>
+            {datetime.now().strftime('%B %d, %Y')} | Misk Tracks
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.stop()  # Don't render the standard dashboard below
+
+# ============================================================================
+# STANDARD SESSION DASHBOARD (for regular sessions)
+# ============================================================================
 
 metrics = data['metrics']
 viz_data = data['visualization_data']
@@ -762,9 +1074,9 @@ with col2:
     st.markdown(
         create_kpi_card(
             "ENGAGEMENT",
-            "Survey Completion",
+            "Completed Both Surveys",
             f"{metrics['total_responses']}",
-            f"{survey_completion:.0f}% of attendees responded",
+            f"Out of {ACTUAL_ATTENDEES} participants",
             "✓ High engagement" if survey_completion >= 50 else "→ Can improve"
         ),
         unsafe_allow_html=True
@@ -912,7 +1224,7 @@ with col1:
     funnel_fig = go.Figure()
     
     funnel_fig.add_trace(go.Funnel(
-        y=['Registered', 'Attended', 'Completed Survey', 'Plan to Act'],
+        y=['Registered', 'Attended', 'Completed Both Surveys', 'Plan to Act'],
         x=[REGISTERED, ACTUAL_ATTENDEES, metrics['total_responses'], metrics.get('connect_total_planning_action', 0)],
         textposition="inside",
         textinfo="value+percent initial",
@@ -1023,6 +1335,9 @@ with tab2:
         labels = list(action_data.keys())
         values = list(action_data.values())
         
+        # Find the committed count safely by looking for Yes/True key, fallback to connect metric
+        committed_count = metrics.get('connect_total_planning_action', 0)
+        
         action_fig = go.Figure(data=[go.Pie(
             labels=labels,
             values=values,
@@ -1035,7 +1350,7 @@ with tab2:
             height=350,
             showlegend=True,
             annotations=[dict(
-                text=f"<b>{values[0]}</b><br>Committed",
+                text=f"<b>{committed_count}</b><br>Committed",
                 x=0.5, y=0.5,
                 font=dict(size=20, family='Cormorant Garamond'),
                 showarrow=False
