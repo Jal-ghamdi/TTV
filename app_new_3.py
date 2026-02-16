@@ -1651,7 +1651,7 @@ with tab2:
         st.markdown("### Summary")
         st.metric("Commitment Rate", f"{metrics.get('connect_members_planning_action_pct', 0):.1f}%")
         st.metric("Total Committed", metrics.get('connect_total_planning_action', 0))
-        st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
+        #st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
         
         st.markdown("---")
         st.success(f"**{metrics.get('connect_total_planning_action', 0)} participants** ready to apply what they learned")
