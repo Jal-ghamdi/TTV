@@ -1,0 +1,50 @@
+{
+  "metrics": {
+    "total_responses": 33,
+    "total_participants_pre": 40,
+    "total_participants_post": 41,
+    "match_rate_pct": 82.5,
+    "awareness_distribution": {
+      "pre": {
+        "Somewhat Aware": 36.4,
+        "Heard the name only": 36.4,
+        "Very Aware": 18.2,
+        "Not aware at all": 9.1
+      },
+      "post": {
+        "Very Aware": 66.7,
+        "Somewhat Aware": 33.3
+      }
+    },
+    "awareness_summary": {
+      "aware_pre_pct": 54.5,
+      "aware_post_pct": 100.0,
+      "awareness_increase_pct_points": 45.5
+    }
+  },
+  "visualization_data": {
+    "awareness_comparison": {
+      "levels": [
+        "Very Aware",
+        "Somewhat Aware",
+        "Not aware at all"
+      ],
+      "pre": [
+        18.2,
+        36.4,
+        9.1
+      ],
+      "post": [
+        66.7,
+        33.3,
+        0
+      ]
+    }
+  },
+  "metadata": {
+    "session_name": "Misk Tracks Through an Australian Lens",
+    "feature": "awareness",
+    "generated_date": "2026-02-16 08:22:24",
+    "analysis_version": "1.0"
+  }
+}
