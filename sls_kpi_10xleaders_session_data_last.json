@@ -1,0 +1,172 @@
+{
+  "metrics": {
+    "total_responses": 24,
+    "total_participants_pre": 38,
+    "total_participants_post": 25,
+    "match_rate_pct": 63.2,
+    "awareness_summary": {
+      "aware_pre_pct": 29.2,
+      "aware_post_pct": 95.8,
+      "awareness_increase_pct_points": 66.7
+    },
+    "impact_avg_satisfaction": 4.54,
+    "impact_satisfaction_pct": 100.0,
+    "impact_satisfaction_distribution": {
+      "4": 11,
+      "5": 13
+    },
+    "connect_members_planning_action_pct": 75.0,
+    "connect_total_planning_action": 18,
+    "grow_members_reporting_growth_pct": 91.7,
+    "grow_avg_knowledge_increase": 2.4,
+    "grow_understand_purpose": {
+      "pre": 2.08,
+      "post": 4.5,
+      "improvement": 2.42
+    },
+    "grow_understand_eligibility": {
+      "pre": 1.92,
+      "post": 4.38,
+      "improvement": 2.46
+    },
+    "grow_awareness_benefits": {
+      "pre": 1.88,
+      "post": 4.33,
+      "improvement": 2.46
+    },
+    "grow_understand_skills": {
+      "pre": 2.04,
+      "post": 4.29,
+      "improvement": 2.25
+    },
+    "grow_improvement_distribution": {
+      "significant_improvement_2plus": 16,
+      "moderate_improvement_1to2": 6,
+      "slight_improvement_0to1": 0,
+      "no_change": 1,
+      "decreased": 1
+    },
+    "grow_pre_score_distribution": {
+      "score_1": 9,
+      "score_2": 7,
+      "score_3": 3,
+      "score_4": 1,
+      "score_5": 1
+    },
+    "grow_post_score_distribution": {
+      "score_1": 0,
+      "score_2": 0,
+      "score_3": 3,
+      "score_4": 13,
+      "score_5": 8
+    },
+    "grow_significant_growth_pct": 91.7,
+    "improvement_stats": {
+      "mean": 2.4,
+      "median": 2.38,
+      "std": 1.34,
+      "min": -0.75,
+      "max": 5.0,
+      "q25": 1.69,
+      "q75": 3.31
+    },
+    "demographics_location": {
+      "Melbourne": 12,
+      "Sydney": 7,
+      "Adelaide": 2,
+      "Brisbane": 1,
+      "Other ": 1,
+      "Perth": 1
+    },
+    "demographics_heard_about": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 14,
+      "WhatsApp": 9,
+      "Other ": 1
+    },
+    "chapter_metrics": {
+      "event_name": "Misk Tracks Through an Australian Lens Inititative | 10x Leaders Program | SLS - Australia Chapter",
+      "total_pre_responses": 38,
+      "total_post_responses": 25,
+      "completed_both_surveys": 24,
+      "completion_rate_pct": 63.2,
+      "estimated_engagement_hours": 2,
+      "attendance_rate": 63.2,
+      "total_registered": 150,
+      "target_attendance": 50,
+      "actual_attendees": 66
+    }
+  },
+  "visualization_data": {
+    "knowledge_comparison": {
+      "topics": [
+        "Understand Purpose",
+        "Understand Eligibility",
+        "Awareness Benefits",
+        "Understand Skills"
+      ],
+      "pre_scores": [
+        2.08,
+        1.92,
+        1.88,
+        2.04
+      ],
+      "post_scores": [
+        4.5,
+        4.38,
+        4.33,
+        4.29
+      ],
+      "improvements": [
+        2.42,
+        2.46,
+        2.46,
+        2.25
+      ]
+    },
+    "location_data": {
+      "Melbourne": 12,
+      "Sydney": 7,
+      "Adelaide": 2,
+      "Brisbane": 1,
+      "Other ": 1,
+      "Perth": 1
+    },
+    "heard_about_data": {
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 14,
+      "WhatsApp": 9,
+      "Other ": 1
+    },
+    "satisfaction_data": {
+      "4": 11,
+      "5": 13
+    },
+    "action_plan_data": {},
+    "improvement_distribution": {
+      "significant_improvement_2plus": 16,
+      "moderate_improvement_1to2": 6,
+      "slight_improvement_0to1": 0,
+      "no_change": 1,
+      "decreased": 1
+    },
+    "pre_score_distribution": {
+      "score_1": 9,
+      "score_2": 7,
+      "score_3": 3,
+      "score_4": 1,
+      "score_5": 1
+    },
+    "post_score_distribution": {
+      "score_1": 0,
+      "score_2": 0,
+      "score_3": 3,
+      "score_4": 13,
+      "score_5": 8
+    }
+  },
+  "metadata": {
+    "generated_date": "2026-02-16 10:41:19",
+    "total_participants": 38,
+    "analysis_version": "1.0",
+    "privacy_safe": true
+  }
+}
