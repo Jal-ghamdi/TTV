@@ -63,11 +63,11 @@ INITIATIVES = {
             },
             "10x Leaders": {
                 "name": "⭐ 10x Leaders Program",
-                "data_file": "sls_kpi_10xleaders_session_data_updated.json",
+                "data_file": "sls_kpi_10xleaders_session_data_last.json",
                 "icon": "⭐",
                 "vision_theme": "Leadership Development & Excellence",
                 "color": "#f59e0b",
-                "topic_labels": ["Leadership Skills", "Vision 2030 Impact", "Personal Development"]
+                "topic_labels": ["Understand Purpose", "Understand Eligibility", "Awareness Benefits", "Understand Skills"]
             }
         }
     }
@@ -820,6 +820,510 @@ if data is None:
 
 # Check if this is an awareness dashboard
 if session_info.get('type') == 'awareness':
+    # ========================================================================
+    # MISK TRACKS AWARENESS DASHBOARD
+    # ========================================================================
+    
+    metrics = data['metrics']
+    viz_data = data['visualization_data']
+    
+    st.markdown('<p class="section-title">📊 Awareness Impact</p>', unsafe_allow_html=True)
+    
+    # Big stats - Before and After
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">BEFORE SESSION</div>
+            <div class="kpi-label">Awareness Level</div>
+            <div class="kpi-value">{metrics['awareness_summary']['aware_pre_pct']:.1f}%</div>
+            <div class="kpi-context">Participants aware of Misk Tracks</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">AFTER SESSION</div>
+            <div class="kpi-label">Awareness Level</div>
+            <div class="kpi-value">{metrics['awareness_summary']['aware_post_pct']:.1f}%</div>
+            <div class="kpi-context">Participants aware of Misk Tracks</div>
+            <div class="kpi-trend">✓ {metrics['awareness_summary']['awareness_increase_pct_points']:.1f} percentage point increase</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-category">SURVEY REACH</div>
+            <div class="kpi-label">Participants Surveyed</div>
+            <div class="kpi-value">{metrics['total_responses']}</div>
+            <div class="kpi-context">Completed both pre and post surveys</div>
+            <div class="kpi-trend">✓ {metrics['match_rate_pct']:.1f}% match rate</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Highlight box
+    st.markdown(f"""
+    <div class="highlight-box">
+        <h3>✨ Key Finding</h3>
+        <ul>
+            <li>Awareness increased by {metrics['awareness_summary']['awareness_increase_pct_points']:.1f} percentage points</li>
+            <li>{metrics['awareness_summary']['aware_post_pct']:.0f}% of participants are now aware of Misk Tracks</li>
+            <li>From {metrics['awareness_summary']['aware_pre_pct']:.1f}% to {metrics['awareness_summary']['aware_post_pct']:.0f}% awareness</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Detailed breakdown
+    st.markdown('<p class="section-title">📈 Awareness Breakdown</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Before Session")
+        
+        pre_dist = metrics['awareness_distribution']['pre']
+        labels_pre = list(pre_dist.keys())
+        values_pre = list(pre_dist.values())
+        
+        colors_map = {
+            'Very Aware': '#006341',
+            'Somewhat Aware': '#93c13f',
+            'Heard the name only': '#fbbf24',
+            'Not aware at all': '#e74c3c'
+        }
+        colors_pre = [colors_map.get(label, '#666') for label in labels_pre]
+        
+        fig_pre = go.Figure(data=[go.Pie(
+            labels=labels_pre,
+            values=values_pre,
+            marker_colors=colors_pre,
+            textfont=dict(size=14, family='Epilogue'),
+            hole=0.4
+        )])
+        
+        fig_pre.update_layout(
+            height=400,
+            showlegend=True,
+            annotations=[dict(
+                text=f"<b>{metrics['awareness_summary']['aware_pre_pct']:.1f}%</b><br>Aware",
+                x=0.5, y=0.5,
+                font=dict(size=20, family='Cormorant Garamond'),
+                showarrow=False
+            )],
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(fig_pre, use_container_width=True)
+    
+    with col2:
+        st.markdown("### After Session")
+        
+        post_dist = metrics['awareness_distribution']['post']
+        labels_post = list(post_dist.keys())
+        values_post = list(post_dist.values())
+        colors_post = [colors_map.get(label, '#666') for label in labels_post]
+        
+        fig_post = go.Figure(data=[go.Pie(
+            labels=labels_post,
+            values=values_post,
+            marker_colors=colors_post,
+            textfont=dict(size=14, family='Epilogue'),
+            hole=0.4
+        )])
+        
+        fig_post.update_layout(
+            height=400,
+            showlegend=True,
+            annotations=[dict(
+                text=f"<b>{metrics['awareness_summary']['aware_post_pct']:.0f}%</b><br>Aware",
+                x=0.5, y=0.5,
+                font=dict(size=20, family='Cormorant Garamond'),
+                showarrow=False
+            )],
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(fig_post, use_container_width=True)
+    
+    # Comparison chart
+    st.markdown('<p class="section-title">🔄 Before vs After Comparison</p>', unsafe_allow_html=True)
+    
+    levels = viz_data['awareness_comparison']['levels']
+    pre_scores = viz_data['awareness_comparison']['pre']
+    post_scores = viz_data['awareness_comparison']['post']
+    
+    fig_compare = go.Figure()
+    
+    fig_compare.add_trace(go.Bar(
+        name='Before Session',
+        x=levels,
+        y=pre_scores,
+        marker_color='#e9ecef',
+        text=[f"{s:.1f}%" for s in pre_scores],
+        textposition='outside'
+    ))
+    
+    fig_compare.add_trace(go.Bar(
+        name='After Session',
+        x=levels,
+        y=post_scores,
+        marker_color='#006341',
+        text=[f"{s:.1f}%" for s in post_scores],
+        textposition='outside'
+    ))
+    
+    fig_compare.update_layout(
+        barmode='group',
+        yaxis_title='Percentage of Participants',
+        yaxis=dict(range=[0, 80]),
+        height=450,
+        font=dict(family="Epilogue", color="#2c3e50"),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+    )
+    
+    st.plotly_chart(fig_compare, use_container_width=True)
+    
+    # Info box about the study
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About This Study</h3>
+        <p>
+            This baseline awareness assessment was conducted to understand participants' 
+            familiarity with <strong>Misk Tracks</strong> before and after the session. 
+            This one-time study helps us measure the impact of our awareness initiatives 
+            and plan future Misk Tracks sessions effectively.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Footer
+    st.markdown(f"""
+    <div class='sls-footer'>
+        <h2>Misk Tracks Awareness Study</h2>
+        <p class="tagline">Baseline Assessment • Australia Chapter</p>
+        <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{metrics['total_responses']}</div>
+                <div style='opacity: 0.8;'>Participants</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>+{metrics['awareness_summary']['awareness_increase_pct_points']:.1f}%</div>
+                <div style='opacity: 0.8;'>Awareness Increase</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{metrics['awareness_summary']['aware_post_pct']:.0f}%</div>
+                <div style='opacity: 0.8;'>Now Aware</div>
+            </div>
+        </div>
+        <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'>
+            <strong>Building Awareness • Growing Impact</strong>
+        </p>
+        <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>
+            {datetime.now().strftime('%B %d, %Y')} | Misk Tracks
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.stop()  # Don't render the standard dashboard below
+
+# Check if this is a hybrid dashboard (10x Leaders style - awareness + satisfaction)
+if session_info.get('type') == 'hybrid':
+    # ========================================================================
+    # HYBRID DASHBOARD (10x Leaders)
+    # ========================================================================
+    
+    metrics = data['metrics']
+    chapter_metrics = metrics.get('chapter_metrics', {})
+    
+    REGISTERED = chapter_metrics.get('total_registered', 0)
+    TARGET = chapter_metrics.get('target_attendance', 50)
+    ACTUAL_ATTENDEES = chapter_metrics.get('actual_attendees', 0)
+    
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>', unsafe_allow_html=True)
+    
+    # ROW 1: REACH & ENGAGEMENT
+    st.markdown('<p class="subsection-title">Reach & Participation</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        attendance_rate = (ACTUAL_ATTENDEES / REGISTERED * 100) if REGISTERED > 0 else 0
+        st.markdown(
+            create_kpi_card(
+                "REACH",
+                "Total Participants",
+                f"{ACTUAL_ATTENDEES}",
+                f"Out of {REGISTERED} registered",
+                f"✓ {attendance_rate:.0f}% attendance rate"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "ENGAGEMENT",
+                "Completed Both Surveys",
+                f"{metrics['total_responses']}",
+                f"Out of {ACTUAL_ATTENDEES} participants",
+                f"✓ {metrics['match_rate_pct']:.1f}% completion rate"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        target_performance = (ACTUAL_ATTENDEES / TARGET * 100) if TARGET > 0 else 0
+        st.markdown(
+            create_kpi_card(
+                "TARGET",
+                "Goal Achievement",
+                f"{target_performance:.0f}%",
+                f"Target was {TARGET} participants",
+                f"✓ Exceeded target" if ACTUAL_ATTENDEES > TARGET else "→ Approaching target"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # ROW 2: AWARENESS IMPACT
+    st.markdown('<p class="subsection-title">Program Awareness</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(
+            create_kpi_card(
+                "BEFORE",
+                "Initial Awareness",
+                f"{metrics['awareness_summary']['aware_pre_pct']:.1f}%",
+                "Knew about 10x Leaders program",
+                ""
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "AFTER",
+                "Final Awareness",
+                f"{metrics['awareness_summary']['aware_post_pct']:.1f}%",
+                "Now understand 10x Leaders",
+                f"✓ +{metrics['awareness_summary']['awareness_increase_pct_points']:.1f} point increase"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            create_kpi_card(
+                "GROWTH",
+                "Awareness Increase",
+                f"+{metrics['awareness_summary']['awareness_increase_pct_points']:.1f}%",
+                "Percentage point improvement",
+                "✓ Excellent impact"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # ROW 3: ACTION & SATISFACTION
+    st.markdown('<p class="subsection-title">Engagement & Satisfaction</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        action_pct = metrics.get('connect_members_planning_action_pct', 0)
+        action_count = metrics.get('connect_total_planning_action', 0)
+        st.markdown(
+            create_kpi_card(
+                "COMMITMENT",
+                "Plan to Take Action",
+                f"{action_pct:.0f}%",
+                f"{action_count} participants committed",
+                f"✓ Outstanding" if action_pct >= 80 else "✓ Strong" if action_pct >= 60 else "→ Growing"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        satisfaction = metrics.get('impact_avg_satisfaction', 0)
+        st.markdown(
+            create_kpi_card(
+                "QUALITY",
+                "Satisfaction Score",
+                f"{satisfaction:.2f}/5.0",
+                "Average participant rating",
+                f"✓ Excellent" if satisfaction >= 4.5 else "✓ Very good" if satisfaction >= 4.0 else "→ Good"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        satisfied_pct = metrics.get('impact_satisfaction_pct', 0)
+        st.markdown(
+            create_kpi_card(
+                "SATISFACTION",
+                "Highly Satisfied",
+                f"{satisfied_pct:.0f}%",
+                "Rated 4+ stars",
+                f"✓ Perfect score" if satisfied_pct >= 95 else "✓ Strong approval"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # Highlights
+    achievements = []
+    if metrics['awareness_summary']['awareness_increase_pct_points'] >= 50:
+        achievements.append(f"Massive {metrics['awareness_summary']['awareness_increase_pct_points']:.1f}% awareness increase")
+    if satisfaction >= 4.5:
+        achievements.append(f"Outstanding {satisfaction:.2f}/5.0 satisfaction rating")
+    if ACTUAL_ATTENDEES > TARGET:
+        achievements.append(f"Exceeded attendance target by {((ACTUAL_ATTENDEES-TARGET)/TARGET*100):.0f}%")
+    if action_pct >= 75:
+        achievements.append(f"{action_pct:.0f}% of participants committed to taking action")
+    
+    if achievements:
+        st.markdown(f"""
+        <div class="highlight-box">
+            <h3>✨ Session Highlights</h3>
+            <ul>
+                {''.join([f'<li>{achievement}</li>' for achievement in achievements])}
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Demographics
+    st.markdown('<p class="section-title">👥 Participant Demographics</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Locations")
+        location_data = metrics.get('demographics_location', {})
+        
+        if location_data:
+            fig_loc = go.Figure(data=[go.Pie(
+                labels=list(location_data.keys()),
+                values=list(location_data.values()),
+                hole=0.4,
+                marker_colors=['#006341', '#00843d', '#93c13f', '#b8d96d', '#d4e89e', '#e9f5c9']
+            )])
+            
+            fig_loc.update_layout(
+                height=400,
+                showlegend=True,
+                paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02)
+            )
+            
+            st.plotly_chart(fig_loc, use_container_width=True)
+    
+    with col2:
+        st.markdown("### How They Heard About Us")
+        heard_data = metrics.get('demographics_heard_about', {})
+        
+        if heard_data:
+            labels = list(heard_data.keys())
+            values = list(heard_data.values())
+            
+            fig_heard = go.Figure(data=[go.Bar(
+                x=labels,
+                y=values,
+                marker_color='#006341',
+                text=values,
+                textposition='outside'
+            )])
+            
+            fig_heard.update_layout(
+                height=400,
+                yaxis_title='Number of Participants',
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig_heard, use_container_width=True)
+    
+    # Satisfaction Distribution
+    st.markdown('<p class="section-title">⭐ Participant Satisfaction</p>', unsafe_allow_html=True)
+    
+    sat_dist = metrics.get('impact_satisfaction_distribution', {})
+    if sat_dist:
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            labels = [f"{k} Stars" for k in sat_dist.keys()]
+            values = list(sat_dist.values())
+            colors = ['#93c13f' if int(k) >= 4 else '#f39c12' for k in sat_dist.keys()]
+            
+            fig_sat = go.Figure(data=[go.Bar(
+                x=labels,
+                y=values,
+                marker_color=colors,
+                text=values,
+                textposition='outside',
+                textfont=dict(size=16)
+            )])
+            
+            fig_sat.update_layout(
+                height=350,
+                yaxis_title='Number of Participants',
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig_sat, use_container_width=True)
+        
+        with col2:
+            st.markdown("### Summary")
+            st.metric("Average Rating", f"{satisfaction:.2f}/5.0")
+            st.metric("Highly Satisfied", f"{satisfied_pct:.0f}%")
+            st.metric("Total Responses", metrics['total_responses'])
+    
+    # Footer
+    st.markdown(f"""
+    <div class='sls-footer'>
+        <h2>10x Leaders Program</h2>
+        <p class="tagline">Misk Tracks • Australia Chapter</p>
+        <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{ACTUAL_ATTENDEES}</div>
+                <div style='opacity: 0.8;'>Participants</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>+{metrics['awareness_summary']['awareness_increase_pct_points']:.1f}%</div>
+                <div style='opacity: 0.8;'>Awareness Growth</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{satisfaction:.2f}/5</div>
+                <div style='opacity: 0.8;'>Satisfaction</div>
+            </div>
+        </div>
+        <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'>
+            <strong>Leadership • Excellence • Impact</strong>
+        </p>
+        <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>
+            {datetime.now().strftime('%B %d, %Y')} | 10x Leaders
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.stop()  # Don't render the standard dashboard below
+
+# ============================================================================
+# STANDARD SESSION DASHBOARD (for regular sessions)
+# ============================================================================
+
+metrics = data['metrics']
     # ========================================================================
     # MISK TRACKS AWARENESS DASHBOARD
     # ========================================================================
