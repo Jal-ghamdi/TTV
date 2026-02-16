@@ -1038,7 +1038,7 @@ if session_info.get('type') == 'awareness':
 # ============================================================================
 
 metrics = data['metrics']
-viz_data = data.get('visualization_data', {})
+viz_data = data['visualization_data']
 chapter_metrics = metrics.get('chapter_metrics', {})
 
 REGISTERED = chapter_metrics.get('total_registered', 119)
@@ -1267,260 +1267,153 @@ with col2:
 st.markdown("---")
 st.markdown('<p class="section-title">📚 Detailed Analysis</p>', unsafe_allow_html=True)
 
-# Check if we have knowledge data to show that tab
-has_knowledge_data = (
-    viz_data.get('knowledge_comparison') and 
-    viz_data['knowledge_comparison'].get('pre_scores')
-)
+tab1, tab2, tab3 = st.tabs(["🌱 Knowledge Development", "🤝 Commitment", "💡 Satisfaction"])
 
-# Build tab list dynamically based on available data
-if has_knowledge_data:
-    # Show all three tabs including knowledge
-    tab1, tab2, tab3 = st.tabs(["🌱 Knowledge Development", "🤝 Commitment", "💡 Satisfaction"])
+with tab1:
+    st.markdown("### Learning Progress")
     
-    with tab1:
-        st.markdown("### Learning Progress")
+    col1, col2 = st.columns([3, 2])
+    
+    with col1:
+        # Use session-specific topic labels instead of hardcoded ones from JSON
+        topics = session_info['topic_labels']
+        pre_scores = viz_data['knowledge_comparison']['pre_scores']
+        post_scores = viz_data['knowledge_comparison']['post_scores']
+        improvements = viz_data['knowledge_comparison']['improvements']
         
-        col1, col2 = st.columns([3, 2])
+        knowledge_fig = go.Figure()
         
-        with col1:
-            topics = session_info['topic_labels']
-            pre_scores = viz_data['knowledge_comparison']['pre_scores']
-            post_scores = viz_data['knowledge_comparison']['post_scores']
-            improvements = viz_data['knowledge_comparison']['improvements']
+        knowledge_fig.add_trace(go.Bar(
+            name='Before Session',
+            x=topics,
+            y=pre_scores,
+            marker_color='#e9ecef',
+            text=[f"{s:.2f}" for s in pre_scores],
+            textposition='outside'
+        ))
+        
+        knowledge_fig.add_trace(go.Bar(
+            name='After Session',
+            x=topics,
+            y=post_scores,
+            marker_color='#006341',
+            text=[f"{s:.2f}" for s in post_scores],
+            textposition='outside'
+        ))
+        
+        knowledge_fig.update_layout(
+            barmode='group',
+            yaxis_title='Knowledge Level (1-5)',
+            yaxis=dict(range=[0, 6]),
+            height=400,
+            font=dict(family="Epilogue", color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(knowledge_fig, use_container_width=True)
+    
+    with col2:
+        st.markdown("### Key Metrics")
+        st.metric("Average Growth", f"+{metrics.get('grow_avg_knowledge_increase', 0):.2f} pts")
+        st.metric("Participants Improved", f"{metrics.get('grow_members_reporting_growth_pct', 0):.0f}%")
+        st.metric("Significant Growth", f"{metrics.get('grow_significant_growth_pct', 0):.0f}%")
+        
+        st.markdown("### Growth by Topic")
+        for i, topic in enumerate(topics):
+            pct = (improvements[i] / pre_scores[i] * 100) if pre_scores[i] > 0 else 0
+            st.markdown(f"**{topic}:** +{pct:.0f}%")
+
+with tab2:
+    st.markdown("### Action Commitment")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        action_data = viz_data.get('action_plan_data', {})
+        labels = list(action_data.keys())
+        values = list(action_data.values())
+        
+        # Find the committed count safely by looking for Yes/True key, fallback to connect metric
+        committed_count = metrics.get('connect_total_planning_action', 0)
+        
+        action_fig = go.Figure(data=[go.Pie(
+            labels=labels,
+            values=values,
+            hole=0.6,
+            marker_colors=['#006341', '#e9ecef'],
+            textfont=dict(size=16, family='Epilogue')
+        )])
+        
+        action_fig.update_layout(
+            height=350,
+            showlegend=True,
+            annotations=[dict(
+                text=f"<b>{committed_count}</b><br>Committed",
+                x=0.5, y=0.5,
+                font=dict(size=20, family='Cormorant Garamond'),
+                showarrow=False
+            )],
+            paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
+        )
+        
+        st.plotly_chart(action_fig, use_container_width=True)
+    
+    with col2:
+        st.markdown("### Summary")
+        st.metric("Commitment Rate", f"{metrics.get('connect_members_planning_action_pct', 0):.1f}%")
+        st.metric("Total Committed", metrics.get('connect_total_planning_action', 0))
+        st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
+        
+        st.markdown("---")
+        st.success(f"**{metrics.get('connect_total_planning_action', 0)} participants** ready to apply what they learned")
+
+with tab3:
+    st.markdown("### Participant Feedback")
+    
+    col1, col2 = st.columns([3, 2])
+    
+    with col1:
+        satisfaction_data = viz_data.get('satisfaction_data', {})
+        
+        if satisfaction_data:
+            satisfaction_order = ['Very dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very satisfied']
+            sorted_items = sorted(
+                satisfaction_data.items(),
+                key=lambda x: satisfaction_order.index(x[0]) if x[0] in satisfaction_order else 2
+            )
+            labels = [item[0] for item in sorted_items]
+            values = [item[1] for item in sorted_items]
+            colors = ['#e74c3c', '#e67e22', '#f39c12', '#93c13f', '#006341'][:len(labels)]
             
-            knowledge_fig = go.Figure()
+            sat_fig = go.Figure(data=[go.Bar(
+                y=labels,
+                x=values,
+                orientation='h',
+                marker_color=colors,
+                text=values,
+                textposition='outside',
+                textfont=dict(size=14)
+            )])
             
-            knowledge_fig.add_trace(go.Bar(
-                name='Before Session',
-                x=topics,
-                y=pre_scores,
-                marker_color='#e9ecef',
-                text=[f"{s:.2f}" for s in pre_scores],
-                textposition='outside'
-            ))
-            
-            knowledge_fig.add_trace(go.Bar(
-                name='After Session',
-                x=topics,
-                y=post_scores,
-                marker_color='#006341',
-                text=[f"{s:.2f}" for s in post_scores],
-                textposition='outside'
-            ))
-            
-            knowledge_fig.update_layout(
-                barmode='group',
-                yaxis_title='Knowledge Level (1-5)',
-                yaxis=dict(range=[0, 6]),
-                height=400,
+            sat_fig.update_layout(
+                xaxis_title='Number of Participants',
+                height=350,
                 font=dict(family="Epilogue", color="#2c3e50"),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+                showlegend=False
             )
             
-            st.plotly_chart(knowledge_fig, use_container_width=True)
-        
-        with col2:
-            st.markdown("### Key Metrics")
-            st.metric("Average Growth", f"+{metrics.get('grow_avg_knowledge_increase', 0):.2f} pts")
-            st.metric("Participants Improved", f"{metrics.get('grow_members_reporting_growth_pct', 0):.0f}%")
-            st.metric("Significant Growth", f"{metrics.get('grow_significant_growth_pct', 0):.0f}%")
-            
-            st.markdown("### Growth by Topic")
-            for i, topic in enumerate(topics):
-                pct = (improvements[i] / pre_scores[i] * 100) if pre_scores[i] > 0 else 0
-                st.markdown(f"**{topic}:** +{pct:.0f}%")
+            st.plotly_chart(sat_fig, use_container_width=True)
     
-    # Commitment tab (tab2)
-    with tab2:
-        st.markdown("### Action Commitment")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            action_data = viz_data.get('action_plan_data', {})
-            if action_data:
-                labels = list(action_data.keys())
-                values = list(action_data.values())
-                committed_count = metrics.get('connect_total_planning_action', 0)
-                
-                action_fig = go.Figure(data=[go.Pie(
-                    labels=labels,
-                    values=values,
-                    hole=0.6,
-                    marker_colors=['#006341', '#e9ecef'],
-                    textfont=dict(size=16, family='Epilogue')
-                )])
-                
-                action_fig.update_layout(
-                    height=350,
-                    showlegend=True,
-                    annotations=[dict(
-                        text=f"<b>{committed_count}</b><br>Committed",
-                        x=0.5, y=0.5,
-                        font=dict(size=20, family='Cormorant Garamond'),
-                        showarrow=False
-                    )],
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
-                )
-                
-                st.plotly_chart(action_fig, use_container_width=True)
-        
-        with col2:
-            st.markdown("### Summary")
-            st.metric("Commitment Rate", f"{metrics.get('connect_members_planning_action_pct', 0):.1f}%")
-            st.metric("Total Committed", metrics.get('connect_total_planning_action', 0))
-            st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
-            
-            st.markdown("---")
-            st.success(f"**{metrics.get('connect_total_planning_action', 0)} participants** ready to apply what they learned")
-    
-    # Satisfaction tab (tab3)
-    with tab3:
-        st.markdown("### Participant Feedback")
-        
-        col1, col2 = st.columns([3, 2])
-        
-        with col1:
-            satisfaction_data = viz_data.get('satisfaction_data', {})
-            
-            if satisfaction_data:
-                satisfaction_order = ['Very dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very satisfied']
-                sorted_items = sorted(
-                    satisfaction_data.items(),
-                    key=lambda x: satisfaction_order.index(x[0]) if x[0] in satisfaction_order else 2
-                )
-                labels = [item[0] for item in sorted_items]
-                values = [item[1] for item in sorted_items]
-                colors = ['#e74c3c', '#e67e22', '#f39c12', '#93c13f', '#006341'][:len(labels)]
-                
-                sat_fig = go.Figure(data=[go.Bar(
-                    y=labels,
-                    x=values,
-                    orientation='h',
-                    marker_color=colors,
-                    text=values,
-                    textposition='outside',
-                    textfont=dict(size=14)
-                )])
-                
-                sat_fig.update_layout(
-                    xaxis_title='Number of Participants',
-                    height=350,
-                    font=dict(family="Epilogue", color="#2c3e50"),
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    showlegend=False
-                )
-                
-                st.plotly_chart(sat_fig, use_container_width=True)
-        
-        with col2:
-            st.markdown("### Metrics")
-            st.metric("Average Rating", f"{metrics.get('impact_avg_satisfaction', 0):.2f}/5.0")
-            st.metric("Highly Satisfied", f"{metrics.get('impact_satisfaction_pct', 0):.0f}%")
-            st.metric("Likely to Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
-
-else:
-    # No knowledge data - only show Commitment and Satisfaction tabs
-    tab1, tab2 = st.tabs(["🤝 Commitment", "💡 Satisfaction"])
-    
-    with tab1:
-        st.markdown("### Action Commitment")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            action_data = viz_data.get('action_plan_data', {})
-            if action_data:
-                labels = list(action_data.keys())
-                values = list(action_data.values())
-                committed_count = metrics.get('connect_total_planning_action', 0)
-                
-                action_fig = go.Figure(data=[go.Pie(
-                    labels=labels,
-                    values=values,
-                    hole=0.6,
-                    marker_colors=['#006341', '#e9ecef'],
-                    textfont=dict(size=16, family='Epilogue')
-                )])
-                
-                action_fig.update_layout(
-                    height=350,
-                    showlegend=True,
-                    annotations=[dict(
-                        text=f"<b>{committed_count}</b><br>Committed",
-                        x=0.5, y=0.5,
-                        font=dict(size=20, family='Cormorant Garamond'),
-                        showarrow=False
-                    )],
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
-                )
-                
-                st.plotly_chart(action_fig, use_container_width=True)
-            else:
-                # No pie chart data - just show metrics
-                st.info("Action plan breakdown not available - see summary for commitment metrics")
-        
-        with col2:
-            st.markdown("### Summary")
-            st.metric("Commitment Rate", f"{metrics.get('connect_members_planning_action_pct', 0):.1f}%")
-            st.metric("Total Committed", metrics.get('connect_total_planning_action', 0))
-            st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
-            
-            st.markdown("---")
-            st.success(f"**{metrics.get('connect_total_planning_action', 0)} participants** ready to apply what they learned")
-    
-    with tab2:
-        st.markdown("### Participant Feedback")
-        
-        col1, col2 = st.columns([3, 2])
-        
-        with col1:
-            satisfaction_data = viz_data.get('satisfaction_data', {})
-            
-            if satisfaction_data:
-                satisfaction_order = ['Very dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very satisfied']
-                sorted_items = sorted(
-                    satisfaction_data.items(),
-                    key=lambda x: satisfaction_order.index(x[0]) if x[0] in satisfaction_order else 2
-                )
-                labels = [item[0] for item in sorted_items]
-                values = [item[1] for item in sorted_items]
-                colors = ['#e74c3c', '#e67e22', '#f39c12', '#93c13f', '#006341'][:len(labels)]
-                
-                sat_fig = go.Figure(data=[go.Bar(
-                    y=labels,
-                    x=values,
-                    orientation='h',
-                    marker_color=colors,
-                    text=values,
-                    textposition='outside',
-                    textfont=dict(size=14)
-                )])
-                
-                sat_fig.update_layout(
-                    xaxis_title='Number of Participants',
-                    height=350,
-                    font=dict(family="Epilogue", color="#2c3e50"),
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    showlegend=False
-                )
-                
-                st.plotly_chart(sat_fig, use_container_width=True)
-            else:
-                st.info("Satisfaction distribution data not available - see summary for overall metrics")
-        
-        with col2:
-            st.markdown("### Metrics")
-            st.metric("Average Rating", f"{metrics.get('impact_avg_satisfaction', 0):.2f}/5.0")
-            st.metric("Highly Satisfied", f"{metrics.get('impact_satisfaction_pct', 0):.0f}%")
-            st.metric("Likely to Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
+    with col2:
+        st.markdown("### Metrics")
+        st.metric("Average Rating", f"{metrics.get('impact_avg_satisfaction', 0):.2f}/5.0")
+        st.metric("Highly Satisfied", f"{metrics.get('impact_satisfaction_pct', 0):.0f}%")
+        st.metric("Likely to Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
 
 # ============================================================================
 # FOOTER
@@ -1529,7 +1422,7 @@ else:
 st.markdown(f"""
 <div class='sls-footer'>
     <h2>Saudi Leadership Society</h2>
-    <p class="tagline">{initiative_info['name']} • Australia Chapter</p>
+    <p class="tagline">Towards the Vision • Australia Chapter</p>
     <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
         <div>
             <div style='font-size: 2.5rem; font-weight: 700;'>{ACTUAL_ATTENDEES}</div>
