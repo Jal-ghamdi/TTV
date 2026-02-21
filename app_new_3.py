@@ -63,11 +63,12 @@ INITIATIVES = {
             },
             "10x Leaders": {
                 "name": "⭐ 10x Leaders Program",
-                "data_file": "sls_kpi_10xleaders_session_data_last.json",
+                "data_file": "sls_kpi_10xleaders_session_data_updated_overall.json",
                 "icon": "⭐",
                 "vision_theme": "Leadership Development & Excellence",
                 "color": "#f59e0b",
-                "topic_labels": ["Understand Purpose", "Understand Eligibility", "Awareness Benefits", "Understand Skills"]
+                "topic_labels": [],
+                "type": "comprehensive"  # New comprehensive awareness analysis
             }
         }
     }
@@ -1320,6 +1321,442 @@ if session_info.get('type') == 'hybrid':
     st.stop()  # Don't render the standard dashboard below
 
 # ============================================================================
+# COMPREHENSIVE DASHBOARD (10x Leaders with Overall/Paired Analysis)
+# ============================================================================
+
+if session_info.get('type') == 'comprehensive':
+    metrics = data['metrics']
+    
+    # Extract nested structures
+    response_summary = metrics.get('response_summary', {})
+    awareness_analysis = metrics.get('awareness_analysis', {})
+    satisfaction = metrics.get('satisfaction', {})
+    action_plan = metrics.get('action_plan', {})
+    demographics = metrics.get('demographics', {})
+    chapter_metrics = metrics.get('chapter_metrics', {})
+    
+    REGISTERED = chapter_metrics.get('total_registered', 0)
+    TARGET = chapter_metrics.get('target_attendance', 50)
+    ACTUAL_ATTENDEES = chapter_metrics.get('actual_attendees', 0)
+    TOTAL_PRE = response_summary.get('total_pre_responses', 0)
+    TOTAL_POST = response_summary.get('total_post_responses', 0)
+    MATCHED = response_summary.get('completed_both_surveys', 0)
+    
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>', unsafe_allow_html=True)
+    
+    # ROW 1: REACH & ENGAGEMENT
+    st.markdown('<p class="subsection-title">Reach & Participation</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        attendance_rate = (ACTUAL_ATTENDEES / REGISTERED * 100) if REGISTERED > 0 else 0
+        st.markdown(
+            create_kpi_card(
+                "REACH",
+                "Total Participants",
+                f"{ACTUAL_ATTENDEES}",
+                f"Out of {REGISTERED} registered",
+                f"✓ {attendance_rate:.0f}% attendance rate"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "ENGAGEMENT",
+                "Survey Participation",
+                f"{TOTAL_PRE} → {TOTAL_POST}",
+                f"{MATCHED} completed both surveys",
+                f"✓ {response_summary.get('match_rate_vs_pre_pct', 0):.1f}% completion rate"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        target_performance = (ACTUAL_ATTENDEES / TARGET * 100) if TARGET > 0 else 0
+        total_hours = chapter_metrics.get('total_participant_hours', 0)
+        st.markdown(
+            create_kpi_card(
+                "IMPACT",
+                "Engagement Hours",
+                f"{total_hours}",
+                f"Total participant hours ({chapter_metrics.get('session_duration_hours', 0)}h session)",
+                f"✓ Exceeded target by {target_performance - 100:.0f}%" if target_performance > 100 else ""
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # ROW 2: AWARENESS IMPACT (OVERALL)
+    st.markdown('<p class="subsection-title">Overall Awareness Impact</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(
+            create_kpi_card(
+                "BEFORE",
+                "Baseline Awareness",
+                f"{awareness_analysis.get('overall_pre_pct', 0):.1f}%",
+                f"Out of {TOTAL_PRE} pre-survey respondents",
+                ""
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "AFTER",
+                "Post-Session Awareness",
+                f"{awareness_analysis.get('overall_post_pct', 0):.1f}%",
+                f"Out of {TOTAL_POST} post-survey respondents",
+                f"✓ +{awareness_analysis.get('overall_increase_pct_points', 0):.1f} points"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            create_kpi_card(
+                "GROWTH",
+                "Awareness Increase",
+                f"+{awareness_analysis.get('overall_increase_pct_points', 0):.1f}%",
+                "Percentage point improvement",
+                "✓ Massive impact!"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # ROW 3: PAIRED AWARENESS ANALYSIS
+    st.markdown('<p class="subsection-title">Paired Awareness Analysis (Same Participants)</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(
+            create_kpi_card(
+                "PAIRED PRE",
+                "Before (Matched)",
+                f"{awareness_analysis.get('paired_pre_pct', 0):.1f}%",
+                f"{MATCHED} participants who completed both",
+                ""
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "PAIRED POST",
+                "After (Matched)",
+                f"{awareness_analysis.get('paired_post_pct', 0):.1f}%",
+                f"Same {MATCHED} participants",
+                f"✓ +{awareness_analysis.get('paired_increase_pct_points', 0):.1f} points"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            create_kpi_card(
+                "PAIRED GROWTH",
+                "Individual Growth",
+                f"+{awareness_analysis.get('paired_increase_pct_points', 0):.1f}%",
+                "True within-person change",
+                "✓ Validated impact!"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # ROW 4: ACTION & SATISFACTION
+    st.markdown('<p class="subsection-title">Action & Satisfaction</p>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown(
+            create_kpi_card(
+                "COMMITMENT",
+                "Plan to Take Action",
+                f"{action_plan.get('planning_action_pct', 0):.0f}%",
+                f"{action_plan.get('total_planning_action', 0)} participants committed",
+                "✓ Strong commitment"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        st.markdown(
+            create_kpi_card(
+                "QUALITY",
+                "Satisfaction Score",
+                f"{satisfaction.get('average_score', 0):.2f}/5.0",
+                "Average participant rating",
+                "✓ Outstanding!"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    with col3:
+        st.markdown(
+            create_kpi_card(
+                "SATISFACTION",
+                "Highly Satisfied",
+                f"{satisfaction.get('satisfied_pct', 0):.0f}%",
+                "Rated 4+ stars",
+                "✓ Perfect score!"
+            ),
+            unsafe_allow_html=True
+        )
+    
+    # HIGHLIGHTS
+    achievements = []
+    overall_increase = awareness_analysis.get('overall_increase_pct_points', 0)
+    paired_increase = awareness_analysis.get('paired_increase_pct_points', 0)
+    
+    if overall_increase >= 80:
+        achievements.append(f"Massive {overall_increase:.1f} percentage point awareness increase (overall)")
+    if paired_increase >= 80:
+        achievements.append(f"True individual growth: {paired_increase:.1f} points for matched participants")
+    if satisfaction.get('average_score', 0) >= 4.5:
+        achievements.append(f"Outstanding satisfaction: {satisfaction.get('average_score', 0):.2f}/5.0")
+    if action_plan.get('planning_action_pct', 0) >= 75:
+        achievements.append(f"{action_plan.get('planning_action_pct', 0):.0f}% committed to taking action")
+    if target_performance > 100:
+        achievements.append(f"Exceeded attendance target by {target_performance - 100:.0f}%")
+    
+    if achievements:
+        st.markdown(f"""
+        <div class="highlight-box">
+            <h3>✨ Session Highlights</h3>
+            <ul>
+                {''.join([f'<li>{achievement}</li>' for achievement in achievements])}
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # METHODOLOGY EXPLANATION
+    st.markdown('<p class="section-title">📊 Analysis Methodology</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        <div class="info-box">
+            <h3>Overall Analysis</h3>
+            <p style="font-size: 1.05rem; line-height: 1.8;">
+            Compares <strong>all pre-survey respondents</strong> ({pre}) with 
+            <strong>all post-survey respondents</strong> ({post}). 
+            Shows the <span class="highlight">population-level change</span> in awareness.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.8; margin-top: 1rem;">
+            <strong>Result:</strong> {before:.1f}% → {after:.1f}% 
+            (<span class="highlight">+{increase:.1f} points</span>)
+            </p>
+        </div>
+        """.format(
+            pre=TOTAL_PRE,
+            post=TOTAL_POST,
+            before=awareness_analysis.get('overall_pre_pct', 0),
+            after=awareness_analysis.get('overall_post_pct', 0),
+            increase=overall_increase
+        ), unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="info-box">
+            <h3>Paired Analysis</h3>
+            <p style="font-size: 1.05rem; line-height: 1.8;">
+            Analyzes only the <strong>{matched} participants who completed both surveys</strong>. 
+            Shows <span class="highlight">true within-person change</span> by comparing 
+            the same individuals before and after.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.8; margin-top: 1rem;">
+            <strong>Result:</strong> {before:.1f}% → {after:.1f}% 
+            (<span class="highlight">+{increase:.1f} points</span>)
+            </p>
+        </div>
+        """.format(
+            matched=MATCHED,
+            before=awareness_analysis.get('paired_pre_pct', 0),
+            after=awareness_analysis.get('paired_post_pct', 0),
+            increase=paired_increase
+        ), unsafe_allow_html=True)
+    
+    # AWARENESS COMPARISON VISUALIZATION
+    st.markdown('<p class="section-title">📈 Awareness Growth Comparison</p>', unsafe_allow_html=True)
+    
+    fig_awareness = go.Figure()
+    
+    categories = ['Overall (All Respondents)', 'Paired (Matched Participants)']
+    pre_values = [
+        awareness_analysis.get('overall_pre_pct', 0),
+        awareness_analysis.get('paired_pre_pct', 0)
+    ]
+    post_values = [
+        awareness_analysis.get('overall_post_pct', 0),
+        awareness_analysis.get('paired_post_pct', 0)
+    ]
+    
+    fig_awareness.add_trace(go.Bar(
+        name='Before Session',
+        x=categories,
+        y=pre_values,
+        marker_color='#e9ecef',
+        text=[f"{v:.1f}%" for v in pre_values],
+        textposition='outside',
+        textfont=dict(size=14)
+    ))
+    
+    fig_awareness.add_trace(go.Bar(
+        name='After Session',
+        x=categories,
+        y=post_values,
+        marker_color='#006341',
+        text=[f"{v:.1f}%" for v in post_values],
+        textposition='outside',
+        textfont=dict(size=14)
+    ))
+    
+    fig_awareness.update_layout(
+        barmode='group',
+        yaxis_title='Awareness Percentage',
+        yaxis=dict(range=[0, 100]),
+        height=450,
+        font=dict(family="Epilogue", color="#2c3e50"),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+    )
+    
+    st.plotly_chart(fig_awareness, use_container_width=True)
+    
+    # DEMOGRAPHICS
+    st.markdown('<p class="section-title">👥 Participant Demographics</p>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Locations")
+        location_data = demographics.get('location', {})
+        
+        if location_data:
+            fig_loc = go.Figure(data=[go.Pie(
+                labels=list(location_data.keys()),
+                values=list(location_data.values()),
+                hole=0.4,
+                marker_colors=['#006341', '#00843d', '#93c13f', '#b8d96d', '#d4e89e', '#e9f5c9'],
+                textfont=dict(size=14)
+            )])
+            
+            fig_loc.update_layout(
+                height=400,
+                showlegend=True,
+                paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02)
+            )
+            
+            st.plotly_chart(fig_loc, use_container_width=True)
+    
+    with col2:
+        st.markdown("### How They Heard About Us")
+        heard_data = demographics.get('heard_about', {})
+        
+        if heard_data:
+            labels = list(heard_data.keys())
+            values = list(heard_data.values())
+            
+            fig_heard = go.Figure(data=[go.Bar(
+                x=labels,
+                y=values,
+                marker_color='#006341',
+                text=values,
+                textposition='outside',
+                textfont=dict(size=14)
+            )])
+            
+            fig_heard.update_layout(
+                height=400,
+                yaxis_title='Number of Participants',
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig_heard, use_container_width=True)
+    
+    # SATISFACTION DISTRIBUTION
+    st.markdown('<p class="section-title">⭐ Satisfaction Distribution</p>', unsafe_allow_html=True)
+    
+    sat_dist = satisfaction.get('distribution', {})
+    if sat_dist:
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            labels = [f"{k} Stars" for k in sorted(sat_dist.keys())]
+            values = [sat_dist[k] for k in sorted(sat_dist.keys())]
+            colors = ['#93c13f' if int(k) >= 4 else '#f39c12' for k in sorted(sat_dist.keys())]
+            
+            fig_sat = go.Figure(data=[go.Bar(
+                x=labels,
+                y=values,
+                marker_color=colors,
+                text=values,
+                textposition='outside',
+                textfont=dict(size=16)
+            )])
+            
+            fig_sat.update_layout(
+                height=350,
+                yaxis_title='Number of Participants',
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False
+            )
+            
+            st.plotly_chart(fig_sat, use_container_width=True)
+        
+        with col2:
+            st.markdown("### Summary")
+            st.metric("Average Rating", f"{satisfaction.get('average_score', 0):.2f}/5.0")
+            st.metric("Highly Satisfied", f"{satisfaction.get('satisfied_pct', 0):.0f}%")
+            st.metric("Total Responses", TOTAL_POST)
+    
+    # FOOTER
+    st.markdown(f"""
+    <div class='sls-footer'>
+        <h2>10x Leaders Program</h2>
+        <p class="tagline">Misk Tracks • Australia Chapter</p>
+        <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{ACTUAL_ATTENDEES}</div>
+                <div style='opacity: 0.8;'>Participants</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>+{paired_increase:.1f}%</div>
+                <div style='opacity: 0.8;'>Awareness Growth</div>
+            </div>
+            <div>
+                <div style='font-size: 2.5rem; font-weight: 700;'>{satisfaction.get('average_score', 0):.2f}/5</div>
+                <div style='opacity: 0.8;'>Satisfaction</div>
+            </div>
+        </div>
+        <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'>
+            <strong>Leadership • Excellence • Impact</strong>
+        </p>
+        <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>
+            {datetime.now().strftime('%B %d, %Y')} | 10x Leaders
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.stop()
+
+# ============================================================================
 # STANDARD SESSION DASHBOARD (for regular sessions)
 # ============================================================================
 
@@ -1651,7 +2088,7 @@ with tab2:
         st.markdown("### Summary")
         st.metric("Commitment Rate", f"{metrics.get('connect_members_planning_action_pct', 0):.1f}%")
         st.metric("Total Committed", metrics.get('connect_total_planning_action', 0))
-        #st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
+        st.metric("Would Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
         
         st.markdown("---")
         st.success(f"**{metrics.get('connect_total_planning_action', 0)} participants** ready to apply what they learned")
@@ -1699,7 +2136,7 @@ with tab3:
         st.markdown("### Metrics")
         st.metric("Average Rating", f"{metrics.get('impact_avg_satisfaction', 0):.2f}/5.0")
         st.metric("Highly Satisfied", f"{metrics.get('impact_satisfaction_pct', 0):.0f}%")
-        #st.metric("Likely to Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
+        st.metric("Likely to Recommend", f"{metrics.get('impact_likely_recommend_pct', 0):.1f}%")
 
 # ============================================================================
 # FOOTER
