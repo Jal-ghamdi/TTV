@@ -1024,7 +1024,7 @@ if session_info.get('type') == 'awareness':
             </div>
         </div>
         <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'>
-            <strong>Building Awareness • Growing Impact</strong>
+            <strong>Grow • Connect • Impact</strong>
         </p>
         <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>
             {datetime.now().strftime('%B %d, %Y')} | Misk Tracks
