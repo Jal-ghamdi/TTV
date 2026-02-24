@@ -49,7 +49,7 @@ INITIATIVES = {
     "Misk Tracks": {
         "name": "Misk Tracks",
         "icon": "🚀",
-        "description": "An initiative showcasing Misk Foundation’s four development tracks — Leadership, Entrepreneurship, Skills, and Community — aimed at raising awareness among Saudi students in Australia and empowering them to explore programs aligned with their academic and professional aspirations.",
+        "description": "An initiative highlighting Misk Foundation’s four tracks — Leadership, Entrepreneurship, Skills, and Community — to help Saudi students in Australia explore programs aligned with their academic and career goals.",
         "color": "#8B5CF6",
         "sessions": {
             "Awareness Study": {
