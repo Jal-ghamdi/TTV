@@ -46,7 +46,7 @@ INITIATIVES = {
             },
             "Health": {
                 "name": "🏥 Health Session",
-                "data_file": "sls_kpi_health_session3_ttv_data.json",
+                "data_file": "sls_kpi_health_session3_ttv_data_updated.json",
                 "icon": "🏥",
                 "vision_theme": "Health Sector Development",
                 "color": "#10b981",
@@ -856,8 +856,8 @@ if session_info.get('type') == 'health':
     topic_keys = ['grow_sector', 'grow_vision2030', 'grow_job_market', 'grow_skills']
     topic_data = [metrics.get(k, {}) for k in topic_keys]
 
-    pre_scores  = [t.get('pre', 0)         for t in topic_data]
-    post_scores = [t.get('post', 0)        for t in topic_data]
+    pre_scores   = [t.get('pre', 0)         for t in topic_data]
+    post_scores  = [t.get('post', 0)        for t in topic_data]
     improvements = [t.get('improvement', 0) for t in topic_data]
 
     # ── KPI ROW 1 : REACH & ENGAGEMENT ──────────────────────────────────────
@@ -884,7 +884,7 @@ if session_info.get('type') == 'health':
                 "ENGAGEMENT",
                 "Completed Both Surveys",
                 str(metrics['total_responses']),
-                f"Matched pre & post responses",
+                "Matched pre & post responses",
                 f"✓ {metrics['match_rate_pct']:.1f}% match rate"
             ),
             unsafe_allow_html=True
@@ -904,7 +904,7 @@ if session_info.get('type') == 'health':
         )
 
     # ── KPI ROW 2 : LEARNING EFFECTIVENESS ───────────────────────────────────
-    st.markdown('<p class="subsection-title">Learning Effectiveness</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subsection-title">Learning Effectiveness by Topic</p>', unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -915,8 +915,8 @@ if session_info.get('type') == 'health':
         ("SKILLS",     topics[3], 3),
     ]
 
-    cols = [col1, col2, col3, col4]
-    for col, (cat, label, i) in zip(cols, card_configs):
+    cols_row = [col1, col2, col3, col4]
+    for col, (cat, label, i) in zip(cols_row, card_configs):
         imp = improvements[i]
         is_positive = imp >= 0
         trend_text = f"{'✓' if is_positive else '▼'} {imp:+.2f} pts ({pre_scores[i]:.2f} → {post_scores[i]:.2f})"
@@ -926,7 +926,7 @@ if session_info.get('type') == 'health':
                     cat,
                     label,
                     f"{post_scores[i]:.2f}",
-                    f"Post-session score (out of 5)",
+                    "Post-session score (out of 5)",
                     trend_text,
                     warn=(not is_positive)
                 ),
@@ -968,7 +968,7 @@ if session_info.get('type') == 'health':
         )
 
     with col3:
-        positive_topics = sum(1 for i in improvements if i > 0)
+        positive_topics = sum(1 for imp in improvements if imp > 0)
         st.markdown(
             create_kpi_card(
                 "BREADTH",
@@ -980,7 +980,7 @@ if session_info.get('type') == 'health':
             unsafe_allow_html=True
         )
 
-    # ── HIGHLIGHTS ────────────────────────────────────────────────────────────
+    # ── SESSION HIGHLIGHTS ─────────────────────────────────────────────────────
     achievements = []
     if improved_pct >= 60:
         achievements.append(f"{improved_pct:.1f}% of paired participants showed knowledge growth")
@@ -1002,119 +1002,274 @@ if session_info.get('type') == 'health':
         </div>
         """, unsafe_allow_html=True)
 
-    # ── KNOWLEDGE COMPARISON CHART ────────────────────────────────────────────
-    st.markdown('<p class="section-title">📈 Knowledge Before vs After</p>', unsafe_allow_html=True)
+    # ── DETAILED ANALYSIS TABS ────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Detailed Analysis</p>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([3, 2])
+    tab1, tab2, tab3 = st.tabs(["🌱 Knowledge Development", "🕸️ Knowledge Profile", "👥 Participant Demographics"])
 
-    with col1:
-        knowledge_fig = go.Figure()
+    with tab1:
+        st.markdown("### Learning Progress — Before vs After")
 
-        knowledge_fig.add_trace(go.Bar(
+        col1, col2 = st.columns([3, 2])
+
+        with col1:
+            knowledge_fig = go.Figure()
+
+            knowledge_fig.add_trace(go.Bar(
+                name='Before Session',
+                x=topics,
+                y=pre_scores,
+                marker_color='#e9ecef',
+                text=[f"{s:.2f}" for s in pre_scores],
+                textposition='outside'
+            ))
+
+            knowledge_fig.add_trace(go.Bar(
+                name='After Session',
+                x=topics,
+                y=post_scores,
+                marker_color='#006341',
+                text=[f"{s:.2f}" for s in post_scores],
+                textposition='outside'
+            ))
+
+            knowledge_fig.update_layout(
+                barmode='group',
+                yaxis_title='Knowledge Score (1–5 scale)',
+                yaxis=dict(range=[0, 5.8]),
+                height=420,
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+            )
+
+            st.plotly_chart(knowledge_fig, use_container_width=True)
+
+        with col2:
+            st.markdown("### Growth by Topic")
+
+            bar_colors = ['#006341' if v >= 0 else '#e74c3c' for v in improvements]
+
+            improvement_fig = go.Figure()
+            improvement_fig.add_trace(go.Bar(
+                x=improvements,
+                y=topics,
+                orientation='h',
+                marker_color=bar_colors,
+                text=[f"{v:+.2f}" for v in improvements],
+                textposition='outside',
+                textfont=dict(size=13)
+            ))
+
+            improvement_fig.add_vline(x=0, line_dash="dash", line_color="#adb5bd", line_width=1.5)
+
+            improvement_fig.update_layout(
+                xaxis_title='Score Change',
+                xaxis=dict(range=[-0.5, 0.8]),
+                height=420,
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False,
+                margin=dict(l=10, r=40, t=20, b=20)
+            )
+
+            st.plotly_chart(improvement_fig, use_container_width=True)
+
+            st.markdown("### Key Metrics")
+            st.metric("Average Growth", f"+{avg_growth:.2f} pts")
+            st.metric("Participants Improved", f"{improved_pct:.1f}%")
+            st.metric("Topics Improved", f"{positive_topics} / {len(topics)}")
+
+    with tab2:
+        st.markdown("### Knowledge Profile — Before vs After")
+
+        radar_fig = go.Figure()
+
+        radar_fig.add_trace(go.Scatterpolar(
+            r=pre_scores + [pre_scores[0]],
+            theta=topics + [topics[0]],
+            fill='toself',
             name='Before Session',
-            x=topics,
-            y=pre_scores,
-            marker_color='#e9ecef',
-            text=[f"{s:.2f}" for s in pre_scores],
-            textposition='outside'
+            line_color='#adb5bd',
+            fillcolor='rgba(173,181,189,0.2)',
+            line_width=2
         ))
 
-        knowledge_fig.add_trace(go.Bar(
+        radar_fig.add_trace(go.Scatterpolar(
+            r=post_scores + [post_scores[0]],
+            theta=topics + [topics[0]],
+            fill='toself',
             name='After Session',
-            x=topics,
-            y=post_scores,
-            marker_color='#006341',
-            text=[f"{s:.2f}" for s in post_scores],
-            textposition='outside'
+            line_color='#006341',
+            fillcolor='rgba(0,132,61,0.15)',
+            line_width=2.5
         ))
 
-        knowledge_fig.update_layout(
-            barmode='group',
-            yaxis_title='Knowledge Score (1–5 scale)',
-            yaxis=dict(range=[0, 5.5]),
-            height=420,
+        radar_fig.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 5], tickfont=dict(size=11)),
+                angularaxis=dict(tickfont=dict(size=13, family='Epilogue'))
+            ),
+            showlegend=True,
+            height=500,
             font=dict(family="Epilogue", color="#2c3e50"),
-            plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
         )
 
-        st.plotly_chart(knowledge_fig, use_container_width=True)
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.plotly_chart(radar_fig, use_container_width=True)
 
-    with col2:
-        st.markdown("### Growth by Topic")
+        st.markdown("### Score Summary")
+        summary_cols = st.columns(len(topics))
+        for i, (col, topic) in enumerate(zip(summary_cols, topics)):
+            with col:
+                delta_val = improvements[i]
+                st.metric(
+                    label=topic,
+                    value=f"{post_scores[i]:.2f}",
+                    delta=f"{delta_val:+.2f}",
+                    delta_color="normal" if delta_val >= 0 else "inverse"
+                )
 
-        improvement_fig = go.Figure()
+    with tab3:
+        st.markdown("### Who Attended?")
 
-        bar_colors = ['#006341' if v >= 0 else '#e74c3c' for v in improvements]
+        demographics = metrics.get('demographics', {})
 
-        improvement_fig.add_trace(go.Bar(
-            x=improvements,
-            y=topics,
-            orientation='h',
-            marker_color=bar_colors,
-            text=[f"{v:+.2f}" for v in improvements],
-            textposition='outside',
-            textfont=dict(size=13)
-        ))
+        if not demographics:
+            st.info("No demographics data available in the JSON yet.")
+        else:
+            location_data   = demographics.get('location', {})
+            heard_data      = demographics.get('heard_about', {})
+            academic_data   = demographics.get('academic_level', {})
 
-        improvement_fig.add_vline(x=0, line_dash="dash", line_color="#adb5bd", line_width=1.5)
+            # ── ROW 1: Location + How They Heard ──────────────────────────────
+            col1, col2 = st.columns(2)
 
-        improvement_fig.update_layout(
-            xaxis_title='Score Change',
-            xaxis=dict(range=[-0.5, 0.8]),
-            height=420,
-            font=dict(family="Epilogue", color="#2c3e50"),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            showlegend=False,
-            margin=dict(l=10, r=40, t=20, b=20)
-        )
+            with col1:
+                st.markdown("#### 📍 Location")
+                if location_data:
+                    fig_loc = go.Figure(data=[go.Pie(
+                        labels=list(location_data.keys()),
+                        values=list(location_data.values()),
+                        hole=0.45,
+                        marker_colors=[
+                            '#006341', '#00843d', '#93c13f',
+                            '#b8d96d', '#d4e89e', '#e9f5c9', '#f4fbe8'
+                        ],
+                        textfont=dict(size=13, family='Epilogue'),
+                        textinfo='label+percent'
+                    )])
+                    fig_loc.update_layout(
+                        height=400,
+                        showlegend=True,
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(family="Epilogue", color="#2c3e50"),
+                        legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02),
+                        margin=dict(l=20, r=120, t=20, b=20)
+                    )
+                    st.plotly_chart(fig_loc, use_container_width=True)
 
-        st.plotly_chart(improvement_fig, use_container_width=True)
+                    # summary callout
+                    top_city = max(location_data, key=location_data.get)
+                    top_pct  = round(location_data[top_city] / sum(location_data.values()) * 100)
+                    st.markdown(
+                        create_kpi_card(
+                            "TOP LOCATION",
+                            "Most Participants From",
+                            top_city,
+                            f"{location_data[top_city]} of {sum(location_data.values())} participants ({top_pct}%)",
+                            "✓ Strong city representation"
+                        ),
+                        unsafe_allow_html=True
+                    )
 
-    # ── RADAR / SPIDER CHART ──────────────────────────────────────────────────
-    st.markdown('<p class="section-title">🕸️ Knowledge Profile</p>', unsafe_allow_html=True)
+            with col2:
+                st.markdown("#### 📣 How Did They Hear About Us?")
+                if heard_data:
+                    heard_labels = list(heard_data.keys())
+                    heard_values = list(heard_data.values())
+                    heard_colors = ['#006341', '#00843d', '#93c13f', '#b8d96d'][:len(heard_labels)]
 
-    radar_fig = go.Figure()
+                    fig_heard = go.Figure(data=[go.Bar(
+                        x=heard_labels,
+                        y=heard_values,
+                        marker_color=heard_colors,
+                        text=heard_values,
+                        textposition='outside',
+                        textfont=dict(size=15, family='Epilogue')
+                    )])
+                    fig_heard.update_layout(
+                        height=380,
+                        yaxis_title='Number of Participants',
+                        yaxis=dict(range=[0, max(heard_values) * 1.25]),
+                        font=dict(family="Epilogue", color="#2c3e50"),
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        showlegend=False,
+                        margin=dict(l=20, r=20, t=20, b=20)
+                    )
+                    st.plotly_chart(fig_heard, use_container_width=True)
 
-    radar_fig.add_trace(go.Scatterpolar(
-        r=pre_scores + [pre_scores[0]],
-        theta=topics + [topics[0]],
-        fill='toself',
-        name='Before Session',
-        line_color='#adb5bd',
-        fillcolor='rgba(173,181,189,0.2)',
-        line_width=2
-    ))
+                    top_channel = max(heard_data, key=heard_data.get)
+                    top_ch_pct  = round(heard_data[top_channel] / sum(heard_data.values()) * 100)
+                    st.markdown(
+                        create_kpi_card(
+                            "TOP CHANNEL",
+                            "Primary Outreach Channel",
+                            top_channel,
+                            f"{heard_data[top_channel]} of {sum(heard_data.values())} participants ({top_ch_pct}%)",
+                            "✓ Effective outreach"
+                        ),
+                        unsafe_allow_html=True
+                    )
 
-    radar_fig.add_trace(go.Scatterpolar(
-        r=post_scores + [post_scores[0]],
-        theta=topics + [topics[0]],
-        fill='toself',
-        name='After Session',
-        line_color='#006341',
-        fillcolor='rgba(0,132,61,0.15)',
-        line_width=2.5
-    ))
+            # ── ROW 2: Academic Level ──────────────────────────────────────────
+            st.markdown("---")
+            st.markdown("#### 🎓 Academic Level")
 
-    radar_fig.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=True, range=[0, 5], tickfont=dict(size=11)),
-            angularaxis=dict(tickfont=dict(size=13, family='Epilogue'))
-        ),
-        showlegend=True,
-        height=460,
-        font=dict(family="Epilogue", color="#2c3e50"),
-        paper_bgcolor='rgba(0,0,0,0)',
-        legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5)
-    )
+            if academic_data:
+                col1, col2 = st.columns([3, 2])
 
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col2:
-        st.plotly_chart(radar_fig, use_container_width=True)
+                with col1:
+                    acad_labels = list(academic_data.keys())
+                    acad_values = list(academic_data.values())
+                    acad_colors = ['#006341', '#00843d', '#93c13f', '#b8d96d'][:len(acad_labels)]
 
-    # ── SURVEY REACH CONTEXT ──────────────────────────────────────────────────
+                    fig_acad = go.Figure(data=[go.Bar(
+                        y=acad_labels,
+                        x=acad_values,
+                        orientation='h',
+                        marker_color=acad_colors,
+                        text=acad_values,
+                        textposition='outside',
+                        textfont=dict(size=15, family='Epilogue')
+                    )])
+                    fig_acad.update_layout(
+                        height=320,
+                        xaxis_title='Number of Participants',
+                        xaxis=dict(range=[0, max(acad_values) * 1.3]),
+                        font=dict(family="Epilogue", color="#2c3e50"),
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        showlegend=False,
+                        margin=dict(l=20, r=60, t=20, b=20)
+                    )
+                    st.plotly_chart(fig_acad, use_container_width=True)
+
+                with col2:
+                    st.markdown("### Summary")
+                    total_acad = sum(acad_values)
+                    for label, val in academic_data.items():
+                        pct = round(val / total_acad * 100)
+                        st.metric(label=label, value=f"{val}", delta=f"{pct}% of cohort")
+
+    # ── ABOUT THIS SESSION ─────────────────────────────────────────────────────
     st.markdown("""
     <div class="info-box">
         <h3>📋 About This Session</h3>
@@ -1123,7 +1278,8 @@ if session_info.get('type') == 'health':
             designed to deepen participants' understanding of Saudi Arabia's health sector landscape, 
             its role in <strong>Vision 2030</strong>, and the skills and job market opportunities 
             it presents. Survey data was collected before and after the session to measure 
-            knowledge growth across four core topic areas.
+            knowledge growth across four core topic areas: Health Sector Knowledge, Vision 2030 
+            Contribution, Job Market Awareness, and In-Demand Skills.
         </p>
     </div>
     """, unsafe_allow_html=True)
