@@ -1,0 +1,199 @@
+{
+  "metrics": {
+    "total_responses": 9,
+    "total_participants_pre": 20,
+    "total_participants_post": 17,
+    "match_rate_pct": 45.0,
+    "grow_members_reporting_growth_pct": 66.7,
+    "grow_avg_knowledge_increase": 0.22,
+    "grow_healthcare_sector": {
+      "pre": 3.44,
+      "post": 3.78,
+      "improvement": 0.33
+    },
+    "grow_healthcare_job_market": {
+      "pre": 3.22,
+      "post": 3.67,
+      "improvement": 0.44
+    },
+    "grow_healthcare_vision2030": {
+      "pre": 4.0,
+      "post": 3.78,
+      "improvement": -0.22
+    },
+    "grow_healthcare_skills_in_demand": {
+      "pre": 3.0,
+      "post": 3.33,
+      "improvement": 0.33
+    },
+    "grow_improvement_distribution": {
+      "significant_improvement_2plus": 0,
+      "moderate_improvement_1to2": 2,
+      "slight_improvement_0to1": 4,
+      "no_change": 1,
+      "decreased": 2
+    },
+    "grow_pre_score_distribution": {
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 7,
+      "score_4": 1,
+      "score_5": 0
+    },
+    "grow_post_score_distribution": {
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 4,
+      "score_4": 4,
+      "score_5": 0
+    },
+    "grow_significant_growth_pct": 55.6,
+    "improvement_stats": {
+      "mean": 0.22,
+      "median": 0.5,
+      "std": 1.0,
+      "min": -1.5,
+      "max": 1.5,
+      "q25": 0.0,
+      "q75": 0.75
+    },
+    "connect_members_planning_action_pct": 77.8,
+    "connect_total_planning_action": 7,
+    "connect_action_plan_distribution": {
+      "Yes": 7,
+      "No": 2
+    },
+    "impact_avg_satisfaction": 4.0,
+    "impact_satisfaction_pct": 66.7,
+    "impact_satisfaction_distribution": {
+      "Satisfied": 3,
+      "Very satisfied": 3,
+      "Neutral": 3
+    },
+    "impact_likely_recommend_pct": 77.8,
+    "impact_recommend_distribution": {
+      "Likely": 4,
+      "Very likely": 3,
+      "Neutral": 2
+    },
+    "impact_people_impacted_estimate": 7,
+    "demographics_location": {
+      "Melbourne": 14,
+      "Canberra": 1,
+      "Other ": 1,
+      "Perth": 1,
+      " New Zealand": 1,
+      "Sydney": 1,
+      "Adelaide": 1
+    },
+    "demographics_academic_level": {
+      "Master\u2019s": 16,
+      "Bachelor\u2019s": 2,
+      "Foundation year": 1,
+      "Doctorate (PhD)": 1
+    },
+    "demographics_heard_about": {
+      "WhatsApp": 10,
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 9,
+      "Other ": 1
+    },
+    "chapter_metrics": {
+      "event_name": "Towards the Vision: Healthcare Specialities with Dr. Ahmed Alshamrani | Saudi Leadership Society \u2013 Australia Chapter",
+      "total_pre_responses": 20,
+      "total_post_responses": 17,
+      "completed_both_surveys": 9,
+      "completion_rate_pct": 45.0,
+      "estimated_engagement_hours": 13.5,
+      "attendance_rate": 45.0
+    }
+  },
+  "visualization_data": {
+    "knowledge_comparison": {
+      "topics": [
+        "Healthcare Sector",
+        "Job Market",
+        "Vision 2030",
+        "Skills in Demand"
+      ],
+      "pre_scores": [
+        3.44,
+        3.22,
+        4.0,
+        3.0
+      ],
+      "post_scores": [
+        3.78,
+        3.67,
+        3.78,
+        3.33
+      ],
+      "improvements": [
+        0.33,
+        0.44,
+        -0.22,
+        0.33
+      ]
+    },
+    "location_data": {
+      "Melbourne": 14,
+      "Canberra": 1,
+      "Other ": 1,
+      "Perth": 1,
+      " New Zealand": 1,
+      "Sydney": 1,
+      "Adelaide": 1
+    },
+    "academic_level_data": {
+      "Master\u2019s": 16,
+      "Bachelor\u2019s": 2,
+      "Foundation year": 1,
+      "Doctorate (PhD)": 1
+    },
+    "heard_about_data": {
+      "WhatsApp": 10,
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 9,
+      "Other ": 1
+    },
+    "satisfaction_data": {
+      "Satisfied": 3,
+      "Very satisfied": 3,
+      "Neutral": 3
+    },
+    "recommend_data": {
+      "Likely": 4,
+      "Very likely": 3,
+      "Neutral": 2
+    },
+    "action_plan_data": {
+      "Yes": 7,
+      "No": 2
+    },
+    "improvement_distribution": {
+      "significant_improvement_2plus": 0,
+      "moderate_improvement_1to2": 2,
+      "slight_improvement_0to1": 4,
+      "no_change": 1,
+      "decreased": 2
+    },
+    "pre_score_distribution": {
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 7,
+      "score_4": 1,
+      "score_5": 0
+    },
+    "post_score_distribution": {
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 4,
+      "score_4": 4,
+      "score_5": 0
+    }
+  },
+  "metadata": {
+    "generated_date": "2026-03-11 12:34:51",
+    "total_participants": 20,
+    "analysis_version": "1.0",
+    "privacy_safe": true
+  }
+}
