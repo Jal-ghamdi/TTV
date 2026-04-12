@@ -1288,26 +1288,38 @@ if session_info.get('type') == 'health':
                         pct = round(val / total_acad * 100)
                         st.metric(label=label, value=f"{val}", delta=f"{pct}% of cohort")
 
-    # ── ABOUT THIS SESSION ─────────────────────────────────────────────────────
-    st.markdown("""
+    
+    st.markdown(f"""
     <div class="info-box">
         <h3>📋 About This Session</h3>
         <p>
-            This Health Sector session is part of the <strong>Towards the Vision</strong> initiative, 
-            designed to deepen participants' understanding of Saudi Arabia's health sector landscape, 
+            This <strong>{selected_session}</strong> session is part of the 
+            <strong>{initiative_info['name']}</strong> initiative, 
+            designed to deepen participants' understanding of the {selected_session} sector landscape, 
             its role in <strong>Vision 2030</strong>, and the skills and job market opportunities 
             it presents. Survey data was collected before and after the session to measure 
-            knowledge growth across four core topic areas: Health Sector Knowledge, Vision 2030 
-            Contribution, Job Market Awareness, and In-Demand Skills.
+            knowledge growth across four core topic areas: {', '.join(topics)}.
         </p>
     </div>
     """, unsafe_allow_html=True)
-
-    # ── FOOTER ────────────────────────────────────────────────────────────────
+    
+    #st.markdown("""
+    #<div class="info-box">
+       # <h3>📋 About This Session</h3>
+       # <p>
+        #    This Health Sector session is part of the <strong>Towards the Vision</strong> initiative, 
+         #   designed to deepen participants' understanding of Saudi Arabia's health sector landscape, 
+         #   its role in <strong>Vision 2030</strong>, and the skills and job market opportunities 
+         #   it presents. Survey data was collected before and after the session to measure 
+         #   knowledge growth across four core topic areas: Health Sector Knowledge, Vision 2030 
+         #   Contribution, Job Market Awareness, and In-Demand Skills.
+       # </p>
+    #</div>
+   # """, unsafe_allow_html=True)
     st.markdown(f"""
     <div class='sls-footer'>
-        <h2>🏥 Health Session</h2>
-        <p class="tagline">Towards the Vision • Australia Chapter</p>
+        <h2>{session_info['icon']} {selected_session}</h2>
+        <p class="tagline">{initiative_info['name']} • Australia Chapter</p>
         <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
             <div>
                 <div style='font-size: 2.5rem; font-weight: 700;'>{metrics['total_participants_pre']}</div>
