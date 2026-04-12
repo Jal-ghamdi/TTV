@@ -53,7 +53,25 @@ INITIATIVES = {
                 "color": "#10b981",
                 "topic_labels": ["Health Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
                 "type": "health"
+            },
+            "Nursing": {
+                "name": "💉 Nursing Session",
+                "data_file": "sls_kpi_data_nursing_session4.json",
+                "icon": "💉",
+                "vision_theme": "Nursing Sector Development",
+                "color": "#0ea5e9",
+                "topic_labels": ["Nursing Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
+                "type": "health"
             }
+            #"Health": {
+               # "name": "🏥 Health Session",
+               # "data_file": "sls_kpi_health_session3_ttv_data_updated.json",
+               # "icon": "🏥",
+               # "vision_theme": "Health Sector Development",
+               # "color": "#10b981",
+               # "topic_labels": ["Health Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
+               # "type": "health"
+            #}
         }
     },
     "Misk Tracks": {
