@@ -60,12 +60,10 @@ INITIATIVES = {
                 "icon": "💉",
                 "vision_theme": "Nursing Sector Development",
                 "color": "#0ea5e9",
-                # NEW — auto-detect first topic key (grow_sector for Health, grow_nursing_knowledge for Nursing)
-                first_key = 'grow_nursing_knowledge' if 'grow_nursing_knowledge' in metrics else 'grow_sector'
-                topic_keys = [first_key, 'grow_vision2030', 'grow_job_market', 'grow_skills']
-                #"topic_labels": ["Nursing Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
+                "topic_keys": ["grow_nursing_knowledge", "grow_vision2030", "grow_job_market", "grow_skills"],
+                "topic_labels": ["Nursing Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
                 "type": "health"
-            }
+        }
             #"Health": {
                # "name": "🏥 Health Session",
                # "data_file": "sls_kpi_health_session3_ttv_data_updated.json",
