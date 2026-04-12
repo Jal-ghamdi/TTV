@@ -1,0 +1,42 @@
+{
+  "metrics": {
+    "total_responses": 5,
+    "total_participants_pre": 19,
+    "total_participants_post": 7,
+    "match_rate_pct": 26.3,
+    "grow_members_reporting_growth_pct": 60.0,
+    "grow_avg_knowledge_increase": 0.55,
+    "grow_sector": {
+      "pre": 3.6,
+      "post": 4.2,
+      "improvement": 0.6
+    },
+    "grow_vision2030": {
+      "pre": 3.6,
+      "post": 4.2,
+      "improvement": 0.6
+    },
+    "grow_job_market": {
+      "pre": 3.4,
+      "post": 4.0,
+      "improvement": 0.6
+    },
+    "grow_skills": {
+      "pre": 3.6,
+      "post": 4.0,
+      "improvement": 0.4
+    },
+    "chapter_metrics": {
+      "total_registered": 145,
+      "target_attendance": 25,
+      "actual_attendees": 42,
+      "estimated_engagement_hours": 1.5
+    }
+  },
+  "metadata": {
+    "generated_date": "2026-04-09 07:03:28",
+    "total_participants": 19,
+    "analysis_version": "1.0",
+    "privacy_safe": true
+  }
+}
