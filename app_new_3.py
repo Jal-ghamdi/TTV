@@ -60,7 +60,10 @@ INITIATIVES = {
                 "icon": "💉",
                 "vision_theme": "Nursing Sector Development",
                 "color": "#0ea5e9",
-                "topic_labels": ["Nursing Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
+                # NEW — auto-detect first topic key (grow_sector for Health, grow_nursing_knowledge for Nursing)
+                first_key = 'grow_nursing_knowledge' if 'grow_nursing_knowledge' in metrics else 'grow_sector'
+                topic_keys = [first_key, 'grow_vision2030', 'grow_job_market', 'grow_skills']
+                #"topic_labels": ["Nursing Sector Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
                 "type": "health"
             }
             #"Health": {
@@ -1158,16 +1161,15 @@ if session_info.get('type') == 'health':
     with tab3:
         st.markdown("### Who Attended?")
 
+        # Support both nested demographics dict (Health) and flat keys (Nursing)
         demographics = metrics.get('demographics', {})
+        location_data  = demographics.get('location', {}) or metrics.get('demographics_location', {})
+        heard_data     = demographics.get('heard_about', {}) or metrics.get('demographics_heard_about', {})
+        academic_data  = demographics.get('academic_level', {})
 
-        if not demographics:
+        if not location_data and not heard_data and not academic_data:
             st.info("No demographics data available in the JSON yet.")
         else:
-            location_data   = demographics.get('location', {})
-            heard_data      = demographics.get('heard_about', {})
-            academic_data   = demographics.get('academic_level', {})
-
-            # ── ROW 1: Location + How They Heard ──────────────────────────────
             col1, col2 = st.columns(2)
 
             with col1:
@@ -1194,14 +1196,11 @@ if session_info.get('type') == 'health':
                     )
                     st.plotly_chart(fig_loc, use_container_width=True)
 
-                    # summary callout
                     top_city = max(location_data, key=location_data.get)
                     top_pct  = round(location_data[top_city] / sum(location_data.values()) * 100)
                     st.markdown(
                         create_kpi_card(
-                            "TOP LOCATION",
-                            "Most Participants From",
-                            top_city,
+                            "TOP LOCATION", "Most Participants From", top_city,
                             f"{location_data[top_city]} of {sum(location_data.values())} participants ({top_pct}%)",
                             "✓ Strong city representation"
                         ),
@@ -1213,7 +1212,7 @@ if session_info.get('type') == 'health':
                 if heard_data:
                     heard_labels = list(heard_data.keys())
                     heard_values = list(heard_data.values())
-                    heard_colors = ['#006341', '#00843d', '#93c13f', '#b8d96d'][:len(heard_labels)]
+                    heard_colors = ['#006341', '#00843d', '#93c13f', '#b8d96d', '#d4e89e'][:len(heard_labels)]
 
                     fig_heard = go.Figure(data=[go.Bar(
                         x=heard_labels,
@@ -1226,12 +1225,12 @@ if session_info.get('type') == 'health':
                     fig_heard.update_layout(
                         height=380,
                         yaxis_title='Number of Participants',
-                        yaxis=dict(range=[0, max(heard_values) * 1.25]),
+                        yaxis=dict(range=[0, max(heard_values) * 1.35]),
                         font=dict(family="Epilogue", color="#2c3e50"),
                         plot_bgcolor='rgba(0,0,0,0)',
                         paper_bgcolor='rgba(0,0,0,0)',
                         showlegend=False,
-                        margin=dict(l=20, r=20, t=20, b=20)
+                        margin=dict(l=20, r=20, t=20, b=60)
                     )
                     st.plotly_chart(fig_heard, use_container_width=True)
 
@@ -1239,55 +1238,42 @@ if session_info.get('type') == 'health':
                     top_ch_pct  = round(heard_data[top_channel] / sum(heard_data.values()) * 100)
                     st.markdown(
                         create_kpi_card(
-                            "TOP CHANNEL",
-                            "Primary Outreach Channel",
-                            top_channel,
+                            "TOP CHANNEL", "Primary Outreach Channel", top_channel,
                             f"{heard_data[top_channel]} of {sum(heard_data.values())} participants ({top_ch_pct}%)",
                             "✓ Effective outreach"
                         ),
                         unsafe_allow_html=True
                     )
 
-            # ── ROW 2: Academic Level ──────────────────────────────────────────
-            st.markdown("---")
-            st.markdown("#### 🎓 Academic Level")
-
+            # Academic level — only shown if data exists (Health has it, Nursing doesn't)
             if academic_data:
+                st.markdown("---")
+                st.markdown("#### 🎓 Academic Level")
                 col1, col2 = st.columns([3, 2])
-
                 with col1:
                     acad_labels = list(academic_data.keys())
                     acad_values = list(academic_data.values())
                     acad_colors = ['#006341', '#00843d', '#93c13f', '#b8d96d'][:len(acad_labels)]
-
                     fig_acad = go.Figure(data=[go.Bar(
-                        y=acad_labels,
-                        x=acad_values,
-                        orientation='h',
-                        marker_color=acad_colors,
-                        text=acad_values,
-                        textposition='outside',
-                        textfont=dict(size=15, family='Epilogue')
+                        y=acad_labels, x=acad_values, orientation='h',
+                        marker_color=acad_colors, text=acad_values,
+                        textposition='outside', textfont=dict(size=15, family='Epilogue')
                     )])
                     fig_acad.update_layout(
-                        height=320,
-                        xaxis_title='Number of Participants',
+                        height=320, xaxis_title='Number of Participants',
                         xaxis=dict(range=[0, max(acad_values) * 1.3]),
                         font=dict(family="Epilogue", color="#2c3e50"),
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        showlegend=False,
-                        margin=dict(l=20, r=60, t=20, b=20)
+                        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                        showlegend=False, margin=dict(l=20, r=60, t=20, b=20)
                     )
                     st.plotly_chart(fig_acad, use_container_width=True)
-
                 with col2:
                     st.markdown("### Summary")
                     total_acad = sum(acad_values)
                     for label, val in academic_data.items():
                         pct = round(val / total_acad * 100)
                         st.metric(label=label, value=f"{val}", delta=f"{pct}% of cohort")
-
+                        
     
     st.markdown(f"""
     <div class="info-box">
