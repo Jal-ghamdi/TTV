@@ -56,7 +56,7 @@ INITIATIVES = {
             },
             "Nursing": {
                 "name": "💉 Nursing Session",
-                "data_file": "sls_kpi_data_nursing_session4.json",
+                "data_file": "sls_kpi_nursing_final.json",
                 "icon": "💉",
                 "vision_theme": "Nursing Sector Development",
                 "color": "#0ea5e9",
