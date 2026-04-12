@@ -1,0 +1,75 @@
+{
+  "metrics": {
+    "total_responses": 5,
+    "total_participants_pre": 19,
+    "total_participants_post": 7,
+    "match_rate_pct": 26.3,
+    "grow_avg_knowledge_increase": 0.55,
+    "grow_members_reporting_growth_pct": 60.0,
+    "grow_nursing_knowledge": {
+      "pre": 3.6,
+      "post": 4.2,
+      "improvement": 0.6
+    },
+    "grow_vision2030": {
+      "pre": 3.6,
+      "post": 4.2,
+      "improvement": 0.6
+    },
+    "grow_job_market": {
+      "pre": 3.4,
+      "post": 4.0,
+      "improvement": 0.6
+    },
+    "grow_skills": {
+      "pre": 3.6,
+      "post": 4.0,
+      "improvement": 0.4
+    },
+    "connect_members_planning_action_pct": 40.0,
+    "connect_action_plan_distribution": {
+      "No": 3,
+      "Yes": 2
+    },
+    "impact_avg_satisfaction": 4.2,
+    "impact_satisfaction_pct": 80.0,
+    "impact_satisfaction_distribution": {
+      "Very satisfied": 2,
+      "Satisfied": 2,
+      "Neutral": 1
+    },
+    "impact_likely_recommend_pct": 80.0,
+    "impact_recommend_distribution": {
+      "Very likely": 3,
+      "Neutral": 1,
+      "Likely": 1
+    },
+    "demographics_location": {
+      "Melbourne": 13,
+      "Sydney": 3,
+      "Adelaide": 1,
+      "Other ": 1,
+      "Canberra": 1
+    },
+    "demographics_heard_about": {
+      "WhatsApp": 9,
+      "SACM (Saudi Arabian Cultural Mission in Australia)": 8,
+      "Saudi Leadership Society Social Media": 1,
+      "Other": 1
+    },
+    "chapter_metrics": {
+      "event_name": "Towards the Vision: Healthcare Sector - Nursing with Dr Ahmad Hawsawi | Saudi Leadership Society \u2013 Australia Chapter",
+      "total_pre_responses": 19,
+      "total_post_responses": 7,
+      "completed_both_surveys": 5,
+      "completion_rate_pct": 26.3,
+      "estimated_engagement_hours": 7.5,
+      "attendance_rate": 26.3
+    }
+  },
+  "metadata": {
+    "generated_date": "2026-04-12 11:09:33",
+    "analysis_version": "final",
+    "privacy_safe": true
+  }
+}
