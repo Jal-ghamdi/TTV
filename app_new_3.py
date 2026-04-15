@@ -994,7 +994,7 @@ if session_info.get('type') == 'lnc':
             f"{pre['atmosphere']['Comfortable\n& friendly']} people felt comfortable",
             f"{post['atmosphere']['Comfortable\n& friendly']} people felt comfortable",
             "#6b7280", "#0d3b6e", "%",
-            "Comfortable\n& friendl"
+            "Comfortable\n& friendly"
         ), unsafe_allow_html=True)
 
         c1, c2 = st.columns(2)
