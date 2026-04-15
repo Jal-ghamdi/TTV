@@ -100,7 +100,24 @@ INITIATIVES = {
                 "type": "comprehensive"
             }
         }
+    },
+    "Leaders Network Circles": {
+    "name": "Leaders Network Circles",
+    "icon": "🔗",
+    "description": "Professional networking circles connecting Saudi health students and professionals in Australia across Growth, Connection, and Impact circles — aligned with Vision 2030.",
+    "color": "#0d3b6e",
+    "sessions": {
+        "Health Sector Session 1": {
+            "name": "🏥 Health Sector — Session 1",
+            "data_file": "lnc_health_session1_data.json",
+            "icon": "🏥",
+            "vision_theme": "Professional Networking & Career Development",
+            "color": "#0d3b6e",
+            "topic_labels": [],
+            "type": "lnc"
+        }
     }
+}
 }
 
 # ============================================================================
@@ -864,6 +881,382 @@ if data is None:
     st.error(f"Could not load data.")
     st.stop()
 
+
+
+# =====================================
+# LEADERS NETWORK CIRCLES 
+# =====================================
+# ============================================================================
+# LEADERS NETWORK CIRCLES DASHBOARD
+# ============================================================================
+if session_info.get('type') == 'lnc':
+
+    # ── HARD-CODED SURVEY DATA (27 respondents, pre + post) ──────────────────
+    lnc = {
+        "participants": 27,
+        "pre": {
+            "registration_excellent_pct": 77.8,
+            "atmosphere_comfortable_pct": 63.0,
+            "atmosphere_overwhelming_pct": 22.2,
+            "experience_very_good_pct": 66.7,
+            "nps_promoters": 12, "nps_passives": 9, "nps_detractors": 6,
+            "confidence": {
+                "Extremely confident": 12,
+                "Somewhat confident": 5,
+                "Neutral": 9,
+                "Somewhat not confident": 1,
+                "Extremely not confident": 0
+            },
+            "barriers": {
+                "Difficulty finding relevant people": 10,
+                "Not knowing how to start conversations": 8,
+                "Shyness / anxiety": 6,
+                "Other": 3
+            },
+            "goals": {
+                "Friendships": 20, "Professional network": 21,
+                "Mentor": 13, "Research / projects": 10, "Saudi community": 14
+            },
+            "connection_targets": {"1-2": 8, "3-5": 9, "6-9": 5, "10-12": 2, "12+": 3},
+            "heard_about": {
+                "Friend/colleague referral": 13, "WhatsApp": 10,
+                "Other": 2, "Snapchat": 2, "LinkedIn": 0
+            }
+        },
+        "post": {
+            "format_excellent_pct": 85.2,
+            "atmosphere_comfortable_pct": 85.2,
+            "atmosphere_overwhelming_pct": 0,
+            "experience_very_good_pct": 88.9,
+            "nps_promoters": 17, "nps_passives": 8, "nps_detractors": 2,
+            "confidence_improved_significantly": 19,
+            "confidence_improved_slightly": 7,
+            "confidence_no_change": 1,
+            "network_expanded_significantly_pct": 66.7,
+            "network_expanded_moderately_pct": 22.2,
+            "career_opps_yes_pct": 51.9,
+            "career_opps_possibly_pct": 22.2,
+            "business_opps_significantly": 15,
+            "research_opps_yes": 8, "research_opps_maybe": 11, "research_opps_no": 8,
+            "recommend_highly_pct": 74.1,
+            "recommend_slightly_pct": 18.5,
+            "linkedin_connections": {"1-2": 3, "3-5": 9, "6-9": 9, "10-12": 4, "12+": 2},
+            "meaningful_connections": {"1-2": 9, "3-5": 8, "6-9": 5, "10-12": 2, "12+": 3},
+            "goals_achieved": {
+                "Friendships": 22, "Professional network": 24,
+                "Mentor": 9, "Research / projects": 9, "Saudi community": 15
+            },
+            "barriers_overcome": {
+                "Difficulty finding relevant people": 9,
+                "Not knowing how to start conversations": 8,
+                "Shyness / anxiety": 6, "Other": 4
+            },
+            "circles_helped": {
+                "Easier to engage": 20,
+                "Better health sector understanding": 16,
+                "Insights into future of health sector": 15,
+                "Identified skills to develop": 9,
+                "Not helpful": 3
+            },
+            "compared_to_other_events": {
+                "First event": 9, "Much better": 6, "Somewhat better": 7,
+                "About the same": 4, "Needs improvement": 1
+            }
+        }
+    }
+
+    p = lnc["pre"]
+    q = lnc["post"]
+    N = lnc["participants"]
+
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subsection-title">Reach & Engagement</p>', unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(create_kpi_card("REACH", "Total Participants", str(N),
+            "Attended & completed both surveys",
+            "✓ 100% survey completion"), unsafe_allow_html=True)
+    with col2:
+        st.markdown(create_kpi_card("FORMAT", "Circles Format Rating",
+            f"{q['format_excellent_pct']:.0f}%",
+            "Rated Excellent",
+            "✓ Up from Very Good pre-event"), unsafe_allow_html=True)
+    with col3:
+        nps_pre  = round((p['nps_promoters'] - p['nps_detractors']) / N * 100)
+        nps_post = round((q['nps_promoters'] - q['nps_detractors']) / N * 100)
+        st.markdown(create_kpi_card("NPS", "Net Promoter Score",
+            f"{nps_post}",
+            f"Post-event (was {nps_pre} pre-event)",
+            f"✓ +{nps_post - nps_pre} point improvement"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Networking Outcomes</p>', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        conf_pct = round((q['confidence_improved_significantly'] + q['confidence_improved_slightly']) / N * 100)
+        st.markdown(create_kpi_card("CONFIDENCE", "Confidence Boosted",
+            f"{conf_pct}%",
+            f"{q['confidence_improved_significantly']} significantly, {q['confidence_improved_slightly']} slightly",
+            "✓ Strong impact"), unsafe_allow_html=True)
+    with col2:
+        career_pct = round((q['career_opps_yes_pct'] + q['career_opps_possibly_pct']))
+        st.markdown(create_kpi_card("CAREERS", "Career Opportunities",
+            f"{career_pct:.0f}%",
+            "Identified definite or possible career opps",
+            "✓ High value"), unsafe_allow_html=True)
+    with col3:
+        rec_pct = q['recommend_highly_pct'] + q['recommend_slightly_pct']
+        st.markdown(create_kpi_card("ADVOCACY", "Would Recommend",
+            f"{rec_pct:.0f}%",
+            f"{round(q['recommend_highly_pct']*N/100)} highly recommend",
+            "✓ Outstanding word-of-mouth"), unsafe_allow_html=True)
+
+    # ── HIGHLIGHT BOX ─────────────────────────────────────────────────────────
+    achievements = [
+        f"{q['format_excellent_pct']:.0f}% rated the Circles networking format as Excellent",
+        f"Professional network expansion exceeded intent: 21 aimed → 24 achieved",
+        f"Atmosphere anxiety dropped from 22% to 0% — format removed the awkwardness",
+        f"NPS improved from {nps_pre} to {nps_post} — a {nps_post-nps_pre} point jump",
+        f"{round(q['confidence_improved_significantly']/N*100)}% significantly improved their networking confidence"
+    ]
+    st.markdown(f"""
+    <div class="highlight-box">
+        <h3>✨ Leaders Network Circles — Session Highlights</h3>
+        <ul>{''.join([f'<li>{a}</li>' for a in achievements])}</ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── DETAILED TABS ──────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Detailed Analysis</p>', unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "🌐 Experience", "🤝 Connections", "💼 Outcomes", "👥 Demographics"
+    ])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("### Atmosphere — Before vs After")
+            atm_fig = go.Figure()
+            atm_labels = ["Comfortable & friendly", "Professional & organized", "Overwhelming"]
+            atm_pre  = [17, 11, 6]
+            atm_post = [23, 11, 0]
+            atm_fig.add_trace(go.Bar(name='Before', x=atm_labels, y=atm_pre,
+                marker_color='#e9ecef', text=atm_pre, textposition='outside'))
+            atm_fig.add_trace(go.Bar(name='After', x=atm_labels, y=atm_post,
+                marker_color='#0d3b6e', text=atm_post, textposition='outside'))
+            atm_fig.update_layout(barmode='group', height=360, yaxis=dict(range=[0,30]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5))
+            st.plotly_chart(atm_fig, use_container_width=True)
+        with col2:
+            st.markdown("### Overall Experience")
+            exp_fig = go.Figure(data=[go.Bar(
+                x=["Very Good", "Average", "Below Avg", "Very Poor"],
+                y=[18, 9, 0, 0],
+                name="Before",
+                marker_color="#e9ecef",
+                text=[18,9,0,0], textposition='outside'
+            )])
+            exp_fig.add_trace(go.Bar(
+                x=["Very Good", "Average", "Below Avg", "Very Poor"],
+                y=[24, 2, 0, 1],
+                name="After",
+                marker_color="#0d3b6e",
+                text=[24,2,0,1], textposition='outside'
+            ))
+            exp_fig.update_layout(barmode='group', height=360, yaxis=dict(range=[0,30]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5))
+            st.plotly_chart(exp_fig, use_container_width=True)
+
+        st.markdown("### NPS Shift")
+        nps_fig = go.Figure(data=[go.Bar(
+            x=["Promoters", "Passives", "Detractors"],
+            y=[p['nps_promoters'], p['nps_passives'], p['nps_detractors']],
+            name="Before", marker_color=["#93c13f","#f39c12","#e74c3c"],
+            text=[p['nps_promoters'], p['nps_passives'], p['nps_detractors']],
+            textposition='outside'
+        )])
+        nps_fig.add_trace(go.Bar(
+            x=["Promoters", "Passives", "Detractors"],
+            y=[q['nps_promoters'], q['nps_passives'], q['nps_detractors']],
+            name="After", marker_color=["#006341","#e67e22","#c0392b"],
+            text=[q['nps_promoters'], q['nps_passives'], q['nps_detractors']],
+            textposition='outside'
+        ))
+        nps_fig.update_layout(barmode='group', height=350, yaxis=dict(range=[0,25]),
+            font=dict(family="Epilogue", color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5))
+        st.plotly_chart(nps_fig, use_container_width=True)
+
+    with tab2:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("### LinkedIn Connections Made")
+            li_labels = list(q['linkedin_connections'].keys())
+            li_vals   = list(q['linkedin_connections'].values())
+            li_fig = go.Figure(data=[go.Bar(
+                x=li_labels, y=li_vals, marker_color='#0d3b6e',
+                text=li_vals, textposition='outside'
+            )])
+            li_fig.update_layout(height=300, yaxis=dict(range=[0,12]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            st.plotly_chart(li_fig, use_container_width=True)
+        with col2:
+            st.markdown("### Meaningful Connections")
+            mc_labels = list(q['meaningful_connections'].keys())
+            mc_vals   = list(q['meaningful_connections'].values())
+            mc_fig = go.Figure(data=[go.Bar(
+                x=mc_labels, y=mc_vals, marker_color='#006341',
+                text=mc_vals, textposition='outside'
+            )])
+            mc_fig.update_layout(height=300, yaxis=dict(range=[0,12]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            st.plotly_chart(mc_fig, use_container_width=True)
+
+        st.markdown("### Goals: Intended vs Achieved")
+        goals_labels = list(p['goals'].keys())
+        goals_pre  = list(p['goals'].values())
+        goals_post = list(q['goals_achieved'].values())
+        gf = go.Figure()
+        gf.add_trace(go.Bar(name='Intended (pre)', x=goals_labels, y=goals_pre,
+            marker_color='#e9ecef', text=goals_pre, textposition='outside'))
+        gf.add_trace(go.Bar(name='Achieved (post)', x=goals_labels, y=goals_post,
+            marker_color='#0d3b6e', text=goals_post, textposition='outside'))
+        gf.update_layout(barmode='group', height=380, yaxis=dict(range=[0,30]),
+            font=dict(family="Epilogue", color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5))
+        st.plotly_chart(gf, use_container_width=True)
+
+        st.markdown("### Confidence Impact")
+        conf_labels = ["Significantly improved", "Slightly improved", "No change"]
+        conf_vals   = [q['confidence_improved_significantly'], q['confidence_improved_slightly'], q['confidence_no_change']]
+        cf = go.Figure(data=[go.Pie(
+            labels=conf_labels, values=conf_vals, hole=0.5,
+            marker_colors=['#0d3b6e','#378add','#e9ecef'],
+            textfont=dict(size=13)
+        )])
+        cf.update_layout(height=380, paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5))
+        st.plotly_chart(cf, use_container_width=True)
+
+    with tab3:
+        st.markdown("### Career & Professional Outcomes")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### Career Opportunities Identified")
+            career_fig = go.Figure(data=[go.Pie(
+                labels=["Yes, definitely","Possibly","Not at this stage"],
+                values=[14, 6, 7], hole=0.5,
+                marker_colors=['#006341','#93c13f','#e9ecef'],
+                textfont=dict(size=13)
+            )])
+            career_fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
+            st.plotly_chart(career_fig, use_container_width=True)
+        with col2:
+            st.markdown("#### Research/Project Opportunities")
+            res_fig = go.Figure(data=[go.Pie(
+                labels=["Yes","Maybe","No"],
+                values=[8, 11, 8], hole=0.5,
+                marker_colors=['#0d3b6e','#85B7EB','#e9ecef'],
+                textfont=dict(size=13)
+            )])
+            res_fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
+            st.plotly_chart(res_fig, use_container_width=True)
+
+        st.markdown("### How Circles Format Helped")
+        circles_labels = list(q['circles_helped'].keys())
+        circles_vals   = list(q['circles_helped'].values())
+        cf2 = go.Figure(data=[go.Bar(
+            y=circles_labels, x=circles_vals, orientation='h',
+            marker_color=['#006341','#0d3b6e','#378add','#85B7EB','#e9ecef'],
+            text=circles_vals, textposition='outside'
+        )])
+        cf2.update_layout(height=300, xaxis=dict(range=[0,25]),
+            font=dict(family="Epilogue", color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False,
+            margin=dict(l=10, r=40, t=10, b=20))
+        st.plotly_chart(cf2, use_container_width=True)
+
+        st.markdown("### How This Compared to Other Events")
+        comp_labels = list(q['compared_to_other_events'].keys())
+        comp_vals   = list(q['compared_to_other_events'].values())
+        comp_colors = ['#e9ecef','#006341','#00843d','#93c13f','#e74c3c']
+        comp_fig = go.Figure(data=[go.Bar(
+            x=comp_labels, y=comp_vals,
+            marker_color=comp_colors, text=comp_vals, textposition='outside'
+        )])
+        comp_fig.update_layout(height=320, yaxis=dict(range=[0,12]),
+            font=dict(family="Epilogue", color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+        st.plotly_chart(comp_fig, use_container_width=True)
+
+    with tab4:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### How Did They Hear About Us?")
+            heard_fig = go.Figure(data=[go.Bar(
+                x=list(p['heard_about'].keys()),
+                y=list(p['heard_about'].values()),
+                marker_color=['#0d3b6e','#378add','#85B7EB','#B5D4F4','#e9ecef'],
+                text=list(p['heard_about'].values()), textposition='outside'
+            )])
+            heard_fig.update_layout(height=350, yaxis=dict(range=[0,16]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            st.plotly_chart(heard_fig, use_container_width=True)
+        with col2:
+            st.markdown("#### Pre-Event Confidence Level")
+            conf_pre_fig = go.Figure(data=[go.Bar(
+                x=list(p['confidence'].keys()),
+                y=list(p['confidence'].values()),
+                marker_color=['#006341','#00843d','#93c13f','#f39c12','#e9ecef'],
+                text=list(p['confidence'].values()), textposition='outside'
+            )])
+            conf_pre_fig.update_layout(height=350, yaxis=dict(range=[0,15]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            st.plotly_chart(conf_pre_fig, use_container_width=True)
+
+    st.markdown(f"""
+    <div class="info-box">
+        <h3>📋 About Leaders Network Circles</h3>
+        <p>
+            Leaders Network Circles is the <strong>third initiative</strong> of the Saudi Leadership Society Australia Chapter.
+            It brings together Saudi health students and professionals through a structured circle-rotation format — 
+            six short rounds of small-group conversations across three circles: <strong>Growth, Connection, and Impact</strong>.
+            Participants build genuine relationships, explore career pathways, and strengthen the Saudi health 
+            community abroad — all aligned with <strong>Vision 2030</strong>'s health sector goals.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class='sls-footer'>
+        <h2>🔗 Leaders Network Circles</h2>
+        <p class="tagline">Health Sector Session 1 • Australia Chapter</p>
+        <div style='display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; flex-wrap: wrap; position: relative; z-index: 1;'>
+            <div><div style='font-size: 2.5rem; font-weight: 700;'>{N}</div><div style='opacity: 0.8;'>Participants</div></div>
+            <div><div style='font-size: 2.5rem; font-weight: 700;'>85%</div><div style='opacity: 0.8;'>Excellent rating</div></div>
+            <div><div style='font-size: 2.5rem; font-weight: 700;'>+{nps_post-nps_pre}</div><div style='opacity: 0.8;'>NPS increase</div></div>
+            <div><div style='font-size: 2.5rem; font-weight: 700;'>74%</div><div style='opacity: 0.8;'>Career opps found</div></div>
+        </div>
+        <p style='font-size: 1.1rem; margin-top: 2rem; opacity: 0.9; position: relative; z-index: 1;'><strong>Grow • Connect • Impact</strong></p>
+        <p style='font-size: 0.9rem; opacity: 0.7; margin-top: 1rem; position: relative; z-index: 1;'>{datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
 # ============================================================================
 # HEALTH SESSION DASHBOARD
 # ============================================================================
