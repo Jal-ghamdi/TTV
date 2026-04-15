@@ -770,8 +770,12 @@ if st.session_state.selected_initiative is None:
         </p>
     </div>
     """, unsafe_allow_html=True)
+    st.markdown(
+    '<p class="section-title" style="color:white; font-size:24px; font-weight:bold;">🌟 Select an Initiative</p>',
+    unsafe_allow_html=True
+)
     
-    st.markdown('<p class="section-title">🌟 Select an Initiative</p>', unsafe_allow_html=True)
+    #st.markdown('<p class="section-title">🌟 Select an Initiative</p>', unsafe_allow_html=True)
     
     cols = st.columns(len(INITIATIVES))
     
