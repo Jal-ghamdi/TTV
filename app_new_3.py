@@ -873,7 +873,9 @@ if session_info.get('type') == 'health':
     topics = session_info['topic_labels']
 
     # Map the four topic keys in order to their nested metric dicts
-    topic_keys = ['grow_sector', 'grow_vision2030', 'grow_job_market', 'grow_skills']
+    # Auto-detect first topic key — 'grow_sector' for Health, 'grow_nursing_knowledge' for Nursing
+    topic_keys = session_info.get('topic_keys', ['grow_sector', 'grow_vision2030', 'grow_job_market', 'grow_skills'])
+    #topic_keys = ['grow_sector', 'grow_vision2030', 'grow_job_market', 'grow_skills']
     topic_data = [metrics.get(k, {}) for k in topic_keys]
 
     pre_scores   = [t.get('pre', 0)         for t in topic_data]
