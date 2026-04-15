@@ -991,7 +991,7 @@ if session_info.get('type') == 'lnc':
         st.markdown(compare_band(
             round(pre['atmosphere']['Comfortable\n& friendly']/N*100),
             round(post['atmosphere']['Comfortable\n& friendly']/N*100),
-            f"{pre['atmosphere']['Comfortable & friendly'.replace(chr(10),' ')]} people felt comfortable",
+            f"{pre['atmosphere']['Comfortable\n& friendly'.replace(chr(10),' ')]} people felt comfortable",
             f"{post['atmosphere']['Comfortable\n& friendly']} people felt comfortable",
             "#6b7280", "#0d3b6e", "%",
             "Comfortable\n& friendl"
