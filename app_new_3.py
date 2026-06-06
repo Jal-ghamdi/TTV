@@ -2504,8 +2504,7 @@ if session_info.get('type') == 'lnc_combined':
             <strong>Leaders Network Circles — Health Sector (Session 1)</strong>
             and <strong>Technology Sector (Session 1)</strong> into a single
             programme-level view. All metrics are combined raw counts or
-            weighted averages across both sessions, giving a holistic picture
-            of the LNC programme's overall reach, quality, and impact.
+            weighted averages across both sessions.
             <br><br>
             <strong>Total reach:</strong> {n_pre} pre-event · {n_post} post-event
             across Health and Technology sectors in Australia —
