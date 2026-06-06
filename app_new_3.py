@@ -2507,8 +2507,7 @@ if session_info.get('type') == 'lnc_combined':
             weighted averages across both sessions.
             <br><br>
             <strong>Total reach:</strong> {n_pre} pre-event · {n_post} post-event
-            across Health and Technology sectors in Australia —
-            all aligned with <strong>Vision 2030</strong>.
+            across Health and Technology sectors in Australia.
         </p>
     </div>
     """.format(n_pre=N_total_pre, n_post=N_total_post), unsafe_allow_html=True)
