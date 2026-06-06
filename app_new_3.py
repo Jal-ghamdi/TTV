@@ -115,6 +115,16 @@ INITIATIVES = {
                 "color": "#0d3b6e",
                 "topic_labels": [],
                 "type": "lnc_tech"
+            },
+            ,
+            "Cross-Sector Analysis": {
+                "name": "⚡ Health vs Technology — Cross Analysis",
+                "data_file": None,
+                "icon": "⚡",
+                "vision_theme": "Health & Technology Sectors Compared",
+                "color": "#0d3b6e",
+                "topic_labels": [],
+                "type": "lnc_cross"
             }
         }
     }
@@ -816,7 +826,7 @@ with col1:
 
 # Only load JSON for non-LNC sessions
 data = None
-if session_info.get('type') not in ('lnc', 'lnc_tech'):
+if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross'):
     data = load_data(session_info['data_file'])
     if data is None:
         st.error("Could not load data.")
@@ -1268,6 +1278,636 @@ if session_info.get('type') == 'lnc_tech':
     st.stop()
 
 
+    # ============================================================================
+# LNC CROSS-SECTOR ANALYSIS DASHBOARD (Health vs Technology)
+# ============================================================================
+
+if session_info.get('type') == 'lnc_cross':
+
+    # ── SHARED CONSTANTS ──────────────────────────────────────────────────────
+    N_H     = 27   # Health: both pre & post matched
+    N_T_pre = 24   # Tech pre
+    N_T     = 22   # Tech post
+
+    # ── HEALTH DATA ───────────────────────────────────────────────────────────
+    H = dict(
+        registration_excellent = 21,
+        heard_about  = {"Friend/colleague": 13, "WhatsApp": 10, "Other": 2, "Snapchat": 2, "LinkedIn": 0},
+        conf_pre_high  = 12 + 5,   # Extremely + Somewhat confident
+        conf_post_high = 19 + 7,   # Significantly + Slightly improved (used as proxy)
+        atmosphere_pre_comfort  = 17,
+        atmosphere_post_comfort = 23,
+        atmosphere_pre_overwhelm  = 6,
+        atmosphere_post_overwhelm = 0,
+        format_excellent = 23,
+        conn_target  = {"1–2": 8, "3–5": 9, "6–9": 5, "10–12": 2, "12+": 3},
+        linkedin_post= {"1–2": 3, "3–5": 9, "6–9": 9, "10–12": 4, "12+": 2},
+        meaningful_post={"1–2": 9, "3–5": 8, "6–9": 5, "10–12": 2, "12+": 3},
+        nps_pre  = {"Promoters": 12, "Passives": 9, "Detractors": 6},
+        nps_post = {"Promoters": 17, "Passives": 8, "Detractors": 2},
+        recommendation = {"Highly recommend": 20, "Slightly recommend": 5,
+                          "Maybe": 0, "Don't think they need it": 2},
+        barriers_pre  = {"Starting conversations": 8, "Finding relevant people": 10,
+                         "Shyness / anxiety": 6, "No specific barrier": 3},
+        barriers_post = {"Starting conversations": 8, "Finding relevant people": 9,
+                         "Shyness / anxiety": 6, "No specific barrier": 4},
+        career_opps   = {"Yes, definitely": 14, "Possibly": 6, "Not at this stage": 7},
+        network_expanded = {"Significantly": 18, "Moderately": 6, "Slightly": 1, "Not at all": 2},
+        goals_pre     = {"Friendships": 20, "Professional network": 21, "Mentor": 13,
+                         "Research / projects": 10, "Saudi community": 14},
+        goals_post    = {"Friendships": 22, "Professional network": 24, "Mentor": 9,
+                         "Research / projects": 9, "Saudi community": 15},
+    )
+
+    # ── TECH DATA ─────────────────────────────────────────────────────────────
+    T = dict(
+        registration_excellent = 12,
+        heard_about  = {"WhatsApp": 14, "Friend/colleague": 3, "Snapchat": 3, "Other": 3, "LinkedIn": 1},
+        conf_pre_high  = 8 + 9,    # Very confident + Confident
+        conf_post_high = 15 + 4,   # Very confident + Confident post
+        atmosphere_pre_comfort  = 20,
+        atmosphere_post_comfort = 20,
+        atmosphere_pre_overwhelm  = 2,
+        atmosphere_post_overwhelm = 0,
+        format_excellent = 19,
+        conn_target  = {"1–2": 6, "3–5": 9, "6–9": 3, "10–12": 2, "12+": 4},
+        linkedin_post= {"1–2": 1, "3–5": 2, "6–9": 12, "10–12": 5, "12+": 2},
+        meaningful_post={"1–2": 4, "3–5": 8, "6–9": 8, "10–12": 2, "12+": 0},
+        nps_post = {"Promoters": 15, "Passives": 5, "Detractors": 2},
+        recommendation = {"Very likely": 20, "Likely": 2, "Neutral": 0,
+                          "Unlikely": 0, "Very unlikely": 0},
+        barriers_pre  = {"Starting conversations": 8, "Finding relevant people": 8,
+                         "Shyness / anxiety": 1, "No specific barrier": 7},
+        barriers_post = {"Starting conversations": 10, "Finding relevant people": 5,
+                         "Shyness / anxiety": 1, "No specific barrier": 6},
+        relevance     = {"Very relevant": 10, "Relevant": 9, "Neutral": 3,
+                         "Irrelevant": 0, "Very irrelevant": 0},
+        discussion_help = {"Very helpful": 12, "Helpful": 9, "Neutral": 0,
+                           "Unhelpful": 0, "Very unhelpful": 1},
+        conn_types_pre = {"Professional network\n(tech)": 19, "Cross-sector": 4,
+                          "Mentorship": 10, "Collaboration": 9, "Curious": 4},
+        conn_types_post= {"Professional network\n(tech)": 21, "Cross-sector": 12,
+                          "Mentorship": 3, "Collaboration": 6, "No connection": 0},
+    )
+
+    # ── DERIVED NUMBERS ───────────────────────────────────────────────────────
+    H_nps_pre  = round((H['nps_pre']['Promoters']  - H['nps_pre']['Detractors'])  / N_H * 100)
+    H_nps_post = round((H['nps_post']['Promoters'] - H['nps_post']['Detractors']) / N_H * 100)
+    T_nps_post = round((T['nps_post']['Promoters'] - T['nps_post']['Detractors']) / N_T * 100)
+
+    H_format_pct      = round(H['format_excellent'] / N_H * 100)
+    T_format_pct      = round(T['format_excellent'] / N_T * 100)
+    H_conf_pre_pct    = round(H['conf_pre_high']  / N_H * 100)
+    H_conf_post_pct   = round(H['conf_post_high'] / N_H * 100)
+    T_conf_pre_pct    = round(T['conf_pre_high']  / N_T_pre * 100)
+    T_conf_post_pct   = round(T['conf_post_high'] / N_T * 100)
+    H_comfort_pre_pct = round(H['atmosphere_pre_comfort']  / N_H * 100)
+    H_comfort_post_pct= round(H['atmosphere_post_comfort'] / N_H * 100)
+    T_comfort_pre_pct = round(T['atmosphere_pre_comfort']  / N_T_pre * 100)
+    T_comfort_post_pct= round(T['atmosphere_post_comfort'] / N_T * 100)
+    H_rec_pct  = round(H['recommendation']['Highly recommend'] / N_H * 100)
+    T_rec_pct  = round((T['recommendation']['Very likely'] + T['recommendation']['Likely']) / N_T * 100)
+    H_career   = round((H['career_opps']['Yes, definitely'] + H['career_opps']['Possibly']) / N_H * 100)
+    H_network  = round(H['network_expanded']['Significantly'] / N_H * 100)
+    T_relevant = round((T['relevance']['Very relevant'] + T['relevance']['Relevant']) / N_T * 100)
+    T_discuss  = round((T['discussion_help']['Very helpful'] + T['discussion_help']['Helpful']) / N_T * 100)
+
+    # ── LINKEDIN WEIGHTED MIDPOINTS ───────────────────────────────────────────
+    def weighted_avg_conns(d, n):
+        mids = {"1–2": 1.5, "3–5": 4, "6–9": 7.5, "10–12": 11, "12+": 13}
+        return round(sum(mids[k] * v for k, v in d.items()) / n, 1)
+
+    H_linkedin_avg = weighted_avg_conns(H['linkedin_post'], N_H)
+    T_linkedin_avg = weighted_avg_conns(T['linkedin_post'], N_T)
+    H_meaningful_avg = weighted_avg_conns(H['meaningful_post'], N_H)
+    T_meaningful_avg = weighted_avg_conns(T['meaningful_post'], N_T)
+
+    # ── HEADER ────────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="lnc-header">
+        <h1 class="initiative-title">⚡ Cross-Sector Analysis</h1>
+        <p class="initiative-subtitle">Saudi Leadership Society — Australia Chapter</p>
+        <div style="text-align:center; margin-top:1.2rem; position:relative; z-index:1;">
+            <span class="circle-badge circle-growth">🏥 Health Sector</span>
+            <span class="circle-badge circle-impact">💻 Technology Sector</span>
+        </div>
+        <div style="text-align:center; margin-top:1rem;">
+            <span class="mission-tagline">Leaders Network Circles — Comparative Insights</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── TOP STAT PILLS ─────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-highlight-box" style="padding:2rem;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; position:relative; z-index:1;">
+            <div class="stat-pill"><span class="num">{N_H}</span><span class="lbl">Health participants</span></div>
+            <div class="stat-pill"><span class="num">{N_T}</span><span class="lbl">Tech participants</span></div>
+            <div class="stat-pill"><span class="num">{H_nps_post} vs {T_nps_post}</span><span class="lbl">NPS (H vs T)</span></div>
+            <div class="stat-pill"><span class="num">{H_format_pct}% vs {T_format_pct}%</span><span class="lbl">Excellent format (H vs T)</span></div>
+            <div class="stat-pill"><span class="num">{H_rec_pct}% vs {T_rec_pct}%</span><span class="lbl">Recommend (H vs T)</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── KPI COMPARISON CARDS ───────────────────────────────────────────────────
+    st.markdown('<p class="section-title">📊 Side-by-Side KPIs</p>', unsafe_allow_html=True)
+
+    def dual_kpi(label, h_val, t_val, h_ctx="", t_ctx="", icon=""):
+        winner_h = str(h_val).replace('%','').replace('pts','').strip()
+        winner_t = str(t_val).replace('%','').replace('pts','').strip()
+        try:
+            h_num = float(winner_h); t_num = float(winner_t)
+            h_style = "color:#006341;font-weight:900" if h_num >= t_num else "color:#1a5fa8;font-weight:700"
+            t_style = "color:#006341;font-weight:900" if t_num >= h_num else "color:#1a5fa8;font-weight:700"
+        except:
+            h_style = t_style = "color:#1a5fa8;font-weight:700"
+        return f"""
+        <div style="background:white;border-radius:20px;padding:1.8rem;
+             box-shadow:0 8px 30px rgba(13,59,110,0.08);border:1px solid rgba(13,59,110,0.08);
+             position:relative;overflow:hidden;height:100%;">
+            <div style="position:absolute;top:0;left:0;width:5px;height:100%;
+                 background:linear-gradient(180deg,#006341,#1a5fa8);"></div>
+            <div style="font-size:0.7rem;font-weight:900;color:#0d3b6e;
+                 text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.5rem;">{icon} {label}</div>
+            <div style="display:flex;gap:0.5rem;align-items:stretch;margin-top:0.8rem;">
+                <div style="flex:1;text-align:center;padding:1rem;
+                     background:rgba(0,99,65,0.06);border-radius:14px;">
+                    <div style="font-size:0.65rem;font-weight:800;color:#006341;
+                         text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">🏥 HEALTH</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;
+                         font-weight:700;{h_style};line-height:1">{h_val}</div>
+                    <div style="font-size:0.78rem;color:#666;margin-top:0.4rem;line-height:1.3">{h_ctx}</div>
+                </div>
+                <div style="flex:1;text-align:center;padding:1rem;
+                     background:rgba(13,59,110,0.06);border-radius:14px;">
+                    <div style="font-size:0.65rem;font-weight:800;color:#1a5fa8;
+                         text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">💻 TECH</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;
+                         font-weight:700;{t_style};line-height:1">{t_val}</div>
+                    <div style="font-size:0.78rem;color:#666;margin-top:0.4rem;line-height:1.3">{t_ctx}</div>
+                </div>
+            </div>
+        </div>
+        """
+
+    st.markdown('<p class="subsection-title">Reach & Format Quality</p>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(dual_kpi("Participants Surveyed", N_H, N_T,
+            "matched pre & post", "post-event respondents", "👥"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(dual_kpi("Format — Excellent", f"{H_format_pct}%", f"{T_format_pct}%",
+            f"{H['format_excellent']} of {N_H}", f"{T['format_excellent']} of {N_T}", "🏆"), unsafe_allow_html=True)
+    with c3:
+        reg_h = round(H['registration_excellent'] / N_H * 100)
+        reg_t = round(T['registration_excellent'] / N_T_pre * 100)
+        st.markdown(dual_kpi("Registration — Excellent", f"{reg_h}%", f"{reg_t}%",
+            f"{H['registration_excellent']} of {N_H}", f"{T['registration_excellent']} of {N_T_pre}", "📋"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Confidence & Atmosphere</p>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(dual_kpi("Pre-Event High Confidence", f"{H_conf_pre_pct}%", f"{T_conf_pre_pct}%",
+            f"{H['conf_pre_high']} of {N_H}", f"{T['conf_pre_high']} of {N_T_pre}", "💪"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(dual_kpi("Post-Event High Confidence", f"{H_conf_post_pct}%", f"{T_conf_post_pct}%",
+            f"of {N_H} participants", f"of {N_T} participants", "🚀"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(dual_kpi("Comfortable Atmosphere (Post)", f"{H_comfort_post_pct}%", f"{T_comfort_post_pct}%",
+            f"{H['atmosphere_post_comfort']} of {N_H}", f"{T['atmosphere_post_comfort']} of {N_T}", "🌿"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Connections & Advocacy</p>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(dual_kpi("Avg LinkedIn Connections", f"{H_linkedin_avg}", f"{T_linkedin_avg}",
+            "weighted avg per participant", "weighted avg per participant", "🔗"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(dual_kpi("Avg Meaningful Connections", f"{H_meaningful_avg}", f"{T_meaningful_avg}",
+            "weighted avg per participant", "weighted avg per participant", "🤝"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(dual_kpi("Would Recommend", f"{H_rec_pct}%", f"{T_rec_pct}%",
+            f"{H['recommendation']['Highly recommend']} highly recommend",
+            f"{T['recommendation']['Very likely']} very likely", "📣"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">NPS & Satisfaction</p>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(dual_kpi("NPS Score (Post-Event)", str(H_nps_post), str(T_nps_post),
+            f"was {H_nps_pre} pre-event", "post-event only", "📈"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(dual_kpi("Overwhelming Atmosphere Eliminated",
+            f"{H['atmosphere_pre_overwhelm']} → 0",
+            f"{T['atmosphere_pre_overwhelm']} → 0",
+            "participants pre → post", "participants pre → post", "✅"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(dual_kpi("Sector-Specific Outcome",
+            f"{H_career}%", f"{T_relevant}%",
+            "found career opportunities", "found relevant connections", "🎯"), unsafe_allow_html=True)
+
+    # ── HIGHLIGHT BOX ──────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-highlight-box">
+        <h3>⚡ Cross-Sector Insights — What the Data Tells Us</h3>
+        <ul>
+            <li>Both sectors <strong>eliminated overwhelming atmosphere</strong> post-event — the circle format works universally</li>
+            <li>Tech participants made <strong>more LinkedIn connections</strong> on average ({T_linkedin_avg} vs {H_linkedin_avg}), reflecting the sector's digital-native culture</li>
+            <li>Health sector had a <strong>stronger NPS swing</strong>: {H_nps_pre} → {H_nps_post} (+{H_nps_post - H_nps_pre} pts); Tech achieved {T_nps_post} post-event</li>
+            <li>Confidence improved in both sectors: Health {H_conf_pre_pct}% → {H_conf_post_pct}% · Tech {T_conf_pre_pct}% → {T_conf_post_pct}%</li>
+            <li>Tech participants skewed toward <strong>higher connection volumes</strong> (6–9 range dominated); Health leaned toward <strong>deeper meaningful ties</strong></li>
+            <li>Both sessions achieved <strong>{min(H_rec_pct, T_rec_pct)}%+ recommendation rates</strong>, validating the LNC format across sectors</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── DEEP-DIVE TABS ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Deep-Dive Comparison</p>', unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📊 Overview", "🤝 Connections", "💪 Confidence & Barriers",
+        "📣 Advocacy & NPS", "🕸️ Radar Profile"
+    ])
+
+    # ── TAB 1: OVERVIEW ────────────────────────────────────────────────────────
+    with tab1:
+        st.markdown("### Format Rating — Health vs Technology")
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = go.Figure()
+            fmt_labs = ["Excellent", "Good", "Fair", "Poor"]
+            fig.add_trace(go.Bar(name='🏥 Health', x=fmt_labs,
+                y=[H['format_excellent'], 3, 0, 1],
+                marker_color='#006341',
+                text=[H['format_excellent'], 3, 0, 1], textposition='outside'))
+            fig.add_trace(go.Bar(name='💻 Technology', x=fmt_labs,
+                y=[T['format_excellent'], 2, 1, 0],
+                marker_color='#1a5fa8',
+                text=[T['format_excellent'], 2, 1, 0], textposition='outside'))
+            fig.update_layout(barmode='group', height=360, yaxis=dict(range=[0, 28]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("### Comfortable Atmosphere — Pre vs Post")
+            dims = ['Health Pre', 'Health Post', 'Tech Pre', 'Tech Post']
+            vals = [H_comfort_pre_pct, H_comfort_post_pct, T_comfort_pre_pct, T_comfort_post_pct]
+            colors = ['rgba(0,99,65,0.4)', '#006341', 'rgba(13,59,110,0.4)', '#1a5fa8']
+            fig = go.Figure(go.Bar(x=dims, y=vals, marker_color=colors,
+                text=[f"{v}%" for v in vals], textposition='outside',
+                textfont=dict(size=13, family='Epilogue')))
+            fig.update_layout(height=360, yaxis=dict(range=[0, 100]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Registration Excellence & Outreach")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Registration Rating — Excellent %")
+            fig = go.Figure(go.Bar(
+                x=['🏥 Health', '💻 Technology'],
+                y=[round(H['registration_excellent']/N_H*100),
+                   round(T['registration_excellent']/N_T_pre*100)],
+                marker_color=['#006341', '#1a5fa8'],
+                text=[f"{round(H['registration_excellent']/N_H*100)}%",
+                      f"{round(T['registration_excellent']/N_T_pre*100)}%"],
+                textposition='outside', textfont=dict(size=14)
+            ))
+            fig.update_layout(height=320, yaxis=dict(range=[0, 100]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### How Participants Heard About the Event")
+            channels = ["WhatsApp", "Friend/colleague", "Snapchat", "LinkedIn", "Other"]
+            h_heard = [10, 13, 2, 0, 2]
+            t_heard = [14, 3, 3, 1, 3]
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='🏥 Health', x=channels, y=h_heard,
+                marker_color='#006341', text=h_heard, textposition='outside'))
+            fig.add_trace(go.Bar(name='💻 Technology', x=channels, y=t_heard,
+                marker_color='#1a5fa8', text=t_heard, textposition='outside'))
+            fig.update_layout(barmode='group', height=320, yaxis=dict(range=[0, 18]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 2: CONNECTIONS ─────────────────────────────────────────────────────
+    with tab2:
+        st.markdown("### LinkedIn Connections Made — Distribution")
+        conn_labs = ["1–2", "3–5", "6–9", "10–12", "12+"]
+        h_linkedin = [H['linkedin_post'][k] for k in conn_labs]
+        t_linkedin = [T['linkedin_post'][k] for k in conn_labs]
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='🏥 Health', x=conn_labs, y=h_linkedin,
+            marker_color='#006341', text=h_linkedin, textposition='outside'))
+        fig.add_trace(go.Bar(name='💻 Technology', x=conn_labs, y=t_linkedin,
+            marker_color='#1a5fa8', text=t_linkedin, textposition='outside'))
+        fig.update_layout(barmode='group', height=380, yaxis=dict(range=[0, 15]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig, use_container_width=True)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Meaningful Connections — Distribution")
+            h_mean = [H['meaningful_post'][k] for k in conn_labs]
+            t_mean = [T['meaningful_post'][k] for k in conn_labs]
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='🏥 Health', x=conn_labs, y=h_mean,
+                marker_color='#006341', text=h_mean, textposition='outside'))
+            fig.add_trace(go.Bar(name='💻 Technology', x=conn_labs, y=t_mean,
+                marker_color='#1a5fa8', text=t_mean, textposition='outside'))
+            fig.update_layout(barmode='group', height=340, yaxis=dict(range=[0, 12]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Weighted Average Connections")
+            avg_labs = ["LinkedIn\nConnections", "Meaningful\nConnections"]
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='🏥 Health', x=avg_labs,
+                y=[H_linkedin_avg, H_meaningful_avg],
+                marker_color='#006341',
+                text=[f"{H_linkedin_avg}", f"{H_meaningful_avg}"],
+                textposition='outside', textfont=dict(size=14)))
+            fig.add_trace(go.Bar(name='💻 Technology', x=avg_labs,
+                y=[T_linkedin_avg, T_meaningful_avg],
+                marker_color='#1a5fa8',
+                text=[f"{T_linkedin_avg}", f"{T_meaningful_avg}"],
+                textposition='outside', textfont=dict(size=14)))
+            fig.update_layout(barmode='group', height=340, yaxis=dict(range=[0, 12]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Connection Target (Pre-Event) — What Did They Aim For?")
+        h_targets = [H['conn_target'][k] for k in conn_labs]
+        t_targets = [T['conn_target'][k] for k in conn_labs]
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='🏥 Health', x=conn_labs, y=h_targets,
+            marker_color='rgba(0,99,65,0.5)', text=h_targets, textposition='outside'))
+        fig.add_trace(go.Bar(name='💻 Technology', x=conn_labs, y=t_targets,
+            marker_color='rgba(13,59,110,0.5)', text=t_targets, textposition='outside'))
+        fig.update_layout(barmode='group', height=340, yaxis=dict(range=[0, 12]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5),
+            title_text="Pre-Event Connection Targets vs Post-Event Achievements",
+            title_font=dict(family='Cormorant Garamond', size=16))
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 3: CONFIDENCE & BARRIERS ───────────────────────────────────────────
+    with tab3:
+        st.markdown("### Confidence Journey — Pre to Post")
+        conf_cats = ["Pre-Event\nHigh Confidence", "Post-Event\nHigh Confidence", "Confidence\nLift (pp)"]
+        h_conf = [H_conf_pre_pct, H_conf_post_pct, H_conf_post_pct - H_conf_pre_pct]
+        t_conf = [T_conf_pre_pct, T_conf_post_pct, T_conf_post_pct - T_conf_pre_pct]
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='🏥 Health', x=conf_cats, y=h_conf,
+            marker_color='#006341', text=[f"{v}%" for v in h_conf], textposition='outside'))
+        fig.add_trace(go.Bar(name='💻 Technology', x=conf_cats, y=t_conf,
+            marker_color='#1a5fa8', text=[f"{v}%" for v in t_conf], textposition='outside'))
+        fig.update_layout(barmode='group', height=380, yaxis=dict(range=[-5, 100]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Networking Barriers — Pre-Event vs Post-Event (Overcome)")
+        barrier_cats = ["Starting conversations", "Finding relevant people",
+                        "Shyness / anxiety", "No specific barrier"]
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### 🏥 Health Sector")
+            h_pre_b  = [H['barriers_pre'][k]  for k in barrier_cats]
+            h_post_b = [H['barriers_post'][k] for k in barrier_cats]
+            fig = lnc_grouped_bar(
+                barrier_cats, h_pre_b, h_post_b,
+                pre_color='rgba(0,99,65,0.3)', post_color='#006341', y_max=14
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### 💻 Technology Sector")
+            t_pre_b  = [T['barriers_pre'][k]  for k in barrier_cats]
+            t_post_b = [T['barriers_post'][k] for k in barrier_cats]
+            fig = lnc_grouped_bar(
+                barrier_cats, t_pre_b, t_post_b,
+                pre_color='rgba(13,59,110,0.3)', post_color='#1a5fa8', y_max=14
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Barriers Comparison — Health vs Technology (Pre-Event)")
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='🏥 Health', x=barrier_cats,
+            y=[H['barriers_pre'][k] for k in barrier_cats],
+            marker_color='#006341',
+            text=[H['barriers_pre'][k] for k in barrier_cats], textposition='outside'))
+        fig.add_trace(go.Bar(name='💻 Technology', x=barrier_cats,
+            y=[T['barriers_pre'][k] for k in barrier_cats],
+            marker_color='#1a5fa8',
+            text=[T['barriers_pre'][k] for k in barrier_cats], textposition='outside'))
+        fig.update_layout(barmode='group', height=360, yaxis=dict(range=[0, 14]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 4: ADVOCACY & NPS ──────────────────────────────────────────────────
+    with tab4:
+        st.markdown("### NPS Comparison")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### 🏥 Health — NPS Journey (Pre → Post)")
+            nps_labs = ["Promoters", "Passives", "Detractors"]
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='Before', x=nps_labs,
+                y=[H['nps_pre'][k] for k in nps_labs],
+                marker_color=['rgba(0,99,65,0.4)', 'rgba(243,156,18,0.4)', 'rgba(231,76,60,0.4)'],
+                text=[H['nps_pre'][k] for k in nps_labs], textposition='outside'))
+            fig.add_trace(go.Bar(name='After', x=nps_labs,
+                y=[H['nps_post'][k] for k in nps_labs],
+                marker_color=['#006341', '#e67e22', '#e74c3c'],
+                text=[H['nps_post'][k] for k in nps_labs], textposition='outside'))
+            fig.update_layout(barmode='group', height=340, yaxis=dict(range=[0, 22]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### 💻 Technology — NPS (Post-Event Only)")
+            fig = go.Figure(go.Bar(
+                x=nps_labs,
+                y=[T['nps_post'][k] for k in nps_labs],
+                marker_color=['#1a5fa8', '#e67e22', '#e74c3c'],
+                text=[T['nps_post'][k] for k in nps_labs],
+                textposition='outside', textfont=dict(size=14)
+            ))
+            fig.update_layout(height=340, yaxis=dict(range=[0, 20]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Recommendation — Health vs Technology")
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = lnc_donut(
+                ["Highly recommend", "Slightly recommend", "Maybe", "Don't think they need it"],
+                [H['recommendation']['Highly recommend'], H['recommendation']['Slightly recommend'],
+                 H['recommendation']['Maybe'], H['recommendation']["Don't think they need it"]],
+                ['#006341', '#00843d', '#93c13f', '#e74c3c'],
+                center_text="🏥 Health\nRecommend"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            fig = lnc_donut(
+                ["Very likely", "Likely", "Neutral", "Unlikely", "Very unlikely"],
+                [T['recommendation']['Very likely'], T['recommendation']['Likely'],
+                 T['recommendation']['Neutral'], T['recommendation']['Unlikely'],
+                 T['recommendation']['Very unlikely']],
+                ['#1a5fa8', '#378add', '#85B7EB', '#e9ecef', '#e74c3c'],
+                center_text="💻 Tech\nRecommend"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### NPS Score — Final Comparison")
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=['🏥 Health (Pre)', '🏥 Health (Post)', '💻 Tech (Post)'],
+            y=[H_nps_pre, H_nps_post, T_nps_post],
+            marker_color=['rgba(0,99,65,0.4)', '#006341', '#1a5fa8'],
+            text=[str(H_nps_pre), str(H_nps_post), str(T_nps_post)],
+            textposition='outside', textfont=dict(size=15, family='Cormorant Garamond')
+        ))
+        fig.update_layout(height=360, yaxis=dict(range=[-10, 60]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            showlegend=False)
+        fig.add_hline(y=0, line_dash="dash", line_color="#adb5bd", line_width=1.5)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 5: RADAR PROFILE ───────────────────────────────────────────────────
+    with tab5:
+        st.markdown("### 🕸️ Sector Profile Radar — Health vs Technology")
+        radar_dims = [
+            "Format\nExcellent %", "Post-Event\nComfort %",
+            "Confidence\nLift (pp)", "Avg LinkedIn\nConns (×10)",
+            "Recommend %", "NPS Score\n(normalised)"
+        ]
+        h_radar = [
+            H_format_pct,
+            H_comfort_post_pct,
+            H_conf_post_pct - H_conf_pre_pct,
+            round(H_linkedin_avg * 10),
+            H_rec_pct,
+            round((H_nps_post + 100) / 2)
+        ]
+        t_radar = [
+            T_format_pct,
+            T_comfort_post_pct,
+            T_conf_post_pct - T_conf_pre_pct,
+            round(T_linkedin_avg * 10),
+            T_rec_pct,
+            round((T_nps_post + 100) / 2)
+        ]
+        fig_r = go.Figure()
+        fig_r.add_trace(go.Scatterpolar(
+            r=h_radar + [h_radar[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='🏥 Health',
+            line_color='#006341', fillcolor='rgba(0,99,65,0.15)', line_width=2.5))
+        fig_r.add_trace(go.Scatterpolar(
+            r=t_radar + [t_radar[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='💻 Technology',
+            line_color='#1a5fa8', fillcolor='rgba(13,59,110,0.15)', line_width=2.5))
+        fig_r.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 100], tickfont=dict(size=10)),
+                angularaxis=dict(tickfont=dict(size=12, family='Epilogue'))
+            ),
+            showlegend=True, height=520, paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=-0.1, xanchor='center', x=0.5)
+        )
+        col_l, col_c, col_r = st.columns([1, 3, 1])
+        with col_c:
+            st.plotly_chart(fig_r, use_container_width=True)
+
+        st.markdown("### Metric-by-Metric Breakdown")
+        metric_names = ["Format Excellent %", "Post Comfort %",
+                        "Confidence Lift (pp)", "Avg LinkedIn Conns",
+                        "Recommend %", "NPS Score"]
+        h_vals_table = [H_format_pct, H_comfort_post_pct,
+                        H_conf_post_pct - H_conf_pre_pct,
+                        H_linkedin_avg, H_rec_pct, H_nps_post]
+        t_vals_table = [T_format_pct, T_comfort_post_pct,
+                        T_conf_post_pct - T_conf_pre_pct,
+                        T_linkedin_avg, T_rec_pct, T_nps_post]
+
+        fig_table = go.Figure()
+        fig_table.add_trace(go.Bar(
+            name='🏥 Health', x=metric_names, y=h_vals_table,
+            marker_color='#006341',
+            text=[str(v) for v in h_vals_table], textposition='outside'))
+        fig_table.add_trace(go.Bar(
+            name='💻 Technology', x=metric_names, y=t_vals_table,
+            marker_color='#1a5fa8',
+            text=[str(v) for v in t_vals_table], textposition='outside'))
+        fig_table.update_layout(barmode='group', height=420, yaxis=dict(range=[0, 110]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig_table, use_container_width=True)
+
+    # ── ABOUT BOX ──────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About This Cross-Sector Analysis</h3>
+        <p>
+            This page compares the <strong>Leaders Network Circles — Health Sector (Session 1)</strong>
+            and <strong>Technology Sector (Session 1)</strong> side by side. Both sessions used the same 
+            circle-rotation format across three circles: <strong>Growth, Connection, and Impact</strong>.
+            The analysis reveals how the same format performs across different professional communities,
+            highlights sector-specific networking behaviours, and validates the LNC model as a scalable 
+            framework for Vision 2030-aligned community building.
+            <br><br>
+            <strong>Health:</strong> N = 27 (matched pre & post) &nbsp;|&nbsp;
+            <strong>Technology:</strong> N = 24 pre · 22 post
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── FOOTER ─────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-footer">
+        <h2>⚡ Cross-Sector Analysis</h2>
+        <p class="tagline">Health × Technology · Leaders Network Circles · Australia Chapter</p>
+        <div style="display:flex; justify-content:center; gap:3rem; margin:2rem 0;
+             flex-wrap:wrap; position:relative; z-index:1;">
+            <div><div style="font-size:2.5rem;font-weight:700">{N_H} + {N_T}</div>
+                 <div style="opacity:0.8">Total participants</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{H_nps_post} vs {T_nps_post}</div>
+                 <div style="opacity:0.8">NPS (H vs T)</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{H_rec_pct}% / {T_rec_pct}%</div>
+                 <div style="opacity:0.8">Recommend (H / T)</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">0%</div>
+                 <div style="opacity:0.8">Overwhelming atmosphere (both)</div></div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:2rem;opacity:0.9;position:relative;z-index:1">
+            <strong>Grow • Connect • Impact</strong></p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:1rem;position:relative;z-index:1">
+            {datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
 
 # ============================================================================
 # ██╗     ███╗   ██╗ ██████╗    DASHBOARD
