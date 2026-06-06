@@ -1874,9 +1874,6 @@ if session_info.get('type') == 'lnc_cross':
             This page compares the <strong>Leaders Network Circles — Health Sector (Session 1)</strong>
             and <strong>Technology Sector (Session 1)</strong> side by side. Both sessions used the same 
             circle-rotation format across three circles: <strong>Growth, Connection, and Impact</strong>.
-            The analysis reveals how the same format performs across different professional communities,
-            highlights sector-specific networking behaviours, and validates the LNC model as a scalable 
-            framework for Vision 2030-aligned community building.
             <br><br>
             <strong>Health:</strong> N = 27 (matched pre & post) &nbsp;|&nbsp;
             <strong>Technology:</strong> N = 24 pre · 22 post
