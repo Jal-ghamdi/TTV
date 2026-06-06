@@ -116,7 +116,7 @@ INITIATIVES = {
                 "topic_labels": [],
                 "type": "lnc_tech"
             },
-            ,
+            
             "Cross-Sector Analysis": {
                 "name": "⚡ Health vs Technology — Cross Analysis",
                 "data_file": None,
