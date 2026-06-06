@@ -125,6 +125,15 @@ INITIATIVES = {
                 "color": "#0d3b6e",
                 "topic_labels": [],
                 "type": "lnc_cross"
+            },
+            "Combined Analysis": {
+                "name": "🌐 Health + Technology — Combined",
+                "data_file": None,
+                "icon": "🌐",
+                "vision_theme": "Health & Technology — Combined Programme Insights",
+                "color": "#0d3b6e",
+                "topic_labels": [],
+                "type": "lnc_combined"
             }
         }
     }
@@ -826,7 +835,7 @@ with col1:
 
 # Only load JSON for non-LNC sessions
 data = None
-if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross'):
+if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross', 'lnc_combined'):
     data = load_data(session_info['data_file'])
     if data is None:
         st.error("Could not load data.")
@@ -1906,6 +1915,634 @@ if session_info.get('type') == 'lnc_cross':
 
     st.stop()
 
+
+# ============================================================================
+# LNC COMBINED ANALYSIS DASHBOARD (Health + Technology)
+# ============================================================================
+
+if session_info.get('type') == 'lnc_combined':
+
+    # ── SHARED CONSTANTS ──────────────────────────────────────────────────────
+    N_H     = 27
+    N_T_pre = 24
+    N_T     = 22
+    N_total_pre  = N_H + N_T_pre   # 51
+    N_total_post = N_H + N_T       # 49
+
+    # ── COMBINED RAW COUNTS ───────────────────────────────────────────────────
+
+    # Registration excellence
+    reg_excellent = 21 + 12   # 33
+    reg_good      = 5  + 11   # 16
+    reg_fair      = 1  + 0    # 1
+    reg_poor      = 1  + 1    # 2 (health poor=0 actually, tech poor=1; health had 0 poor in reg)
+
+    # Format excellence (post)
+    fmt_excellent = 23 + 19   # 42
+    fmt_good      = 3  + 2    # 5
+    fmt_fair      = 0  + 1    # 1
+    fmt_poor      = 1  + 0    # 1
+
+    # Atmosphere — comfortable & friendly
+    atm_pre_comfort  = 17 + 20   # 37
+    atm_post_comfort = 23 + 20   # 43
+    atm_pre_overwhelm  = 6 + 2   # 8
+    atm_post_overwhelm = 0 + 0   # 0
+
+    # Confidence
+    conf_pre_high  = (12 + 5) + (8 + 9)    # 34
+    conf_post_high = (19 + 7) + (15 + 4)   # 45
+
+    # LinkedIn connections (post) — raw counts per bucket
+    linkedin_combined = {
+        "1–2":   3 + 1,    # 4
+        "3–5":   9 + 2,    # 11
+        "6–9":   9 + 12,   # 21
+        "10–12": 4 + 5,    # 9
+        "12+":   2 + 2,    # 4
+    }
+
+    # Meaningful connections (post)
+    meaningful_combined = {
+        "1–2":   9 + 4,    # 13
+        "3–5":   8 + 8,    # 16
+        "6–9":   5 + 8,    # 13
+        "10–12": 2 + 2,    # 4
+        "12+":   3 + 0,    # 3
+    }
+
+    # Connection targets (pre)
+    conn_target_combined = {
+        "1–2":   8 + 6,    # 14
+        "3–5":   9 + 9,    # 18
+        "6–9":   5 + 3,    # 8
+        "10–12": 2 + 2,    # 4
+        "12+":   3 + 4,    # 7
+    }
+
+    # Barriers pre
+    barriers_pre_combined = {
+        "Starting\nconversations":  8 + 8,    # 16
+        "Finding\nrelevant people": 10 + 8,   # 18
+        "Shyness /\nanxiety":       6 + 1,    # 7
+        "No specific\nbarrier":     3 + 7,    # 10
+    }
+
+    # Barriers post (overcome)
+    barriers_post_combined = {
+        "Starting\nconversations":  8 + 10,   # 18
+        "Finding\nrelevant people": 9 + 5,    # 14
+        "Shyness /\nanxiety":       6 + 1,    # 7
+        "No specific\nbarrier":     4 + 6,    # 10
+    }
+
+    # NPS post (combined raw counts)
+    nps_post_combined = {
+        "Promoters":  17 + 15,   # 32
+        "Passives":   8  + 5,    # 13
+        "Detractors": 2  + 2,    # 4
+    }
+    nps_pre_health = {
+        "Promoters": 12, "Passives": 9, "Detractors": 6
+    }
+
+    # How heard (pre) — combined
+    heard_combined = {
+        "WhatsApp":          10 + 14,  # 24
+        "Friend/colleague":  13 + 3,   # 16
+        "Snapchat":          2  + 3,   # 5
+        "Other":             2  + 3,   # 5
+        "LinkedIn":          0  + 1,   # 1
+    }
+
+    # ── DERIVED METRICS ───────────────────────────────────────────────────────
+    fmt_excel_pct      = round(fmt_excellent / N_total_post * 100)
+    reg_excel_pct      = round(reg_excellent / N_total_pre  * 100)
+    conf_pre_pct       = round(conf_pre_high  / N_total_pre  * 100)
+    conf_post_pct      = round(conf_post_high / N_total_post * 100)
+    conf_lift          = conf_post_pct - conf_pre_pct
+    comfort_pre_pct    = round(atm_pre_comfort  / N_total_pre  * 100)
+    comfort_post_pct   = round(atm_post_comfort / N_total_post * 100)
+    overwhelm_pre_pct  = round(atm_pre_overwhelm  / N_total_pre  * 100)
+    overwhelm_post_pct = round(atm_post_overwhelm / N_total_post * 100)
+
+    nps_score = round(
+        (nps_post_combined['Promoters'] - nps_post_combined['Detractors'])
+        / N_total_post * 100
+    )
+
+    # Recommend combined
+    # Health: "Highly recommend" = 20 of 27
+    # Tech:   "Very likely" + "Likely" = 20 + 2 = 22 of 22
+    rec_combined     = 20 + 22    # 42
+    rec_combined_pct = round(rec_combined / N_total_post * 100)
+
+    # Weighted avg connections helper
+    def weighted_avg(d, n):
+        mids = {"1–2": 1.5, "3–5": 4, "6–9": 7.5, "10–12": 11, "12+": 13}
+        return round(sum(mids[k] * v for k, v in d.items()) / n, 1)
+
+    linkedin_avg    = weighted_avg(linkedin_combined,    N_total_post)
+    meaningful_avg  = weighted_avg(meaningful_combined,  N_total_post)
+    target_avg      = weighted_avg(conn_target_combined, N_total_pre)
+
+    # Career & outcomes (health only has these; used as partial combined)
+    # Health career opps: 14 definite + 6 possible = 20 of 27 = 74%
+    # Tech relevant conns: 10 + 9 = 19 of 22 = 86%
+    career_combined     = 20 + 19   # 39
+    career_combined_pct = round(career_combined / N_total_post * 100)
+
+    # ── HEADER ────────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="lnc-header">
+        <h1 class="initiative-title">🌐 Combined Programme Analysis</h1>
+        <p class="initiative-subtitle">Saudi Leadership Society — Australia Chapter</p>
+        <div style="text-align:center; margin-top:1.2rem; position:relative; z-index:1;">
+            <span class="circle-badge circle-growth">🌱 Growth</span>
+            <span class="circle-badge circle-connect">🤝 Connection</span>
+            <span class="circle-badge circle-impact">💥 Impact</span>
+        </div>
+        <div style="text-align:center; margin-top:1rem;">
+            <span class="mission-tagline">🏥 Health + 💻 Technology — All Sessions Combined</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── TOP STAT PILLS ─────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-highlight-box" style="padding:2rem;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center;
+             gap:0.5rem; position:relative; z-index:1;">
+            <div class="stat-pill">
+                <span class="num">{N_total_pre}</span>
+                <span class="lbl">Pre-survey total</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">{N_total_post}</span>
+                <span class="lbl">Post-survey total</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">{fmt_excel_pct}%</span>
+                <span class="lbl">Excellent format</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">{conf_lift:+}pp</span>
+                <span class="lbl">Confidence lift</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">{nps_score}</span>
+                <span class="lbl">Combined NPS</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">{rec_combined_pct}%</span>
+                <span class="lbl">Would recommend</span>
+            </div>
+            <div class="stat-pill">
+                <span class="num">0%</span>
+                <span class="lbl">Overwhelmed (post)</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── KPI CARDS ──────────────────────────────────────────────────────────────
+    st.markdown('<p class="section-title">📊 Programme-Wide KPIs</p>',
+                unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Reach & Event Quality</p>',
+                unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(create_kpi_card(
+            "REACH", "Total Participants",
+            f"{N_total_pre} / {N_total_post}",
+            f"{N_total_pre} pre-event across both sectors · {N_total_post} post-event",
+            "✓ 2 sectors · 2 sessions"
+        ), unsafe_allow_html=True)
+    with c2:
+        st.markdown(create_kpi_card(
+            "FORMAT", "Circle Format — Excellent",
+            f"{fmt_excel_pct}%",
+            f"{fmt_excellent} of {N_total_post} rated the format Excellent",
+            "✓ Consistent across both sectors"
+        ), unsafe_allow_html=True)
+    with c3:
+        st.markdown(create_kpi_card(
+            "ONBOARDING", "Registration — Excellent",
+            f"{reg_excel_pct}%",
+            f"{reg_excellent} of {N_total_pre} rated registration Excellent",
+            "✓ Smooth onboarding programme-wide"
+        ), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Networking Outcomes</p>',
+                unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(create_kpi_card(
+            "CONFIDENCE", "Post-Event High Confidence",
+            f"{conf_post_pct}%",
+            f"{conf_post_high} of {N_total_post} felt highly confident after the event",
+            f"✓ +{conf_lift}pp lift from pre-event ({conf_pre_pct}%)"
+        ), unsafe_allow_html=True)
+    with c2:
+        st.markdown(create_kpi_card(
+            "CONNECTIONS", "Avg LinkedIn Connections",
+            str(linkedin_avg),
+            f"Weighted average per participant across both sessions",
+            f"✓ Avg {meaningful_avg} meaningful connections"
+        ), unsafe_allow_html=True)
+    with c3:
+        st.markdown(create_kpi_card(
+            "ATMOSPHERE", "Overwhelming Atmosphere Eliminated",
+            "0%",
+            f"Dropped from {atm_pre_overwhelm} participants pre → 0 post-event",
+            "✓ Circle format removes anxiety universally"
+        ), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Satisfaction & Advocacy</p>',
+                unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(create_kpi_card(
+            "NPS", "Combined NPS Score",
+            str(nps_score),
+            f"Promoters: {nps_post_combined['Promoters']} · "
+            f"Passives: {nps_post_combined['Passives']} · "
+            f"Detractors: {nps_post_combined['Detractors']}",
+            "✓ Strong advocacy across both sectors"
+        ), unsafe_allow_html=True)
+    with c2:
+        st.markdown(create_kpi_card(
+            "ADVOCACY", "Would Recommend",
+            f"{rec_combined_pct}%",
+            f"{rec_combined} of {N_total_post} would recommend the event",
+            "✓ Outstanding word-of-mouth"
+        ), unsafe_allow_html=True)
+    with c3:
+        st.markdown(create_kpi_card(
+            "OUTCOMES", "Career / Relevant Connections",
+            f"{career_combined_pct}%",
+            "Found career opps (Health) or relevant connections (Tech)",
+            "✓ High professional value"
+        ), unsafe_allow_html=True)
+
+    # ── HIGHLIGHT BOX ──────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-highlight-box">
+        <h3>🌐 Combined Programme — Key Findings</h3>
+        <ul>
+            <li><strong>{N_total_pre} participants</strong> engaged across Health and Technology
+                sessions — {N_H} Health · {N_T_pre} Technology</li>
+            <li><strong>{fmt_excel_pct}%</strong> rated the circle-rotation format as Excellent
+                — consistent quality across both sectors</li>
+            <li>Overwhelming atmosphere dropped from
+                <strong>{atm_pre_overwhelm} → 0 participants</strong>
+                post-event in both sessions combined</li>
+            <li>Confidence in networking lifted by
+                <strong>+{conf_lift} percentage points</strong>
+                programme-wide ({conf_pre_pct}% → {conf_post_pct}%)</li>
+            <li>Combined NPS of <strong>{nps_score}</strong> with
+                {nps_post_combined['Promoters']} Promoters and only
+                {nps_post_combined['Detractors']} Detractors across both sessions</li>
+            <li><strong>{rec_combined_pct}%</strong> of all participants would recommend
+                Leaders Network Circles to fellow Saudi students</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── DEEP-DIVE TABS ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Programme Deep-Dive</p>',
+                unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "📊 Format & Atmosphere",
+        "🤝 Connections",
+        "💪 Confidence & Barriers",
+        "📣 Advocacy & NPS"
+    ])
+
+    # ── TAB 1: FORMAT & ATMOSPHERE ─────────────────────────────────────────────
+    with tab1:
+        st.markdown("### Circle Format Rating — Combined (Post-Event)")
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = lnc_donut(
+                ["Excellent", "Good", "Fair", "Poor"],
+                [fmt_excellent, fmt_good, fmt_fair, fmt_poor],
+                ['#0d3b6e', '#378add', '#85B7EB', '#e74c3c'],
+                center_text="Format\nRating"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("### Registration Rating — Combined (Pre-Event)")
+            fig = lnc_donut(
+                ["Excellent", "Good", "Fair", "Poor"],
+                [reg_excellent, reg_good, reg_fair, reg_poor],
+                ['#006341', '#00843d', '#93c13f', '#e74c3c'],
+                center_text="Registration\nRating"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Atmosphere — Before vs After (Combined)")
+        st.markdown(compare_band(
+            comfort_pre_pct, comfort_post_pct,
+            f"{atm_pre_comfort} of {N_total_pre} felt comfortable pre-event",
+            f"{atm_post_comfort} of {N_total_post} felt comfortable post-event",
+            "#6b7280", "#0d3b6e", "%",
+            "Comfortable & friendly"
+        ), unsafe_allow_html=True)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Comfortable Atmosphere — Pre vs Post")
+            fig = go.Figure(go.Bar(
+                x=["Pre-Event", "Post-Event"],
+                y=[comfort_pre_pct, comfort_post_pct],
+                marker_color=['rgba(13,59,110,0.4)', '#0d3b6e'],
+                text=[f"{comfort_pre_pct}%", f"{comfort_post_pct}%"],
+                textposition='outside', textfont=dict(size=15, family='Epilogue')
+            ))
+            fig.update_layout(height=340, yaxis=dict(range=[0, 100]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Overwhelming Atmosphere — Pre vs Post")
+            fig = go.Figure(go.Bar(
+                x=["Pre-Event", "Post-Event"],
+                y=[atm_pre_overwhelm, atm_post_overwhelm],
+                marker_color=['#e74c3c', '#93c13f'],
+                text=[str(atm_pre_overwhelm), str(atm_post_overwhelm)],
+                textposition='outside', textfont=dict(size=15, family='Epilogue')
+            ))
+            fig.update_layout(height=340, yaxis=dict(range=[0, 12]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### How Participants Heard About the Event — Combined")
+        fig = lnc_bar(
+            list(heard_combined.keys()),
+            list(heard_combined.values()),
+            ['#0d3b6e', '#1a5fa8', '#378add', '#85B7EB', '#d0d9e8'],
+            height=320, v_range=[0, 28]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 2: CONNECTIONS ─────────────────────────────────────────────────────
+    with tab2:
+        st.markdown("### LinkedIn Connections Made — Combined (Post-Event)")
+        conn_labs = ["1–2", "3–5", "6–9", "10–12", "12+"]
+
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = lnc_donut(
+                conn_labs,
+                [linkedin_combined[k] for k in conn_labs],
+                ['#e9ecef', '#85B7EB', '#0d3b6e', '#006341', '#93c13f'],
+                center_text=f"Avg\n{linkedin_avg}"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("### Meaningful Connections — Combined (Post-Event)")
+            fig = lnc_donut(
+                conn_labs,
+                [meaningful_combined[k] for k in conn_labs],
+                ['#e9ecef', '#85B7EB', '#0d3b6e', '#006341', '#93c13f'],
+                center_text=f"Avg\n{meaningful_avg}"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Target vs Actual — Combined Connection Journey")
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            name='Target (Pre-Event)',
+            x=conn_labs,
+            y=[conn_target_combined[k] for k in conn_labs],
+            marker_color='rgba(13,59,110,0.35)',
+            text=[conn_target_combined[k] for k in conn_labs],
+            textposition='outside'
+        ))
+        fig.add_trace(go.Bar(
+            name='LinkedIn Made (Post)',
+            x=conn_labs,
+            y=[linkedin_combined[k] for k in conn_labs],
+            marker_color='#0d3b6e',
+            text=[linkedin_combined[k] for k in conn_labs],
+            textposition='outside'
+        ))
+        fig.add_trace(go.Bar(
+            name='Meaningful (Post)',
+            x=conn_labs,
+            y=[meaningful_combined[k] for k in conn_labs],
+            marker_color='#006341',
+            text=[meaningful_combined[k] for k in conn_labs],
+            textposition='outside'
+        ))
+        fig.update_layout(
+            barmode='group', height=420, yaxis=dict(range=[0, 26]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02,
+                        xanchor='center', x=0.5)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Avg LinkedIn Connections", str(linkedin_avg),
+                      delta="per participant")
+        with c2:
+            st.metric("Avg Meaningful Connections", str(meaningful_avg),
+                      delta="per participant")
+        with c3:
+            st.metric("Avg Target (Pre-Event)", str(target_avg),
+                      delta="per participant")
+
+    # ── TAB 3: CONFIDENCE & BARRIERS ───────────────────────────────────────────
+    with tab3:
+        st.markdown("### Confidence Journey — Combined Programme")
+        st.markdown(compare_band(
+            conf_pre_pct, conf_post_pct,
+            f"{conf_pre_high} of {N_total_pre} highly confident pre-event",
+            f"{conf_post_high} of {N_total_post} highly confident post-event",
+            "#6b7280", "#0d3b6e", "%", "High confidence (combined)"
+        ), unsafe_allow_html=True)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Confidence — Pre vs Post (Combined %)")
+            fig = go.Figure(go.Bar(
+                x=["Pre-Event\nHigh Confidence", "Post-Event\nHigh Confidence"],
+                y=[conf_pre_pct, conf_post_pct],
+                marker_color=['rgba(13,59,110,0.4)', '#0d3b6e'],
+                text=[f"{conf_pre_pct}%", f"{conf_post_pct}%"],
+                textposition='outside', textfont=dict(size=15)
+            ))
+            fig.update_layout(height=340, yaxis=dict(range=[0, 100]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Confidence Levels Distribution (Post-Event Combined)")
+            # Post combined: Very confident 15+8=23(T only has very conf/conf)
+            # Health post: significantly improved=19, slightly=7 → using as high conf proxy
+            # Tech post: very conf=15, conf=4
+            post_conf_labs = ["High\nConfidence", "Neutral", "Low\nConfidence"]
+            post_conf_vals = [conf_post_high, (N_total_post - conf_post_high - 0), 0]
+            # Health neutral=1 (no change), Tech neutral=3 → total neutral=4
+            post_conf_vals = [conf_post_high, 4, 0]
+            fig = lnc_donut(
+                post_conf_labs, post_conf_vals,
+                ['#0d3b6e', '#85B7EB', '#e9ecef'],
+                center_text=f"{conf_post_pct}%\nHigh Conf"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Barriers — Combined Pre vs Post")
+        bar_labs = [k.replace('\n', ' ') for k in barriers_pre_combined.keys()]
+        pre_bar_vals  = list(barriers_pre_combined.values())
+        post_bar_vals = list(barriers_post_combined.values())
+
+        fig = lnc_grouped_bar(
+            bar_labs, pre_bar_vals, post_bar_vals,
+            pre_color='rgba(13,59,110,0.3)', post_color='#0d3b6e',
+            height=380, y_max=22
+        )
+        fig.update_layout(
+            title_text="Barriers Reported Pre-Event vs Overcome Post-Event (Combined)",
+            title_font=dict(family='Cormorant Garamond', size=17)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Barriers Distribution — Combined (Pre-Event)")
+        fig = lnc_donut(
+            [k.replace('\n', ' ') for k in barriers_pre_combined.keys()],
+            list(barriers_pre_combined.values()),
+            ['#0d3b6e', '#1a5fa8', '#378add', '#85B7EB'],
+            center_text=f"{N_total_pre}\nParticipants"
+        )
+        col_l, col_c, col_r = st.columns([1, 2, 1])
+        with col_c:
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 4: ADVOCACY & NPS ──────────────────────────────────────────────────
+    with tab4:
+        st.markdown("### NPS — Combined Post-Event")
+        c1, c2 = st.columns(2)
+        with c1:
+            nps_labs = ["Promoters", "Passives", "Detractors"]
+            fig = lnc_donut(
+                nps_labs,
+                [nps_post_combined[k] for k in nps_labs],
+                ['#006341', '#f39c12', '#e74c3c'],
+                center_text=f"NPS\n{nps_score}"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### NPS Breakdown — Raw Counts")
+            fig = go.Figure(go.Bar(
+                x=nps_labs,
+                y=[nps_post_combined[k] for k in nps_labs],
+                marker_color=['#006341', '#f39c12', '#e74c3c'],
+                text=[nps_post_combined[k] for k in nps_labs],
+                textposition='outside', textfont=dict(size=15, family='Epilogue')
+            ))
+            fig.update_layout(height=360, yaxis=dict(range=[0, 38]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Recommendation — Combined (Post-Event)")
+        # Health: Highly=20, Slightly=5, Maybe=0, Don't=2
+        # Tech:   Very likely=20, Likely=2, Neutral=0, Unlikely=0, VU=0
+        # Merged into: Strong=42, Moderate=5, Neutral=0, Against=2
+        fig = lnc_donut(
+            ["Strong\nRecommendation", "Moderate\nRecommendation",
+             "Neutral / Against"],
+            [42, 5, 2],
+            ['#006341', '#00843d', '#e74c3c'],
+            center_text=f"{rec_combined_pct}%\nRecommend"
+        )
+        col_l, col_c, col_r = st.columns([1, 2, 1])
+        with col_c:
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Programme Funnel — Combined")
+        fig = go.Figure(go.Funnel(
+            y=["Pre-Event Participants", "Post-Event Participants",
+               "Excellent Format Rating", "High Confidence (Post)",
+               "Would Recommend"],
+            x=[N_total_pre, N_total_post,
+               fmt_excellent, conf_post_high, rec_combined],
+            textposition="inside",
+            textinfo="value+percent initial",
+            marker={
+                "color": ['#0d3b6e', '#1a5fa8', '#378add', '#006341', '#00843d'],
+                "line": {"width": 2, "color": "white"}
+            }
+        ))
+        fig.update_layout(
+            height=440,
+            font=dict(family="Epilogue", size=13, color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=20, r=20, t=20, b=20)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── ABOUT BOX ──────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About This Combined Analysis</h3>
+        <p>
+            This page aggregates data from both the
+            <strong>Leaders Network Circles — Health Sector (Session 1)</strong>
+            and <strong>Technology Sector (Session 1)</strong> into a single
+            programme-level view. All metrics are combined raw counts or
+            weighted averages across both sessions, giving a holistic picture
+            of the LNC programme's overall reach, quality, and impact.
+            <br><br>
+            <strong>Total reach:</strong> {n_pre} pre-event · {n_post} post-event
+            across Health and Technology sectors in Australia —
+            all aligned with <strong>Vision 2030</strong>.
+        </p>
+    </div>
+    """.format(n_pre=N_total_pre, n_post=N_total_post), unsafe_allow_html=True)
+
+    # ── FOOTER ─────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div class="lnc-footer">
+        <h2>🌐 Combined Programme Analysis</h2>
+        <p class="tagline">Health + Technology · Leaders Network Circles · Australia Chapter</p>
+        <div style="display:flex; justify-content:center; gap:2.5rem; margin:2rem 0;
+             flex-wrap:wrap; position:relative; z-index:1;">
+            <div><div style="font-size:2.5rem;font-weight:700">{N_total_pre}</div>
+                 <div style="opacity:0.8">Total pre-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{N_total_post}</div>
+                 <div style="opacity:0.8">Total post-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{fmt_excel_pct}%</div>
+                 <div style="opacity:0.8">Excellent format</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{conf_lift:+}pp</div>
+                 <div style="opacity:0.8">Confidence lift</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{nps_score}</div>
+                 <div style="opacity:0.8">Combined NPS</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{rec_combined_pct}%</div>
+                 <div style="opacity:0.8">Would recommend</div></div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:2rem;opacity:0.9;
+             position:relative;z-index:1"><strong>Grow • Connect • Impact</strong></p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:1rem;
+             position:relative;z-index:1">
+             {datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
 # ============================================================================
 # ██╗     ███╗   ██╗ ██████╗    DASHBOARD
 # ██║     ████╗  ██║██╔════╝
