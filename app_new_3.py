@@ -3612,8 +3612,7 @@ if session_info.get('type') == 'leaders_accelerator':
             designed to help Saudi students in Australia prepare strong applications for the
             <strong>Misk 10X Leaders program</strong>. Through individual mentoring, participants
             clarify their track fit, sharpen their articulation of leadership experiences, and
-            leave with the confidence and clarity to submit a competitive application — all
-            aligned with <strong>Vision 2030</strong>'s leadership development goals.
+            leave with the confidence and clarity to submit a competitive application.
         </p>
     </div>
     """, unsafe_allow_html=True)
