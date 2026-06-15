@@ -136,6 +136,23 @@ INITIATIVES = {
                 "type": "lnc_combined"
             }
         }
+    },
+    "Leaders Accelerator": {
+        "name": "Leaders Accelerator",
+        "icon": "⚡",
+        "description": "A mentorship-driven accelerator preparing Saudi students in Australia to apply for Misk's 10X Leaders program — through clarity, confidence, and coaching.",
+        "color": "#7C3AED",
+        "sessions": {
+            "10X Leaders Session": {
+                "name": "⚡ Leaders Accelerator — 10X Leaders",
+                "data_file": None,
+                "icon": "⚡",
+                "vision_theme": "Application Readiness & Leadership Development",
+                "color": "#7C3AED",
+                "topic_labels": [],
+                "type": "leaders_accelerator"
+            }
+        }
     }
 }
 
@@ -3095,6 +3112,547 @@ if session_info.get('type') == 'lnc':
 
     st.stop()
 
+# ============================================================================
+# LEADERS ACCELERATOR — 10X LEADERS DASHBOARD
+# ============================================================================
+
+if session_info.get('type') == 'leaders_accelerator':
+
+    N_pre  = 10
+    N_post = 9
+
+    # ── RAW DATA ──────────────────────────────────────────────────────────────
+    pre = dict(
+        heard_about = {"WhatsApp": 3, "Saudi Students Associations": 7,
+                       "Telegram": 0, "Snapchat": 0, "Other": 0},
+        location    = {"Sydney": 4, "Melbourne": 5, "Brisbane": 0,
+                       "Perth": 0, "Adelaide": 0, "Canberra": 0,
+                       "New Zealand": 0, "Other": 1},
+        program_understanding = {
+            "Strongly Agree": 2, "Agree": 3, "Neutral": 4,
+            "Disagree": 1, "Strongly Disagree": 0},
+        track_clarity = {
+            "Strongly Agree": 2, "Agree": 6, "Neutral": 1,
+            "Disagree": 1, "Strongly Disagree": 0},
+        app_confidence = {
+            "Strongly Agree": 3, "Agree": 2, "Neutral": 4,
+            "Disagree": 1, "Strongly Disagree": 0},
+        articulate_leadership = {
+            "Strongly Agree": 1, "Agree": 8, "Neutral": 1,
+            "Disagree": 0, "Strongly Disagree": 0},
+    )
+
+    post = dict(
+        program_understanding = {
+            "Strongly Agree": 8, "Agree": 1, "Neutral": 0,
+            "Disagree": 0, "Strongly Disagree": 0},
+        track_clarity = {
+            "Strongly Agree": 7, "Agree": 2, "Neutral": 0,
+            "Disagree": 0, "Strongly Disagree": 0},
+        app_confidence = {
+            "Strongly Agree": 8, "Agree": 1, "Neutral": 0,
+            "Disagree": 0, "Strongly Disagree": 0},
+        articulate_leadership = {
+            "Strongly Agree": 8, "Agree": 1, "Neutral": 0,
+            "Disagree": 0, "Strongly Disagree": 0},
+        mentoring_helped = {
+            "Strongly Agree": 8, "Agree": 1, "Neutral": 0,
+            "Disagree": 0, "Strongly Disagree": 0},
+        plan_to_apply = {
+            "Yes": 7, "No": 0, "I have already applied": 2},
+        recommendation = {
+            "Very likely": 8, "Likely": 1, "Neutral": 0,
+            "Unlikely": 0, "Very unlikely": 0},
+    )
+
+    # ── DERIVED METRICS ───────────────────────────────────────────────────────
+    def pct_agree(d, n):
+        """% who Strongly Agree or Agree."""
+        return round((d.get("Strongly Agree", 0) + d.get("Agree", 0)) / n * 100)
+
+    pre_understand_pct  = pct_agree(pre['program_understanding'], N_pre)
+    post_understand_pct = pct_agree(post['program_understanding'], N_post)
+    pre_track_pct       = pct_agree(pre['track_clarity'], N_pre)
+    post_track_pct      = pct_agree(post['track_clarity'], N_post)
+    pre_conf_pct        = pct_agree(pre['app_confidence'], N_pre)
+    post_conf_pct       = pct_agree(post['app_confidence'], N_post)
+    pre_artic_pct       = pct_agree(pre['articulate_leadership'], N_pre)
+    post_artic_pct      = pct_agree(post['articulate_leadership'], N_post)
+
+    mentoring_pct   = pct_agree(post['mentoring_helped'], N_post)
+    recommend_pct   = round((post['recommendation']['Very likely'] +
+                             post['recommendation']['Likely']) / N_post * 100)
+    plan_action_pct = round((post['plan_to_apply']['Yes'] +
+                             post['plan_to_apply']['I have already applied']) / N_post * 100)
+
+    scale_labels = ["Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree"]
+    scale_colors = ['#7C3AED', '#A78BFA', '#C4B5FD', '#DDD6FE', '#EDE9FE']
+
+    # ── HEADER ────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 60%, #A78BFA 100%);
+         padding: 4rem 2rem; border-radius: 0 0 40px 40px;
+         box-shadow: 0 20px 60px rgba(124,58,237,0.25);
+         margin-bottom: 3rem; position: relative; overflow: hidden;">
+        <div style="position:absolute;top:-50%;right:-10%;width:600px;height:600px;
+             background:radial-gradient(circle,rgba(255,255,255,0.12) 0%,transparent 70%);
+             border-radius:50%;"></div>
+        <h1 class="initiative-title">⚡ Leaders Accelerator</h1>
+        <p class="initiative-subtitle">10X Leaders · Saudi Leadership Society — Australia Chapter</p>
+        <div style="text-align:center; margin-top:1.2rem; position:relative; z-index:1;">
+            <span class="circle-badge" style="background:rgba(167,139,250,0.25);
+                  color:#fff;border:1px solid rgba(167,139,250,0.5);">🎯 Clarity</span>
+            <span class="circle-badge" style="background:rgba(124,58,237,0.25);
+                  color:#fff;border:1px solid rgba(124,58,237,0.5);">💪 Confidence</span>
+            <span class="circle-badge" style="background:rgba(76,29,149,0.25);
+                  color:#fff;border:1px solid rgba(76,29,149,0.5);">🏆 Coaching</span>
+        </div>
+        <div style="text-align:center; margin-top:1rem;">
+            <span class="mission-tagline">Application Readiness & Leadership Development</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── TOP STAT PILLS ─────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#4C1D95 0%,#7C3AED 100%);
+         padding:2rem; border-radius:20px; margin-bottom:2rem;
+         box-shadow:0 10px 40px rgba(124,58,237,0.2);">
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;
+             gap:0.5rem;position:relative;z-index:1;">
+            <div class="stat-pill"><span class="num">{N_pre}</span>
+                <span class="lbl">Pre-survey</span></div>
+            <div class="stat-pill"><span class="num">{N_post}</span>
+                <span class="lbl">Post-survey</span></div>
+            <div class="stat-pill"><span class="num">{post_understand_pct}%</span>
+                <span class="lbl">Program clarity (post)</span></div>
+            <div class="stat-pill"><span class="num">{post_conf_pct}%</span>
+                <span class="lbl">App. confidence (post)</span></div>
+            <div class="stat-pill"><span class="num">{mentoring_pct}%</span>
+                <span class="lbl">Mentoring helped</span></div>
+            <div class="stat-pill"><span class="num">{recommend_pct}%</span>
+                <span class="lbl">Would recommend</span></div>
+            <div class="stat-pill"><span class="num">{plan_action_pct}%</span>
+                <span class="lbl">Plan to apply</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── KPI CARDS ──────────────────────────────────────────────────────────────
+    ACC_COLOR = "#7C3AED"
+
+    def acc_kpi_card(category, label, value, context, trend="", warn=False):
+        trend_html = ""
+        if trend:
+            trend_class = "kpi-trend-warn" if warn else "kpi-trend"
+            trend_html = f'<div class="{trend_class}">{trend}</div>'
+        return f"""
+        <div class="kpi-card" style="--accent:#7C3AED;">
+            <div style="position:absolute;top:0;left:0;width:5px;height:100%;
+                 background:linear-gradient(180deg,#4C1D95,#A78BFA);
+                 box-shadow:0 0 20px rgba(124,58,237,0.3);border-radius:2px 0 0 2px;"></div>
+            <div class="kpi-category" style="color:{ACC_COLOR};">{category}</div>
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value" style="background:linear-gradient(135deg,#4C1D95,#7C3AED);
+                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                 background-clip:text;">{value}</div>
+            <div class="kpi-context">{context}</div>
+            {trend_html}
+        </div>"""
+
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>',
+                unsafe_allow_html=True)
+    st.markdown('<p class="subsection-title">Reach & Participation</p>',
+                unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(acc_kpi_card("REACH", "Participants Surveyed",
+            f"{N_pre} / {N_post}",
+            f"{N_pre} pre-session · {N_post} post-session respondents",
+            "✓ Strong engagement for focused cohort"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(acc_kpi_card("OUTREACH", "Primary Channel — Saudi Student Assoc.",
+            "70%",
+            f"7 of {N_pre} heard via Saudi Students Associations",
+            "✓ Community-driven reach"), unsafe_allow_html=True)
+    with c3:
+        cities = sum(1 for v in pre['location'].values() if v > 0)
+        st.markdown(acc_kpi_card("REACH", "Cities Represented",
+            str(cities),
+            "Sydney, Melbourne + 1 other location",
+            "✓ Multi-city cohort"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Readiness Shift — Pre vs Post</p>',
+                unsafe_allow_html=True)
+
+    c1, c2, c3, c4 = st.columns(4)
+    items = [
+        ("CLARITY", "Program Requirements Clarity",
+         pre_understand_pct, post_understand_pct),
+        ("TRACK", "Track Selection Clarity",
+         pre_track_pct, post_track_pct),
+        ("CONFIDENCE", "Application Confidence",
+         pre_conf_pct, post_conf_pct),
+        ("ARTICULATION", "Leadership Articulation",
+         pre_artic_pct, post_artic_pct),
+    ]
+    for col, (cat, label, pre_v, post_v) in zip([c1, c2, c3, c4], items):
+        lift = post_v - pre_v
+        with col:
+            st.markdown(acc_kpi_card(
+                cat, label,
+                f"{post_v}%",
+                f"Agree/Strongly Agree post-session",
+                f"✓ +{lift}pp vs pre-session ({pre_v}%)"
+            ), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Mentoring & Advocacy</p>',
+                unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(acc_kpi_card("MENTORING", "Individual Mentoring Helped",
+            f"{mentoring_pct}%",
+            f"{post['mentoring_helped']['Strongly Agree']} Strongly Agree + "
+            f"{post['mentoring_helped']['Agree']} Agree",
+            "✓ High-impact coaching format"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(acc_kpi_card("ACTION", "Plan to Apply / Already Applied",
+            f"{plan_action_pct}%",
+            f"7 planning to apply · 2 already applied",
+            "✓ 100% conversion — 0 said No"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(acc_kpi_card("ADVOCACY", "Would Recommend",
+            f"{recommend_pct}%",
+            f"{post['recommendation']['Very likely']} Very Likely + "
+            f"{post['recommendation']['Likely']} Likely",
+            "✓ Outstanding word-of-mouth"), unsafe_allow_html=True)
+
+    # ── HIGHLIGHT BOX ──────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#4C1D95 0%,#7C3AED 100%);
+         padding:3rem; border-radius:30px; margin:3rem 0;
+         box-shadow:0 20px 60px rgba(124,58,237,0.3);
+         position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-50%;right:-20%;width:500px;height:500px;
+             background:radial-gradient(circle,rgba(167,139,250,0.25) 0%,transparent 70%);
+             border-radius:50%;"></div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+             color:white;margin-bottom:2rem;position:relative;z-index:1;">
+            ✨ Leaders Accelerator — Session Highlights</h3>
+        <ul style="list-style:none;padding:0;margin:0;position:relative;z-index:1;">
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                Program requirements clarity jumped from
+                <strong>{pre_understand_pct}% → {post_understand_pct}%</strong>
+                (+{post_understand_pct - pre_understand_pct}pp)</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                Application confidence rose from
+                <strong>{pre_conf_pct}% → {post_conf_pct}%</strong>
+                (+{post_conf_pct - pre_conf_pct}pp)</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                <strong>100%</strong> of post-survey respondents plan to apply or have
+                already applied — 0 said No</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                Individual mentoring rated helpful by
+                <strong>{mentoring_pct}%</strong> of participants</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                <strong>{recommend_pct}%</strong> would recommend the session to a colleague
+            </li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── DEEP-DIVE TABS ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Deep-Dive Analysis</p>',
+                unsafe_allow_html=True)
+
+    tab1, tab2, tab3 = st.tabs([
+        "🔄 Pre vs Post Shifts", "🎯 Outcomes & Action", "👥 Demographics"
+    ])
+
+    # ── TAB 1: PRE VS POST ─────────────────────────────────────────────────────
+    with tab1:
+        st.markdown("### Readiness Shifts — All Four Dimensions")
+
+        dimensions = [
+            "Program\nRequirements\nClarity",
+            "Track\nSelection\nClarity",
+            "Application\nConfidence",
+            "Leadership\nArticulation",
+        ]
+        pre_pcts  = [pre_understand_pct, pre_track_pct,
+                     pre_conf_pct, pre_artic_pct]
+        post_pcts = [post_understand_pct, post_track_pct,
+                     post_conf_pct, post_artic_pct]
+
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            name='Before Session', x=dimensions, y=pre_pcts,
+            marker_color='#DDD6FE',
+            text=[f"{v}%" for v in pre_pcts], textposition='outside',
+            textfont=dict(size=13, family='Epilogue')))
+        fig.add_trace(go.Bar(
+            name='After Session', x=dimensions, y=post_pcts,
+            marker_color='#7C3AED',
+            text=[f"{v}%" for v in post_pcts], textposition='outside',
+            textfont=dict(size=13, family='Epilogue')))
+        fig.update_layout(
+            barmode='group', height=420,
+            yaxis=dict(range=[0, 110], title='% Agree / Strongly Agree'),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom',
+                        y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Compare Bands — Each Dimension")
+        for dim, pre_v, post_v in zip(
+                ["Program Requirements Clarity", "Track Selection Clarity",
+                 "Application Confidence", "Leadership Articulation"],
+                pre_pcts, post_pcts):
+            st.markdown(compare_band(
+                pre_v, post_v,
+                f"agreed pre-session",
+                f"agreed post-session",
+                "#6b7280", "#7C3AED", "%", dim
+            ), unsafe_allow_html=True)
+
+        st.markdown("### Likert Distribution — Before vs After")
+        c1, c2 = st.columns(2)
+        likert_dims_pre = {
+            "Program\nClarity":    pre['program_understanding'],
+            "Track\nClarity":      pre['track_clarity'],
+            "App\nConfidence":     pre['app_confidence'],
+            "Leadership\nArticul.":pre['articulate_leadership'],
+        }
+        likert_dims_post = {
+            "Program\nClarity":     post['program_understanding'],
+            "Track\nClarity":       post['track_clarity'],
+            "App\nConfidence":      post['app_confidence'],
+            "Leadership\nArticul.": post['articulate_leadership'],
+        }
+        with c1:
+            st.markdown("#### Before Session")
+            fig_pre = go.Figure()
+            for label, color in zip(scale_labels, scale_colors):
+                fig_pre.add_trace(go.Bar(
+                    name=label,
+                    x=list(likert_dims_pre.keys()),
+                    y=[d.get(label, 0) for d in likert_dims_pre.values()],
+                    marker_color=color,
+                    text=[d.get(label, 0) for d in likert_dims_pre.values()],
+                    textposition='inside', textfont=dict(size=11)
+                ))
+            fig_pre.update_layout(
+                barmode='stack', height=380, yaxis=dict(range=[0, N_pre + 1]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom',
+                            y=-0.3, xanchor='center', x=0.5))
+            st.plotly_chart(fig_pre, use_container_width=True)
+        with c2:
+            st.markdown("#### After Session")
+            fig_post = go.Figure()
+            for label, color in zip(scale_labels, scale_colors):
+                fig_post.add_trace(go.Bar(
+                    name=label,
+                    x=list(likert_dims_post.keys()),
+                    y=[d.get(label, 0) for d in likert_dims_post.values()],
+                    marker_color=color,
+                    text=[d.get(label, 0) for d in likert_dims_post.values()],
+                    textposition='inside', textfont=dict(size=11)
+                ))
+            fig_post.update_layout(
+                barmode='stack', height=380, yaxis=dict(range=[0, N_post + 1]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom',
+                            y=-0.3, xanchor='center', x=0.5))
+            st.plotly_chart(fig_post, use_container_width=True)
+
+        st.markdown("### Radar — Readiness Profile Before vs After")
+        radar_dims  = ["Program\nClarity", "Track\nClarity",
+                       "App\nConfidence", "Leadership\nArticulation"]
+        fig_r = go.Figure()
+        fig_r.add_trace(go.Scatterpolar(
+            r=pre_pcts + [pre_pcts[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='Before Session',
+            line_color='#C4B5FD', fillcolor='rgba(196,181,253,0.15)', line_width=2))
+        fig_r.add_trace(go.Scatterpolar(
+            r=post_pcts + [post_pcts[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='After Session',
+            line_color='#7C3AED', fillcolor='rgba(124,58,237,0.15)', line_width=2.5))
+        fig_r.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 100],
+                                tickfont=dict(size=10)),
+                angularaxis=dict(tickfont=dict(size=12, family='Epilogue'))),
+            showlegend=True, height=480, paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom',
+                        y=-0.1, xanchor='center', x=0.5))
+        col_l, col_c, col_r = st.columns([1, 3, 1])
+        with col_c:
+            st.plotly_chart(fig_r, use_container_width=True)
+
+    # ── TAB 2: OUTCOMES ────────────────────────────────────────────────────────
+    with tab2:
+        st.markdown("### Post-Session Outcomes")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.markdown("#### Plan to Apply")
+            fig = lnc_donut(
+                list(post['plan_to_apply'].keys()),
+                list(post['plan_to_apply'].values()),
+                ['#7C3AED', '#A78BFA', '#E9D5FF'],
+                center_text=f"{plan_action_pct}%\nWill Apply"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Recommendation Likelihood")
+            fig = lnc_donut(
+                list(post['recommendation'].keys()),
+                list(post['recommendation'].values()),
+                ['#4C1D95', '#7C3AED', '#A78BFA', '#C4B5FD', '#EDE9FE'],
+                center_text=f"{recommend_pct}%\nRecommend"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c3:
+            st.markdown("#### Mentoring Effectiveness")
+            fig = lnc_donut(
+                list(post['mentoring_helped'].keys()),
+                list(post['mentoring_helped'].values()),
+                ['#4C1D95', '#7C3AED', '#A78BFA', '#C4B5FD', '#EDE9FE'],
+                center_text=f"{mentoring_pct}%\nHelped"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Post-Session Summary — All Measures")
+        post_measures = [
+            "Program\nClarity", "Track\nClarity",
+            "App\nConfidence", "Leadership\nArticulation",
+            "Mentoring\nHelped", "Would\nRecommend", "Plan\nto Apply"
+        ]
+        post_vals = [
+            post_understand_pct, post_track_pct,
+            post_conf_pct, post_artic_pct,
+            mentoring_pct, recommend_pct, plan_action_pct
+        ]
+        fig = go.Figure(go.Bar(
+            x=post_measures, y=post_vals,
+            marker_color='#7C3AED',
+            text=[f"{v}%" for v in post_vals],
+            textposition='outside',
+            textfont=dict(size=13, family='Epilogue')
+        ))
+        fig.update_layout(
+            height=380, yaxis=dict(range=[0, 110]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 3: DEMOGRAPHICS ────────────────────────────────────────────────────
+    with tab3:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### How Participants Heard About the Session")
+            heard_labels = [k for k, v in pre['heard_about'].items() if v > 0]
+            heard_vals   = [v for v in pre['heard_about'].values() if v > 0]
+            fig = go.Figure(go.Bar(
+                x=heard_labels, y=heard_vals,
+                marker_color=['#7C3AED', '#A78BFA', '#C4B5FD'],
+                text=heard_vals, textposition='outside',
+                textfont=dict(size=14, family='Epilogue')
+            ))
+            fig.update_layout(
+                height=340, yaxis=dict(range=[0, 10]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Location of Participants")
+            loc_labels = [k for k, v in pre['location'].items() if v > 0]
+            loc_vals   = [v for k, v in pre['location'].items() if v > 0]
+            fig = lnc_donut(
+                loc_labels, loc_vals,
+                ['#4C1D95', '#7C3AED', '#A78BFA'],
+                center_text=f"{N_pre}\nParticipants"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── ABOUT BOX ──────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About Leaders Accelerator — 10X Leaders</h3>
+        <p>
+            The <strong>Leaders Accelerator</strong> is a focused coaching and mentorship session
+            designed to help Saudi students in Australia prepare strong applications for the
+            <strong>Misk 10X Leaders program</strong>. Through individual mentoring, participants
+            clarify their track fit, sharpen their articulation of leadership experiences, and
+            leave with the confidence and clarity to submit a competitive application — all
+            aligned with <strong>Vision 2030</strong>'s leadership development goals.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── FOOTER ─────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#1E0A3C 0%,#4C1D95 100%);
+         color:white;padding:4rem 2rem;border-radius:40px 40px 0 0;
+         margin-top:5rem;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-50%;left:-25%;width:150%;height:200%;
+             background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%);"></div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;
+             margin-bottom:0.75rem;position:relative;z-index:1;">
+             ⚡ Leaders Accelerator — 10X Leaders</h2>
+        <p style="font-family:'Epilogue',sans-serif;font-size:1.4rem;font-weight:300;
+             opacity:0.95;margin-bottom:2.5rem;position:relative;z-index:1;">
+             Saudi Leadership Society · Australia Chapter</p>
+        <div style="display:flex;justify-content:center;gap:2.5rem;margin:2rem 0;
+             flex-wrap:wrap;position:relative;z-index:1;">
+            <div><div style="font-size:2.5rem;font-weight:700">{N_pre}</div>
+                 <div style="opacity:0.8">Pre-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{N_post}</div>
+                 <div style="opacity:0.8">Post-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{post_conf_pct}%</div>
+                 <div style="opacity:0.8">App. confident (post)</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{plan_action_pct}%</div>
+                 <div style="opacity:0.8">Plan to apply</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{recommend_pct}%</div>
+                 <div style="opacity:0.8">Would recommend</div></div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:2rem;opacity:0.9;
+             position:relative;z-index:1;"><strong>Clarity · Confidence · Coaching</strong></p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:1rem;
+             position:relative;z-index:1;">
+             {datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
 # ============================================================================
 # HEALTH SESSION DASHBOARD
 # ============================================================================
