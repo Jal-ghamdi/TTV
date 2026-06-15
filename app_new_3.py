@@ -852,7 +852,7 @@ with col1:
 
 # Only load JSON for non-LNC sessions
 data = None
-if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross', 'lnc_combined'):
+if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross', 'lnc_combined', 'leaders_accelerator'):
     data = load_data(session_info['data_file'])
     if data is None:
         st.error("Could not load data.")
