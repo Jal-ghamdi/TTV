@@ -3652,6 +3652,483 @@ if session_info.get('type') == 'leaders_accelerator':
     """, unsafe_allow_html=True)
 
     st.stop()
+
+
+# ============================================================================
+# WHERE TO PASTE THIS
+# ============================================================================
+# Paste this entire block into your dispatch chain, right AFTER the
+# Leaders Accelerator block's closing `st.stop()` and BEFORE the
+# "# HEALTH SESSION DASHBOARD" comment. It follows the exact same pattern
+# as the other custom (data_file: None) session types in your app.
+#
+# Data provenance: computed from Pre_poll_AUC.csv (n=30) and
+# Post_poll_AUC.csv (n=25), matched on hashed participant email (n=16
+# matched pairs, 53.3% match rate). Readiness-shift deltas use the matched
+# pairs only (correct paired pre/post comparison, same approach as your
+# Health/Nursing/Cybersecurity sessions). Demographics and "all
+# respondents" distributions use the full unmatched samples.
+#
+# The four chapter numbers below are intentionally left as None — fill
+# them in whenever you have them. The dashboard renders "TBD" in their
+# place until then, so nothing will break.
+# ============================================================================
+
+if session_info.get('type') == 'innovation_diwan':
+
+    # ── CHAPTER CONFIG — FILL IN LATER ──────────────────────────────────────
+    TOTAL_REGISTERED       = None   # e.g. 120
+    TARGET_ATTENDANCE      = None   # e.g. 40
+    ACTUAL_ATTENDEES       = None   # e.g. 35
+    SESSION_DURATION_HOURS = None   # e.g. 1.5
+
+    def tbd(val, suffix=""):
+        return f"{val}{suffix}" if val is not None else "TBD"
+
+    # ── SAMPLE SIZES ─────────────────────────────────────────────────────────
+    N_pre      = 30   # pre-survey respondents
+    N_post     = 25   # post-survey respondents
+    N_matched  = 16   # matched pre+post pairs (hashed email match, 53.3%)
+
+    # ── FULL-SAMPLE PRE DATA (n=30) ─────────────────────────────────────────
+    pre = dict(
+        heard_about = {
+            "WhatsApp": 23, "Saudi Leadership Society Social Media": 3,
+            "SACM (Saudi Arabian Cultural Mission in Australia)": 3, "Other": 1
+        },
+        location = {"Melbourne": 15, "Sydney": 12, "Adelaide": 1, "Brisbane": 1, "Other": 1},
+        heard_before = {"No": 23, "Yes": 7},
+        purpose     = {"Neutral": 16, "Strongly Agree": 5, "Agree": 4, "Disagree": 3, "Strongly Disagree": 2},
+        eligibility = {"Neutral": 11, "Disagree": 9, "Agree": 4, "Strongly Disagree": 3, "Strongly Agree": 3},
+        benefits    = {"Disagree": 9, "Agree": 8, "Neutral": 6, "Strongly Agree": 5, "Strongly Disagree": 2},
+        skills      = {"Disagree": 10, "Neutral": 9, "Agree": 7, "Strongly Disagree": 2, "Strongly Agree": 2},
+    )
+
+    # ── FULL-SAMPLE POST DATA (n=25) ────────────────────────────────────────
+    post = dict(
+        purpose     = {"Strongly Agree": 17, "Agree": 4, "Neutral": 2, "Strongly Disagree": 2},
+        eligibility = {"Strongly Agree": 13, "Agree": 7, "Neutral": 3, "Disagree": 1, "Strongly Disagree": 1},
+        benefits    = {"Strongly Agree": 16, "Agree": 6, "Neutral": 2, "Strongly Disagree": 1},
+        skills      = {"Strongly Agree": 13, "Agree": 6, "Neutral": 4, "Strongly Disagree": 2},
+        intend_apply  = {"Yes": 22, "No": 3},
+        session_value = {"Strongly Agree": 15, "Agree": 5, "Neutral": 4, "Strongly Disagree": 1},
+    )
+
+    # ── MATCHED-PAIRS (n=16) AVERAGE SCORES — headline growth metric ───────
+    matched_scores = {
+        "purpose":     {"pre": 3.50, "post": 4.38},
+        "eligibility": {"pre": 3.00, "post": 4.31},
+        "benefits":    {"pre": 3.50, "post": 4.38},
+        "skills":      {"pre": 3.06, "post": 4.31},
+    }
+    matched_avg_growth      = 1.08   # avg pts increase across the 4 dimensions, matched pairs
+    matched_pct_grew        = 68.8   # % of the 16 matched participants who improved
+    matched_intend_apply    = {"Yes": 14, "No": 2}          # n=16
+    matched_session_value   = {"Strongly Agree": 9, "Agree": 4, "Neutral": 3}  # n=16
+    matched_avg_satisfaction = 4.38
+
+    # ── DERIVED (full-sample) ───────────────────────────────────────────────
+    def pct_agree(d, n):
+        return round((d.get("Strongly Agree", 0) + d.get("Agree", 0)) / n * 100, 1)
+
+    post_purpose_pct     = pct_agree(post['purpose'], N_post)
+    post_eligibility_pct = pct_agree(post['eligibility'], N_post)
+    post_benefits_pct    = pct_agree(post['benefits'], N_post)
+    post_skills_pct      = pct_agree(post['skills'], N_post)
+    intend_apply_pct     = round(post['intend_apply']['Yes'] / N_post * 100, 1)
+    session_value_pct    = pct_agree(post['session_value'], N_post)
+    session_value_avg    = 4.32   # full-sample average (n=25)
+    heard_before_pct     = round(pre['heard_before']['Yes'] / N_pre * 100, 1)
+    top_channel_pct      = round(pre['heard_about']['WhatsApp'] / N_pre * 100, 1)
+
+    DIWAN_COLOR = "#8B5CF6"
+    scale_labels = ["Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree"]
+    scale_colors = ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE', '#EDE9FE']
+
+    # ── HEADER ────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 55%, #8B5CF6 100%);
+         padding: 4rem 2rem; border-radius: 0 0 40px 40px;
+         box-shadow: 0 20px 60px rgba(139,92,246,0.25);
+         margin-bottom: 3rem; position: relative; overflow: hidden;">
+        <div style="position:absolute;top:-50%;right:-10%;width:600px;height:600px;
+             background:radial-gradient(circle,rgba(255,255,255,0.12) 0%,transparent 70%);
+             border-radius:50%;"></div>
+        <h1 class="initiative-title">🌏 Australian Lens | Innovation Diwan</h1>
+        <p class="initiative-subtitle">Misk Tracks · Saudi Leadership Society — Australia Chapter</p>
+        <div style="text-align:center; margin-top:1.2rem; position:relative; z-index:1;">
+            <span class="circle-badge" style="background:rgba(167,139,250,0.25);
+                  color:#fff;border:1px solid rgba(167,139,250,0.5);">🎯 Purpose</span>
+            <span class="circle-badge" style="background:rgba(124,58,237,0.25);
+                  color:#fff;border:1px solid rgba(124,58,237,0.5);">📋 Eligibility</span>
+            <span class="circle-badge" style="background:rgba(76,29,149,0.25);
+                  color:#fff;border:1px solid rgba(76,29,149,0.5);">🚀 Benefits</span>
+        </div>
+        <div style="text-align:center; margin-top:1rem;">
+            <span class="mission-tagline">Innovation Diwan Program Readiness</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── TOP STAT PILLS ─────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#4C1D95 0%,#8B5CF6 100%);
+         padding:2rem; border-radius:20px; margin-bottom:2rem;
+         box-shadow:0 10px 40px rgba(139,92,246,0.2);">
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;
+             gap:0.5rem;position:relative;z-index:1;">
+            <div class="stat-pill"><span class="num">{N_pre}</span>
+                <span class="lbl">Pre-survey</span></div>
+            <div class="stat-pill"><span class="num">{N_post}</span>
+                <span class="lbl">Post-survey</span></div>
+            <div class="stat-pill"><span class="num">{N_matched}</span>
+                <span class="lbl">Matched pairs</span></div>
+            <div class="stat-pill"><span class="num">+{matched_avg_growth}</span>
+                <span class="lbl">Avg readiness lift</span></div>
+            <div class="stat-pill"><span class="num">{intend_apply_pct}%</span>
+                <span class="lbl">Intend to apply</span></div>
+            <div class="stat-pill"><span class="num">{session_value_pct}%</span>
+                <span class="lbl">Found it valuable</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── KPI CARDS ──────────────────────────────────────────────────────────────
+    def diwan_kpi_card(category, label, value, context, trend="", warn=False):
+        trend_html = ""
+        if trend:
+            trend_class = "kpi-trend-warn" if warn else "kpi-trend"
+            trend_html = f'<div class="{trend_class}">{trend}</div>'
+        return f"""
+        <div class="kpi-card">
+            <div style="position:absolute;top:0;left:0;width:5px;height:100%;
+                 background:linear-gradient(180deg,#4C1D95,#A78BFA);
+                 box-shadow:0 0 20px rgba(139,92,246,0.3);border-radius:2px 0 0 2px;"></div>
+            <div class="kpi-category" style="color:{DIWAN_COLOR};">{category}</div>
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value" style="background:linear-gradient(135deg,#4C1D95,#8B5CF6);
+                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                 background-clip:text;">{value}</div>
+            <div class="kpi-context">{context}</div>
+            {trend_html}
+        </div>"""
+
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subsection-title">Reach & Participation</p>', unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(diwan_kpi_card("REACH", "Participants Surveyed",
+            f"{N_pre} / {N_post}",
+            f"{N_pre} pre-session · {N_post} post-session · {N_matched} matched pairs",
+            "✓ 53.3% match rate"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(diwan_kpi_card("OUTREACH", "Primary Channel — WhatsApp",
+            f"{top_channel_pct}%",
+            f"23 of {N_pre} heard about the session via WhatsApp",
+            "✓ Community-driven reach"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(diwan_kpi_card("AWARENESS", "New to Innovation Diwan",
+            f"{heard_before_pct}%",
+            f"23 of {N_pre} had not heard of the program before",
+            "✓ Strong first-exposure audience"), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Readiness Shift — Matched Participants (n=16)</p>', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    items = [
+        ("PURPOSE", "Program Purpose", matched_scores['purpose']),
+        ("ELIGIBILITY", "Eligibility Requirements", matched_scores['eligibility']),
+        ("BENEFITS", "Benefits Awareness", matched_scores['benefits']),
+        ("SKILLS", "Skills & Preparation", matched_scores['skills']),
+    ]
+    for col, (cat, label, sc) in zip([c1, c2, c3, c4], items):
+        lift = round(sc['post'] - sc['pre'], 2)
+        with col:
+            st.markdown(diwan_kpi_card(
+                cat, label, f"{sc['post']:.2f}/5",
+                f"Post-session average (matched, n={N_matched})",
+                f"✓ +{lift} vs pre ({sc['pre']:.2f})"
+            ), unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Outcomes & Advocacy (All Post-Session Respondents, n=25)</p>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(diwan_kpi_card("ACTION", "Intend to Apply",
+            f"{intend_apply_pct}%",
+            f"{post['intend_apply']['Yes']} of {N_post} intend to apply",
+            "✓ Strong conversion signal"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(diwan_kpi_card("VALUE", "Found Session Valuable",
+            f"{session_value_pct}%",
+            f"Avg {session_value_avg}/5 across all {N_post} respondents",
+            "✓ High perceived value"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(diwan_kpi_card("GROWTH", "Matched Participants Improved",
+            f"{matched_pct_grew}%",
+            f"Of the {N_matched} matched pairs showed a readiness increase",
+            f"✓ +{matched_avg_growth} pts avg across 4 dimensions"), unsafe_allow_html=True)
+
+    # ── HIGHLIGHT BOX ──────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#4C1D95 0%,#8B5CF6 100%);
+         padding:3rem; border-radius:30px; margin:3rem 0;
+         box-shadow:0 20px 60px rgba(139,92,246,0.3);
+         position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-50%;right:-20%;width:500px;height:500px;
+             background:radial-gradient(circle,rgba(167,139,250,0.25) 0%,transparent 70%);
+             border-radius:50%;"></div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+             color:white;margin-bottom:2rem;position:relative;z-index:1;">
+            ✨ Australian Lens | Innovation Diwan — Session Highlights</h3>
+        <ul style="list-style:none;padding:0;margin:0;position:relative;z-index:1;">
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                Skills &amp; preparation clarity rose the most among matched participants:
+                <strong>3.06 → 4.31</strong> (+1.25 pts)</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                Eligibility understanding jumped from
+                <strong>3.00 → 4.31</strong> (+1.31 pts) — the largest single-topic lift</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                <strong>{intend_apply_pct}%</strong> of all post-session respondents intend to apply
+                to the Innovation Diwan Program</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                <strong>76.7%</strong> of pre-session respondents had never heard of the program
+                before this session — a genuine first-exposure audience</li>
+            <li style="font-family:'Epilogue',sans-serif;font-size:1.1rem;
+                 color:rgba(255,255,255,0.95);line-height:2;padding:0.6rem 0 0.6rem 2.5rem;
+                 position:relative;">
+                <span style="position:absolute;left:0;color:#C4B5FD;font-weight:900;
+                      font-size:1.4rem;">✓</span>
+                <strong>{session_value_pct}%</strong> rated the session valuable or very valuable
+                (avg {session_value_avg}/5, n={N_post})</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── DEEP-DIVE TABS ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Deep-Dive Analysis</p>', unsafe_allow_html=True)
+
+    tab1, tab2, tab3 = st.tabs([
+        "🔄 Pre vs Post Shifts", "🎯 Outcomes & Action", "👥 Demographics"
+    ])
+
+    # ── TAB 1: PRE VS POST (matched pairs) ──────────────────────────────────
+    with tab1:
+        st.markdown("### Readiness Shifts — Matched Pairs (n=16)")
+
+        dimensions = ["Program\nPurpose", "Eligibility\nRequirements", "Benefits\nAwareness", "Skills &\nPreparation"]
+        pre_vals  = [matched_scores[k]['pre']  for k in ['purpose','eligibility','benefits','skills']]
+        post_vals = [matched_scores[k]['post'] for k in ['purpose','eligibility','benefits','skills']]
+
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='Before Session', x=dimensions, y=pre_vals,
+            marker_color='#DDD6FE', text=[f"{v:.2f}" for v in pre_vals],
+            textposition='outside', textfont=dict(size=13, family='Epilogue')))
+        fig.add_trace(go.Bar(name='After Session', x=dimensions, y=post_vals,
+            marker_color='#8B5CF6', text=[f"{v:.2f}" for v in post_vals],
+            textposition='outside', textfont=dict(size=13, family='Epilogue')))
+        fig.update_layout(barmode='group', height=420, yaxis=dict(range=[0, 5.8], title='Score (1–5)'),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5))
+        st.plotly_chart(fig, use_container_width=True)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Before Session — Full Sample (n=30)")
+            fig_pre = go.Figure()
+            pre_topic_dists = {"Purpose": pre['purpose'], "Eligibility": pre['eligibility'],
+                                "Benefits": pre['benefits'], "Skills": pre['skills']}
+            for label, color in zip(scale_labels, scale_colors):
+                fig_pre.add_trace(go.Bar(
+                    name=label, x=list(pre_topic_dists.keys()),
+                    y=[d.get(label, 0) for d in pre_topic_dists.values()],
+                    marker_color=color,
+                    text=[d.get(label, 0) for d in pre_topic_dists.values()],
+                    textposition='inside', textfont=dict(size=11)))
+            fig_pre.update_layout(barmode='stack', height=380, yaxis=dict(range=[0, N_pre + 2]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=-0.3, xanchor='center', x=0.5))
+            st.plotly_chart(fig_pre, use_container_width=True)
+        with c2:
+            st.markdown("#### After Session — Full Sample (n=25)")
+            fig_post = go.Figure()
+            post_topic_dists = {"Purpose": post['purpose'], "Eligibility": post['eligibility'],
+                                 "Benefits": post['benefits'], "Skills": post['skills']}
+            for label, color in zip(scale_labels, scale_colors):
+                fig_post.add_trace(go.Bar(
+                    name=label, x=list(post_topic_dists.keys()),
+                    y=[d.get(label, 0) for d in post_topic_dists.values()],
+                    marker_color=color,
+                    text=[d.get(label, 0) for d in post_topic_dists.values()],
+                    textposition='inside', textfont=dict(size=11)))
+            fig_post.update_layout(barmode='stack', height=380, yaxis=dict(range=[0, N_post + 2]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation='h', yanchor='bottom', y=-0.3, xanchor='center', x=0.5))
+            st.plotly_chart(fig_post, use_container_width=True)
+
+        st.markdown("### Readiness Profile — Radar (Matched Pairs)")
+        radar_dims = ["Program\nPurpose", "Eligibility\nRequirements", "Benefits\nAwareness", "Skills &\nPreparation"]
+        pre_pcts_radar  = [v / 5 * 100 for v in pre_vals]
+        post_pcts_radar = [v / 5 * 100 for v in post_vals]
+        fig_r = go.Figure()
+        fig_r.add_trace(go.Scatterpolar(
+            r=pre_pcts_radar + [pre_pcts_radar[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='Before Session',
+            line_color='#C4B5FD', fillcolor='rgba(196,181,253,0.15)', line_width=2))
+        fig_r.add_trace(go.Scatterpolar(
+            r=post_pcts_radar + [post_pcts_radar[0]], theta=radar_dims + [radar_dims[0]],
+            fill='toself', name='After Session',
+            line_color='#8B5CF6', fillcolor='rgba(139,92,246,0.15)', line_width=2.5))
+        fig_r.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 100], tickfont=dict(size=10)),
+                       angularaxis=dict(tickfont=dict(size=12, family='Epilogue'))),
+            showlegend=True, height=480, paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation='h', yanchor='bottom', y=-0.1, xanchor='center', x=0.5))
+        col_l, col_c, col_r = st.columns([1, 3, 1])
+        with col_c:
+            st.plotly_chart(fig_r, use_container_width=True)
+
+    # ── TAB 2: OUTCOMES & ACTION ────────────────────────────────────────────
+    with tab2:
+        st.markdown("### Post-Session Outcomes (Full Sample, n=25)")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Intend to Apply")
+            fig = lnc_donut(
+                list(post['intend_apply'].keys()), list(post['intend_apply'].values()),
+                ['#8B5CF6', '#EDE9FE'],
+                center_text=f"{intend_apply_pct}%\nIntend"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Found Session Valuable")
+            fig = lnc_donut(
+                list(post['session_value'].keys()), list(post['session_value'].values()),
+                ['#4C1D95', '#8B5CF6', '#A78BFA', '#EDE9FE'],
+                center_text=f"{session_value_pct}%\nValuable"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Intend to Apply — Matched Pairs Only (n=16)")
+        fig = go.Figure(go.Bar(
+            x=list(matched_intend_apply.keys()), y=list(matched_intend_apply.values()),
+            marker_color=['#8B5CF6', '#EDE9FE'],
+            text=list(matched_intend_apply.values()), textposition='outside',
+            textfont=dict(size=15, family='Epilogue')
+        ))
+        fig.update_layout(height=320, yaxis=dict(range=[0, N_matched + 2]),
+            font=dict(family='Epilogue', color='#2c3e50'),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Prior Awareness of Innovation Diwan (Pre-Session, n=30)")
+        fig = lnc_donut(
+            list(pre['heard_before'].keys()), list(pre['heard_before'].values()),
+            ['#EDE9FE', '#8B5CF6'],
+            center_text=f"{heard_before_pct}%\nNew"
+        )
+        col_l, col_c, col_r = st.columns([1, 2, 1])
+        with col_c:
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── TAB 3: DEMOGRAPHICS ────────────────────────────────────────────────
+    with tab3:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### How Participants Heard About the Session")
+            heard_labels = list(pre['heard_about'].keys())
+            heard_vals   = list(pre['heard_about'].values())
+            fig = go.Figure(go.Bar(
+                x=heard_labels, y=heard_vals,
+                marker_color=['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE'],
+                text=heard_vals, textposition='outside',
+                textfont=dict(size=13, family='Epilogue')
+            ))
+            fig.update_layout(height=380, yaxis=dict(range=[0, 26]),
+                font=dict(family='Epilogue', color='#2c3e50'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False, xaxis=dict(tickangle=-15))
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Location of Participants")
+            loc_labels = list(pre['location'].keys())
+            loc_vals   = list(pre['location'].values())
+            fig = lnc_donut(
+                loc_labels, loc_vals,
+                ['#4C1D95', '#8B5CF6', '#A78BFA', '#C4B5FD', '#EDE9FE'],
+                center_text=f"{N_pre}\nParticipants"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── ABOUT BOX ──────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="info-box">
+        <h3>📋 About Australian Lens | Innovation Diwan</h3>
+        <p>
+            This session, part of the <strong>Misk Tracks</strong> initiative, introduced Saudi
+            students in Australia to the <strong>Innovation Diwan Program</strong> — its purpose,
+            eligibility requirements, benefits, and the skills needed to apply successfully.
+            Pre- and post-session surveys were matched on hashed participant email to measure
+            genuine before/after readiness shifts, alongside full-sample outcome and demographic
+            data from all respondents.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── FOOTER ─────────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#1E0A3C 0%,#4C1D95 100%);
+         color:white;padding:4rem 2rem;border-radius:40px 40px 0 0;
+         margin-top:5rem;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-50%;left:-25%;width:150%;height:200%;
+             background:radial-gradient(circle,rgba(139,92,246,0.15) 0%,transparent 70%);"></div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;
+             margin-bottom:0.75rem;position:relative;z-index:1;">
+             🌏 Australian Lens | Innovation Diwan</h2>
+        <p style="font-family:'Epilogue',sans-serif;font-size:1.4rem;font-weight:300;
+             opacity:0.95;margin-bottom:2.5rem;position:relative;z-index:1;">
+             Misk Tracks · Saudi Leadership Society — Australia Chapter</p>
+        <div style="display:flex;justify-content:center;gap:2.5rem;margin:2rem 0;
+             flex-wrap:wrap;position:relative;z-index:1;">
+            <div><div style="font-size:2.5rem;font-weight:700">{N_pre}</div>
+                 <div style="opacity:0.8">Pre-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{N_post}</div>
+                 <div style="opacity:0.8">Post-survey</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{intend_apply_pct}%</div>
+                 <div style="opacity:0.8">Intend to apply</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">+{matched_avg_growth}</div>
+                 <div style="opacity:0.8">Avg readiness lift</div></div>
+            <div><div style="font-size:2.5rem;font-weight:700">{tbd(ACTUAL_ATTENDEES)}</div>
+                 <div style="opacity:0.8">Actual attendees</div></div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:2rem;opacity:0.9;
+             position:relative;z-index:1;"><strong>Purpose · Eligibility · Benefits · Skills</strong></p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:1rem;
+             position:relative;z-index:1;">
+             {datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
 # ============================================================================
 # HEALTH SESSION DASHBOARD
 # ============================================================================
