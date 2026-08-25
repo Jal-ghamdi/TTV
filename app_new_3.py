@@ -89,6 +89,15 @@ INITIATIVES = {
                 "color": "#f59e0b",
                 "topic_labels": [],
                 "type": "comprehensive"
+            },
+            "Australian Lens | Innovation Diwan": {
+                "name": "🌏 Australian Lens | Innovation Diwan",
+                "data_file": None,
+                "icon": "🌏",
+                "vision_theme": "Innovation Diwan Program Readiness",
+                "color": "#8B5CF6",
+                "topic_labels": [],
+                "type": "innovation_diwan"
             }
         }
     },
