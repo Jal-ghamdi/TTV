@@ -63,6 +63,15 @@ INITIATIVES = {
                 "topic_keys": ["grow_nursing_knowledge", "grow_vision2030", "grow_job_market", "grow_skills"],
                 "topic_labels": ["Nursing Knowledge", "Vision 2030 Contribution", "Job Market Awareness", "In-Demand Skills"],
                 "type": "health"
+            },
+                "AI & Arabic Language": {
+                "name": "🤖 AI & Arabic Language Session",
+                "data_file": None,
+                "icon": "🤖",
+                "vision_theme": "AI, NLP & Arabic Language Technologies",
+                "color": "#0ea5e9",
+                "topic_labels": [],
+                "type": "ai_arabic"
             }
         }
     },
@@ -861,7 +870,7 @@ with col1:
 
 # Only load JSON for non-LNC sessions
 data = None
-if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross', 'lnc_combined', 'leaders_accelerator', 'innovation_diwan'):
+if session_info.get('type') not in ('lnc', 'lnc_tech', 'lnc_cross', 'lnc_combined', 'leaders_accelerator', 'innovation_diwan', 'ai_arabic'):
     data = load_data(session_info['data_file'])
     if data is None:
         st.error("Could not load data.")
@@ -3663,25 +3672,7 @@ if session_info.get('type') == 'leaders_accelerator':
     st.stop()
 
 
-# ============================================================================
-# WHERE TO PASTE THIS
-# ============================================================================
-# Paste this entire block into your dispatch chain, right AFTER the
-# Leaders Accelerator block's closing `st.stop()` and BEFORE the
-# "# HEALTH SESSION DASHBOARD" comment. It follows the exact same pattern
-# as the other custom (data_file: None) session types in your app.
-#
-# Data provenance: computed from Pre_poll_AUC.csv (n=30) and
-# Post_poll_AUC.csv (n=25), matched on hashed participant email (n=16
-# matched pairs, 53.3% match rate). Readiness-shift deltas use the matched
-# pairs only (correct paired pre/post comparison, same approach as your
-# Health/Nursing/Cybersecurity sessions). Demographics and "all
-# respondents" distributions use the full unmatched samples.
-#
-# The four chapter numbers below are intentionally left as None — fill
-# them in whenever you have them. The dashboard renders "TBD" in their
-# place until then, so nothing will break.
-# ============================================================================
+
 
 if session_info.get('type') == 'innovation_diwan':
 
@@ -4136,6 +4127,313 @@ if session_info.get('type') == 'innovation_diwan':
              {datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
     </div>
     """, unsafe_allow_html=True)
+
+    st.stop()
+
+
+# ============================================================================
+# TOWARDS THE VISION — AI & ARABIC LANGUAGE SESSION
+# ============================================================================
+
+if session_info.get('type') == 'ai_arabic':
+
+    # ── CHAPTER CONFIG — fill in when known (attendance is NOT in survey data) ──
+    TOTAL_REGISTERED  = None
+    TARGET_ATTENDANCE = None
+    ACTUAL_ATTENDEES  = None
+
+    def tbd(val, suffix=""):
+        return f"{val}{suffix}" if val is not None else "TBD"
+
+    # ── SAMPLE SIZES ─────────────────────────────────────────────────────────
+    N_pre, N_post, N_matched = 20, 16, 14
+    match_vs_pre  = round(N_matched / N_pre * 100, 1)    # 70.0
+    match_vs_post = round(N_matched / N_post * 100, 1)   # 87.5
+
+    # ── MATCHED-PAIRS KNOWLEDGE SCORES (n=14, 1–5 scale) ─────────────────────
+    topics = ["AI & NLP Landscape", "Vision 2030 Contribution",
+              "Job Market Awareness", "In-Demand Skills"]
+    pre_scores  = [3.29, 3.14, 2.93, 2.93]
+    post_scores = [3.93, 3.86, 3.79, 3.57]
+    improvements = [round(b - a, 2) for a, b in zip(pre_scores, post_scores)]
+    # Reported from the unrounded data: 0.64, 0.71, 0.86, 0.64
+    improvements = [0.64, 0.71, 0.86, 0.64]
+
+    avg_growth        = 0.71
+    median_growth     = 0.63
+    sd_growth         = 0.91
+    improved_n        = 9                       # any increase
+    improved_pct      = round(improved_n / N_matched * 100, 1)   # 64.3
+    sig_ge1_n         = 5                       # improvement >= 1.0
+    sig_ge1_pct       = round(sig_ge1_n / N_matched * 100, 1)    # 35.7
+
+    improvement_dist = {
+        "≥ 2 pts": 3, "1–2 pts": 2, "0–1 pts": 4, "No change": 3, "Decreased": 2
+    }
+    pre_dist  = {1: 0, 2: 4, 3: 7, 4: 1, 5: 2}
+    post_dist = {1: 0, 2: 1, 3: 1, 4: 11, 5: 1}
+
+    # ── POST-SESSION OUTCOMES (all post respondents, n=16) ───────────────────
+    satisfaction = {"Very satisfied": 2, "Satisfied": 12, "Neutral": 1, "Dissatisfied": 1}
+    recommend    = {"Very likely": 4, "Likely": 10, "Neutral": 2}
+    action_plan  = {"Yes": 8, "No": 8}
+
+    sat_avg       = 3.94
+    sat_pct       = round((satisfaction["Very satisfied"] + satisfaction["Satisfied"]) / N_post * 100, 1)  # 87.5
+    rec_pct       = round((recommend["Very likely"] + recommend["Likely"]) / N_post * 100, 1)              # 87.5
+    action_n      = action_plan["Yes"]
+    action_pct    = round(action_n / N_post * 100, 1)                                                      # 50.0
+
+    # ── DEMOGRAPHICS (all pre respondents, n=20) ─────────────────────────────
+    location = {"Melbourne": 11, "Sydney": 2, "Canberra": 1, "Other": 6}
+    heard_about = {"WhatsApp": 9, "SLS social media": 5,
+                   "SACM (Saudi Arabian Cultural Mission in Australia)": 3, "Other": 3}
+
+    AI_COLOR = "#0ea5e9"
+
+    # ── STAT PILLS ────────────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#075985 0%,#0ea5e9 100%);
+         padding:2rem; border-radius:20px; margin-bottom:2rem;
+         box-shadow:0 10px 40px rgba(14,165,233,0.2);">
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem;position:relative;z-index:1;">
+            <div class="stat-pill"><span class="num">{N_pre}</span><span class="lbl">Pre-survey</span></div>
+            <div class="stat-pill"><span class="num">{N_post}</span><span class="lbl">Post-survey</span></div>
+            <div class="stat-pill"><span class="num">{N_matched}</span><span class="lbl">Matched pairs</span></div>
+            <div class="stat-pill"><span class="num">+{avg_growth}</span><span class="lbl">Avg knowledge lift</span></div>
+            <div class="stat-pill"><span class="num">{sat_pct:.1f}%</span><span class="lbl">Satisfied</span></div>
+            <div class="stat-pill"><span class="num">{rec_pct:.1f}%</span><span class="lbl">Would recommend</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── KPI CARDS ─────────────────────────────────────────────────────────────
+    st.markdown('<p class="section-title">📊 Key Performance Indicators</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subsection-title">Reach & Participation</p>', unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(create_kpi_card("REACH", "Survey Respondents",
+            f"{N_pre} / {N_post}",
+            f"{N_pre} pre-session · {N_post} post-session",
+            f"✓ {tbd(ACTUAL_ATTENDEES)} attendees (registered: {tbd(TOTAL_REGISTERED)})"),
+            unsafe_allow_html=True)
+    with c2:
+        st.markdown(create_kpi_card("ENGAGEMENT", "Completed Both Surveys",
+            str(N_matched),
+            f"{match_vs_pre}% of pre respondents · {match_vs_post}% of post respondents",
+            "✓ Used for paired growth analysis"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(create_kpi_card("LEARNING", "Participants Improved",
+            f"{improved_pct:.1f}%",
+            f"{improved_n} of {N_matched} matched participants showed a net increase",
+            f"→ {sig_ge1_pct:.1f}% gained ≥1.0 pt ({sig_ge1_n} of {N_matched})"),
+            unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Learning Effectiveness by Topic (Matched, n=14)</p>',
+                unsafe_allow_html=True)
+    cols = st.columns(4)
+    cats = ["AI & NLP", "VISION", "JOB MARKET", "SKILLS"]
+    for i, col in enumerate(cols):
+        with col:
+            st.markdown(create_kpi_card(cats[i], topics[i], f"{post_scores[i]:.2f}",
+                "Post-session score (out of 5)",
+                f"✓ {improvements[i]:+.2f} pts ({pre_scores[i]:.2f} → {post_scores[i]:.2f})"),
+                unsafe_allow_html=True)
+
+    st.markdown('<p class="subsection-title">Action & Satisfaction (All Post Respondents, n=16)</p>',
+                unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(create_kpi_card("COMMITMENT", "Plan to Take Action",
+            f"{action_pct:.0f}%",
+            f"{action_n} of {N_post} plan an academic/career action in AI or Arabic NLP",
+            "→ Solid intent"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(create_kpi_card("QUALITY", "Satisfaction Score",
+            f"{sat_avg:.2f}/5.0",
+            f"{sat_pct:.1f}% Satisfied or Very satisfied",
+            "✓ Very good"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(create_kpi_card("ADVOCACY", "Likely to Recommend",
+            f"{rec_pct:.1f}%",
+            f"{recommend['Very likely']} Very likely + {recommend['Likely']} Likely",
+            "✓ Strong word-of-mouth"), unsafe_allow_html=True)
+
+    # ── HIGHLIGHTS ────────────────────────────────────────────────────────────
+    best_i = improvements.index(max(improvements))
+    st.markdown(f"""<div class="highlight-box"><h3>✨ Session Highlights</h3><ul>
+        <li>Strongest gain in <strong>{topics[best_i]}</strong>: {pre_scores[best_i]:.2f} → {post_scores[best_i]:.2f} (+{improvements[best_i]:.2f})</li>
+        <li>All four knowledge areas improved on average (mean +{avg_growth} pts, n={N_matched})</li>
+        <li>Most respondents moved from "Neutral" (7 of 14) to "Agree" (11 of 14) on average</li>
+        <li>{sat_pct:.1f}% satisfied and {rec_pct:.1f}% likely to recommend future sessions</li>
+    </ul></div>""", unsafe_allow_html=True)
+
+    # ── TABS ──────────────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown('<p class="section-title">📚 Detailed Analysis</p>', unsafe_allow_html=True)
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "🌱 Knowledge Development", "🕸️ Knowledge Profile",
+        "💡 Outcomes & Satisfaction", "👥 Demographics"
+    ])
+
+    # TAB 1 — knowledge
+    with tab1:
+        st.markdown("### Learning Progress — Before vs After (Matched, n=14)")
+        col1, col2 = st.columns([3, 2])
+        with col1:
+            fig = go.Figure()
+            fig.add_trace(go.Bar(name='Before Session', x=topics, y=pre_scores,
+                marker_color='#e9ecef', text=[f"{s:.2f}" for s in pre_scores], textposition='outside'))
+            fig.add_trace(go.Bar(name='After Session', x=topics, y=post_scores,
+                marker_color='#0ea5e9', text=[f"{s:.2f}" for s in post_scores], textposition='outside'))
+            fig.update_layout(barmode='group', yaxis_title='Knowledge Score (1–5)',
+                yaxis=dict(range=[0, 5.8]), height=420,
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5))
+            st.plotly_chart(fig, use_container_width=True)
+        with col2:
+            st.markdown("### Growth by Topic")
+            fig = go.Figure(go.Bar(x=improvements, y=topics, orientation='h',
+                marker_color='#0ea5e9', text=[f"{v:+.2f}" for v in improvements],
+                textposition='outside', textfont=dict(size=13)))
+            fig.add_vline(x=0, line_dash="dash", line_color="#adb5bd", line_width=1.5)
+            fig.update_layout(xaxis=dict(range=[-0.2, 1.2]), height=420,
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False, margin=dict(l=10, r=40, t=20, b=20))
+            st.plotly_chart(fig, use_container_width=True)
+            st.metric("Mean growth", f"+{avg_growth:.2f} pts")
+            st.metric("Median growth", f"+{median_growth:.2f} pts")
+            st.metric("Participants improved", f"{improved_pct:.1f}%")
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Distribution of Individual Improvement")
+            fig = go.Figure(go.Bar(
+                x=list(improvement_dist.keys()), y=list(improvement_dist.values()),
+                marker_color=['#075985', '#0ea5e9', '#7dd3fc', '#e9ecef', '#e74c3c'],
+                text=list(improvement_dist.values()), textposition='outside'))
+            fig.update_layout(height=340, yaxis=dict(range=[0, 6]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Average Score Distribution — Pre vs Post")
+            fig = lnc_grouped_bar(
+                ["1", "2", "3", "4", "5"],
+                list(pre_dist.values()), list(post_dist.values()),
+                pre_color='#e9ecef', post_color='#0ea5e9', height=340, y_max=14)
+            st.plotly_chart(fig, use_container_width=True)
+        st.caption("Per-person average across the four items, rounded to the nearest whole score. "
+                   "Matched respondents only (n=14).")
+
+    # TAB 2 — radar
+    with tab2:
+        st.markdown("### Knowledge Profile — Before vs After")
+        fig = go.Figure()
+        fig.add_trace(go.Scatterpolar(r=pre_scores + [pre_scores[0]], theta=topics + [topics[0]],
+            fill='toself', name='Before Session', line_color='#adb5bd',
+            fillcolor='rgba(173,181,189,0.2)', line_width=2))
+        fig.add_trace(go.Scatterpolar(r=post_scores + [post_scores[0]], theta=topics + [topics[0]],
+            fill='toself', name='After Session', line_color='#0ea5e9',
+            fillcolor='rgba(14,165,233,0.15)', line_width=2.5))
+        fig.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 5], tickfont=dict(size=11)),
+                       angularaxis=dict(tickfont=dict(size=13, family='Epilogue'))),
+            showlegend=True, height=500, paper_bgcolor='rgba(0,0,0,0)',
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
+        col_l, col_c, col_r = st.columns([1, 3, 1])
+        with col_c:
+            st.plotly_chart(fig, use_container_width=True)
+        sc = st.columns(4)
+        for i, col in enumerate(sc):
+            with col:
+                st.metric(topics[i], f"{post_scores[i]:.2f}", delta=f"{improvements[i]:+.2f}")
+
+    # TAB 3 — outcomes
+    with tab3:
+        st.markdown("### Post-Session Outcomes (All Post Respondents, n=16)")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.markdown("#### Satisfaction")
+            fig = lnc_donut(list(satisfaction.keys()), list(satisfaction.values()),
+                ['#075985', '#0ea5e9', '#7dd3fc', '#e74c3c'],
+                center_text=f"{sat_pct:.1f}%\nSatisfied")
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### Likely to Recommend")
+            fig = lnc_donut(list(recommend.keys()), list(recommend.values()),
+                ['#075985', '#0ea5e9', '#e9ecef'],
+                center_text=f"{rec_pct:.1f}%\nRecommend")
+            st.plotly_chart(fig, use_container_width=True)
+        with c3:
+            st.markdown("#### Plan to Take Action")
+            fig = lnc_donut(list(action_plan.keys()), list(action_plan.values()),
+                ['#0ea5e9', '#e9ecef'],
+                center_text=f"{action_pct:.0f}%\nYes")
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### Participant Journey")
+        fig = go.Figure(go.Funnel(
+            y=['Pre-survey', 'Post-survey', 'Completed Both', 'Plan to Act'],
+            x=[N_pre, N_post, N_matched, action_n],
+            textposition="inside", textinfo="value+percent initial",
+            marker={"color": ['#075985', '#0284c7', '#0ea5e9', '#7dd3fc'],
+                    "line": {"width": 2, "color": "white"}}))
+        fig.update_layout(height=380, font=dict(family="Epilogue", size=14, color="#2c3e50"),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=20, r=20, t=20, b=20))
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption("Plan to Act is counted among all 16 post respondents, not only matched pairs.")
+
+    # TAB 4 — demographics
+    with tab4:
+        st.markdown(f"### Who Responded? (Pre-survey, n={N_pre})")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### 📍 Location")
+            fig = lnc_donut(list(location.keys()), list(location.values()),
+                ['#075985', '#0ea5e9', '#7dd3fc', '#bae6fd'],
+                center_text=f"{N_pre}\nRespondents", height=380)
+            st.plotly_chart(fig, use_container_width=True)
+        with c2:
+            st.markdown("#### 📣 How Did They Hear About Us?")
+            labels = list(heard_about.keys()); vals = list(heard_about.values())
+            fig = go.Figure(go.Bar(x=labels, y=vals,
+                marker_color=['#075985', '#0284c7', '#0ea5e9', '#7dd3fc'],
+                text=vals, textposition='outside', textfont=dict(size=14)))
+            fig.update_layout(height=380, yaxis=dict(range=[0, max(vals) * 1.35]),
+                font=dict(family="Epilogue", color="#2c3e50"),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                showlegend=False, xaxis=dict(tickangle=-15))
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ── ABOUT ─────────────────────────────────────────────────────────────────
+    st.markdown(f"""<div class="info-box"><h3>📋 About This Session</h3>
+        <p>This session, <strong>Towards the Vision: Artificial Intelligence and Arabic Language</strong>
+        with Dr. Abdullah Alharbi, is part of the <strong>Towards the Vision</strong> initiative.
+        It explored the AI and NLP landscape in Saudi Arabia, the role of Arabic language technologies in
+        <strong>Vision 2030</strong>, and the job market and skills in demand.
+        Knowledge growth is measured on matched pre/post pairs (n={N_matched}); satisfaction,
+        recommendation and action plans use all {N_post} post-session respondents.
+        With a small sample on a 5-point scale, results are indicative rather than conclusive.</p></div>""",
+        unsafe_allow_html=True)
+
+    # ── FOOTER ────────────────────────────────────────────────────────────────
+    st.markdown(f"""<div class='sls-footer'>
+        <h2>🤖 AI & Arabic Language</h2>
+        <p class="tagline">Towards the Vision • Australia Chapter</p>
+        <div style='display:flex;justify-content:center;gap:3rem;margin:2rem 0;flex-wrap:wrap;position:relative;z-index:1;'>
+            <div><div style='font-size:2.5rem;font-weight:700'>{N_pre} / {N_post}</div><div style='opacity:0.8'>Pre / Post surveys</div></div>
+            <div><div style='font-size:2.5rem;font-weight:700'>{N_matched}</div><div style='opacity:0.8'>Matched pairs</div></div>
+            <div><div style='font-size:2.5rem;font-weight:700'>+{avg_growth}</div><div style='opacity:0.8'>Avg Growth</div></div>
+            <div><div style='font-size:2.5rem;font-weight:700'>{action_n}</div><div style='opacity:0.8'>Taking Action</div></div>
+        </div>
+        <p style='font-size:1.1rem;margin-top:2rem;opacity:0.9;position:relative;z-index:1'><strong>Grow • Connect • Impact</strong></p>
+        <p style='font-size:0.9rem;opacity:0.7;margin-top:1rem;position:relative;z-index:1'>{datetime.now().strftime('%B %d, %Y')} | Vision 2030</p>
+    </div>""", unsafe_allow_html=True)
 
     st.stop()
 # ============================================================================
