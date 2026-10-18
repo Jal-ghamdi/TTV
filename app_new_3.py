@@ -595,7 +595,19 @@ st.markdown("""
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
-
+def show_banner(path="sls_image.jpg"):
+    """Full-width banner that works on both old and new Streamlit versions."""
+    try:
+        st.image(path, width="stretch")                 # Streamlit >= ~1.50
+    except Exception:
+        try:
+            st.image(path, use_container_width=True)    # Streamlit ~1.30-1.49
+        except Exception:
+            try:
+                st.image(path, use_column_width=True)   # older versions
+            except Exception:
+                pass                                    # file missing: skip silently
+                
 def create_kpi_card(category, label, value, context, trend="", warn=False):
     trend_html = ""
     if trend:
@@ -732,10 +744,7 @@ if 'selected_session' not in st.session_state:
 # ============================================================================
 
 if st.session_state.selected_initiative is None:
-    try:
-        st.image("sls_image.jpg", use_column_width=True)
-    except:
-        pass
+    show_banner()
     
     st.markdown("""
     <div class="sls-header">
@@ -788,10 +797,7 @@ if st.session_state.selected_session is None:
     initiative_key = st.session_state.selected_initiative
     initiative_info = INITIATIVES[initiative_key]
     
-    try:
-        st.image("sls_image.jpg", use_column_width=True)
-    except:
-        pass
+    show_banner()
     
     st.markdown(f"""
     <div class="sls-header">
@@ -833,10 +839,7 @@ selected_session    = st.session_state.selected_session
 initiative_info     = INITIATIVES[selected_initiative]
 session_info        = initiative_info['sessions'][selected_session]
 
-try:
-    st.image("sls_image.jpg", use_column_width=True)
-except:
-    pass
+show_banner()
 
 # ─── Header (LNC gets its own navy header) ───────────────────────────────────
 if session_info.get('type') == 'lnc':
